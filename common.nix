@@ -51,7 +51,10 @@
     atom
     android-studio
     ntfs3g
-    termite
+    (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
+       termite = termite-unwrapped;
+       configFile = ./termite.conf;
+    })
     rofi 
     xmobar
     clipmenu
