@@ -31,7 +31,21 @@ in {
   # Set your time zone.
   # time.timeZone = "Europe/Amsterdam";
 
-  nixpkgs.config.allowUnfree = true;
+  # Don't forget to set a password with ‘passwd’.
+  users = { 
+    mutableUsers = false;
+    defaultUserShell = pkgs.fish;
+    users.bakhtiyar = {
+      description = "Bakhtiyar Neyman";
+      isNormalUser = true;
+      extraGroups = [ 
+          "wheel" # Enable ‘sudo’ for the user.
+          "adbusers"
+          "video" # Allow changing brightness via `light`.
+      ];
+      hashedPassword = "$6$.9aOljbRDW00nl$vRfj6ZVwgWXLTw2Ti/I55ov9nNl6iQAqAuauCiVhoRWIv5txKFIb49FKY0X3dgVqE61rPOqBh8qQSk61P2lZI1";
+    };
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -65,6 +79,147 @@ in {
     clipmenu
     pavucontrol
   ];
+  
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
+
+  sound = {
+    enable = true;
+    mediaKeys = {
+      enable = true;
+      volumeStep = "1%";
+    };
+  };
+
+  hardware.pulseaudio = {
+    enable = true;
+    package = pkgs.pulseaudioFull; # For bluetooth headphones
+  };
+
+  services = {
+
+    # Enable the X11 windowing system.
+    xserver = {
+      enable = true;
+      layout = "us";
+      # services.xserver.xkbOptions = "eurosign:e";
+
+      # Enable touchpad support.
+      libinput = {
+        enable = true;
+        naturalScrolling = true;
+      };
+
+      # displayManager.sddm.enable = true;
+      displayManager.gdm = {
+        enable = true;
+        # Autologin is only safe becae the harddisk is encrypted. 
+        # It can lead to an infinite loop if the window manager crashes.
+        autoLogin = {
+          enable = true; 
+          user = "bakhtiyar";
+        };
+      };
+
+      windowManager = {
+        i3 = {
+          enable = true;
+          configFile = unsafeRef ./i3.conf;
+          package = pkgs.i3-gaps;
+        };
+        xmonad = {
+          enable = true;
+          enableContribAndExtras = true;
+          extraPackages = with pkgs; haskellPackages: [
+            haskellPackages.xmonad-contrib
+            haskellPackages.xmonad-extras
+            haskellPackages.xmonad
+          ];
+        };
+        default = "i3";
+      };
+
+      desktopManager.gnome3.enable = true;
+    };
+
+    compton.enable = true;
+  
+    gnome3.chrome-gnome-shell.enable = true;
+  
+    geoclue2.enable = true;
+
+    localtime.enable = true;
+
+    redshift = {
+      enable = true;
+      provider = "geoclue2";
+    };
+
+    actkbd = {
+      enable = true;
+      bindings = 
+        let 
+          light = "${pkgs.light}/bin/light";
+          mkBinding = keys: events: command: { inherit keys events command; };
+        in [
+          (mkBinding [ 224 ] [ "key" "rep" ] "${light} -U 1")
+          (mkBinding [ 225 ] [ "key" "rep" ] "${light} -A 1")
+        ];  
+    };
+
+    openssh.enable = true;
+    printing.enable = true;
+  };
+
+  programs = {
+    fish = {
+        enable = true;
+        # This assumes that peco_plugin has been installed by some means, e.g. via oh-my-fish.
+        interactiveShellInit = ''
+          function fish_user_key_bindings
+            bind \cr 'peco_select_history (commandline -b)'
+          end
+        '';
+      };
+    
+    sway.enable = true;
+    # sway.extraPackages = with pkgs; [
+    #   xwayland # Wayland bindings.
+    #   dmenu # Launcher. Alternative to rofi.
+    #   rxvt_unicode # Terminal. Alternative to termite.
+    #   termite
+    #   i3status-rust # Status bar. 
+    #   swaylock # Lock screen.
+    #   swayidle # Idle-related tasks.
+    # ];  
+    light.enable = true; # Brightness management.
+    nm-applet.enable = true; # Wi-fi management.
+    adb.enable = true;
+  };
+  
+  # Allow elevating privileges dynamically via `pkexec`.
+  # This doesn't currently help with `vscode` because `sudo-prompt` package is not working right.
+  security.polkit = {
+    enable = true;
+    adminIdentities = [ "unix-user:bakhtiyar" ];
+  };
+
+  powerManagement.powertop.enable = true; # Battery optimizations.
+
+  # This value determines the NixOS release with which your system is to be
+  # compatible, in order to avoid breaking some software such as database
+  # servers. You should change this only after NixOS release notes say you
+  # should.
+  system = {
+    stateVersion = "19.03"; # Did you read the comment?
+    autoUpgrade.enable = true;
+  };  
+  
+  nixpkgs.config.allowUnfree = true;
+  nix.gc.automatic = true; # Garbage collection.
 
   fonts = {
     enableFontDir = true;
@@ -85,152 +240,4 @@ in {
     ];
   };
 
-  users.defaultUserShell = pkgs.fish;
-  programs.fish.enable = true;
-  programs.fish.interactiveShellInit = 
-    ''
-      function fish_user_key_bindings
-        bind \cr 'peco_select_history (commandline -b)'
-      end
-    '';
-  programs.light.enable = true; # Brightness management.
-  programs.nm-applet.enable = true; # Wi-fi management.
-  programs.sway.enable = true;
-  # programs.sway.extraPackages = with pkgs; [
-  #   xwayland # Wayland bindings.
-  #   dmenu # Launcher. Alternative to rofi.
-  #   rxvt_unicode # Terminal. Alternative to termite.
-  #   termite
-  #   i3status-rust # Status bar. 
-  #   swaylock # Lock screen.
-  #   swayidle # Idle-related tasks.
-  # ];  
-  programs.adb.enable = true;
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = { enable = true; enableSSHSupport = true; };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-  services.gnome3.chrome-gnome-shell.enable = true;
-
-  # Enable sound.
-  sound.enable = true;
-  sound.mediaKeys = {
-    enable = true;
-    volumeStep = "1%";
-  };
-  hardware.pulseaudio = {
-    enable = true;
-    package = pkgs.pulseaudioFull; # For bluetooth headphones
-  };
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e";
-
-  # Enable touchpad support.
-  services.xserver.libinput = {
-    enable = true;
-    naturalScrolling = true;
-  };
-
-  services.xserver.displayManager.gdm.enable = true;
-
-
-  # Autologin is only safe becae the harddisk is encrypted. 
-  # It can lead to an infinite loop if the window manager crashes.
-  services.xserver.displayManager.gdm.autoLogin.enable = true; 
-  services.xserver.displayManager.gdm.autoLogin.user = "bakhtiyar";
-  services.xserver.windowManager = {
-    i3 = {
-      enable = true;
-      configFile = unsafeRef ./i3.conf;
-      package = pkgs.i3-gaps;
-    };
-    xmonad = {
-      enable = true;
-      enableContribAndExtras = true;
-      extraPackages = with pkgs; haskellPackages: [
-        haskellPackages.xmonad-contrib
-        haskellPackages.xmonad-extras
-        haskellPackages.xmonad
-      ];
-    };
-    default = "i3";
-  };
-  services.xserver.desktopManager.gnome3.enable = true;
-  # services.xserver.displayManager.sddm.enable = true;
-  # services.xserver.desktopManager.plasma5.enable = true;
-
-  services.compton.enable = true;
-
-  services.geoclue2.enable = true;
-
-  services.localtime.enable = true;
-
-  services.redshift = {
-    enable = true;
-    provider = "geoclue2";
-  };
-
-  services.actkbd = {
-    enable = true;
-    bindings = 
-      let 
-        light = "${pkgs.light}/bin/light";
-	mkBinding = keys: events: command: { 
-	  inherit keys;
-	  inherit events;
-	  inherit command;
-	};
-      in [
-        (mkBinding [ 224 ] [ "key" "rep" ] "${light} -U 1")
-        (mkBinding [ 225 ] [ "key" "rep" ] "${light} -A 1")
-      ];  };
-
-  powerManagement.powertop.enable = true; # Battery optimizations.
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.mutableUsers = false;
-  users.users.bakhtiyar = {
-    description = "Bakhtiyar Neyman";
-    isNormalUser = true;
-    extraGroups = [ 
-	"wheel" # Enable ‘sudo’ for the user.
-        "adbusers"
-        "video" # Allow changing brightness via `light`.
-    ];
-    hashedPassword = "$6$.9aOljbRDW00nl$vRfj6ZVwgWXLTw2Ti/I55ov9nNl6iQAqAuauCiVhoRWIv5txKFIb49FKY0X3dgVqE61rPOqBh8qQSk61P2lZI1";
-  };
-
-  # Allow elevating privileges dynamically via `pkexec`.
-  # This doesn't currently help with `vscode` because `sudo-prompt` package is not working right.
-  security.polkit = {
-    enable = true;
-    adminIdentities = [ "unix-user:bakhtiyar" ];
-  };
-
-  # This value determines the NixOS release with which your system is to be
-  # compatible, in order to avoid breaking some software such as database
-  # servers. You should change this only after NixOS release notes say you
-  # should.
-  system.stateVersion = "19.03"; # Did you read the comment?
-  system.autoUpgrade.enable = true;  
-  nix.gc.automatic = true;
-  nix.gc.dates = "03:15";
 }
