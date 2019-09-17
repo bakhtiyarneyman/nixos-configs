@@ -80,12 +80,12 @@ in {
     pavucontrol
   ];
   
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
-
+  networking.firewall = {
+    # Chromecast ports.
+    allowedTCPPorts = [ 8008 8009 ];
+    allowedUDPPortRanges = [ { from = 32768; to = 60999; } ];
+  };
+  
   sound = {
     enable = true;
     mediaKeys = {
