@@ -218,6 +218,13 @@ in {
     hashedPassword = "$6$.9aOljbRDW00nl$vRfj6ZVwgWXLTw2Ti/I55ov9nNl6iQAqAuauCiVhoRWIv5txKFIb49FKY0X3dgVqE61rPOqBh8qQSk61P2lZI1";
   };
 
+  # Allow elevating privileges dynamically via `pkexec`.
+  # This doesn't currently help with `vscode` because `sudo-prompt` package is not working right.
+  security.polkit = {
+    enable = true;
+    adminIdentities = [ "unix-user:bakhtiyar" ];
+  };
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
