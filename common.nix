@@ -179,6 +179,13 @@ in {
 
   services.compton.enable = true;
 
+  services.geoclue2.enable = true;
+
+  services.redshift = {
+    enable = true;
+    provider = "geoclue2";
+  };
+
   services.actkbd = {
     enable = true;
     bindings = 
@@ -193,8 +200,9 @@ in {
         (mkBinding [ 224 ] [ "key" "rep" ] "${light} -U 1")
         (mkBinding [ 225 ] [ "key" "rep" ] "${light} -A 1")
       ];  };
-  # systemd.services."actkbd@".serviceConfig.ExecStart = 
+
   powerManagement.powertop.enable = true; # Battery optimizations.
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.mutableUsers = false;
   users.users.bakhtiyar = {
