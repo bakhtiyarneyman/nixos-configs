@@ -152,7 +152,11 @@
   services.xserver.displayManager.gdm.autoLogin.enable = true; 
   services.xserver.displayManager.gdm.autoLogin.user = "bakhtiyar";
   services.xserver.windowManager = {
-    i3.enable = true;
+    i3 = {
+      enable = true;
+      configFile = ./i3.conf;
+      package = pkgs.i3-gaps;
+    };
     xmonad = {
       enable = true;
       enableContribAndExtras = true;
