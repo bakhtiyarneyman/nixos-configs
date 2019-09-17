@@ -181,6 +181,8 @@ in {
 
   services.geoclue2.enable = true;
 
+  services.localtime.enable = true;
+
   services.redshift = {
     enable = true;
     provider = "geoclue2";
