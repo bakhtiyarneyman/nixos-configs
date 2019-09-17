@@ -4,7 +4,12 @@
 
 { config, pkgs, ... }:
 
-{
+let 
+  # Don't put into /nix/store. Instead use the files in /etc/nixos directly.
+  # This makes it easier to test out configuration changes while still
+  # managing them centrally.
+  unsafeRef = toString;
+in {
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_5_2;
@@ -53,7 +58,7 @@
     ntfs3g
     (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
        termite = termite-unwrapped;
-       configFile = ./termite.conf;
+       configFile = unsafeRef ./termite.conf;
     })
     rofi 
     xmobar
@@ -154,7 +159,7 @@
   services.xserver.windowManager = {
     i3 = {
       enable = true;
-      configFile = ./i3.conf;
+      configFile = unsafeRef ./i3.conf;
       package = pkgs.i3-gaps;
     };
     xmonad = {
