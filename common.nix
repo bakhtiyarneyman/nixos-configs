@@ -116,7 +116,7 @@ in {
       # displayManager.sddm.enable = true;
       displayManager.gdm = {
         enable = true;
-        # Autologin is only safe becae the harddisk is encrypted. 
+        # Autologin is only safe because the disk is encrypted. 
         # It can lead to an infinite loop if the window manager crashes.
         autoLogin = {
           enable = true; 
