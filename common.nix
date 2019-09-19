@@ -219,7 +219,10 @@ in {
   };  
   
   nixpkgs.config.allowUnfree = true;
-  nix.gc.automatic = true; # Garbage collection.
+  nix.gc = {
+    automatic = true;
+    options = "--delete-older-than 14d";
+  };
 
   fonts = {
     enableFontDir = true;
