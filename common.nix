@@ -76,8 +76,11 @@ in {
     })
     rofi 
     xmobar
-    clipmenu
-    pavucontrol
+    clipmenu # Clipboard manager.
+    pavucontrol # Pulse audio volume control.
+    libnotify # Notification service API. 
+    (dunst.override { dunstify = true ; }) # Notification service implementation.
+    wmctrl
   ];
   
   networking.firewall = {
