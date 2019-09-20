@@ -148,7 +148,13 @@ in {
       desktopManager.gnome3.enable = true;
     };
 
-    compton.enable = true;
+    compton = {
+      enable = true;
+      fade = true; 
+      fadeSteps = ["0.1" "0.1"];
+      shadow = true;
+      inactiveOpacity = "0.8";
+    };
   
     gnome3.chrome-gnome-shell.enable = true;
   
