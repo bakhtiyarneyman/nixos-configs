@@ -42,7 +42,15 @@ options.services.dunst = {
     '';
   };
 
-  shortcutConfig = mkOption {
+  experimentalConfig = mkOption {
+    type = with types; attrsOf str;
+    default = {};
+    description = ''
+      The experimental configuration section for dunst.
+    '';
+  };
+  
+  shortcutsConfig = mkOption {
     type = with types; attrsOf str;
     default = {};
     description = ''
@@ -105,7 +113,8 @@ config =
     dunstConfig = lib.generators.toINI {} allOptions;
     allOptions = {
       global = cfg.globalConfig;
-      shortcut = cfg.shortcutConfig;
+      experimental = cfg.experimentalConfig;
+      shortcuts = cfg.shortcutsConfig;
       urgency_normal = cfg.urgencyConfig.normal;
       urgency_low = cfg.urgencyConfig.low;
       urgency_critical = cfg.urgencyConfig.critical;

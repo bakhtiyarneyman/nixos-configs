@@ -10,6 +10,10 @@ let
   # managing them centrally.
   unsafeRef = toString;
 in {
+  imports = [
+    ./modules/dunst.nix
+  ];
+
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.kernelPackages = pkgs.linuxPackages_5_2;
@@ -79,10 +83,9 @@ in {
     clipmenu # Clipboard manager.
     pavucontrol # Pulse audio volume control.
     libnotify # Notification service API. 
-    (dunst.override { dunstify = true ; }) # Notification service implementation.
     wmctrl
   ];
-  
+
   networking.firewall = {
     # Chromecast ports.
     allowedTCPPorts = [ 8008 8009 ];
@@ -155,6 +158,84 @@ in {
       shadow = true;
       inactiveOpacity = "0.8";
     };
+
+    # Notification service.
+    dunst = {
+      enable = true;
+      globalConfig = {
+        monitor = "0";
+        follow = "keyboard";
+        geometry = "300x5-30+20";
+        indicate_hidden = "yes";
+        shrink = "true";
+        transparency = "40";
+        notification_height = "0";
+        separator_height = "3";
+        padding = "8";
+        horizontal_padding = "8";
+        frame_width = "0";
+        frame_color = "#aaaaaa";
+        separator_color = "auto";
+        sort = "yes";
+        idle_threshold = "120";
+        font = "Ubuntu 6";
+        line_height = "0";
+        markup = "full";
+        format = ''"<b>%s</b>\n%b"'';
+        alignment = "center";
+        show_age_threshold = "60";
+        word_wrap = "yes";
+        ellipsize = "middle";
+        ignore_newline = "no";
+        stack_duplicates = "true";
+        hide_duplicate_count = "false";
+        show_indicators = "yes";
+        icon_position = "left";
+        max_icon_size = "32";
+        sticky_history = "yes";
+        history_length = "100";
+        dmenu = "${pkgs.dmenu}/bin/dmenu -p dunst:";
+        browser = "${pkgs.google-chrome}/bin/google-chrome-stable -new-tab";
+        always_run_script = "true";
+        title = "Dunst";
+        class = "Dunst";
+        startup_notification = "true";
+        verbosity = "mesg";
+        corner_radius = "10";
+        force_xinerama = "false";
+        mouse_left_click = "do_action";
+        mouse_middle_click = "close_all";
+        mouse_right_click = "close_current";
+      };
+      experimentalConfig = {
+        per_monitor_dpi = "true";
+      };
+      shortcutsConfig = {
+        close = "mod4+BackSpace";
+        history = "mod4+shift+BackSpace";
+        context = "mod4+period";
+      };
+      urgencyConfig = let q = s: ''"${s}"''; in {
+        low = {
+          background = q "#203040";
+          foreground = q "#909090";
+          timeout = "10";
+        };
+        normal = {
+          background = q "#203040";
+          foreground = q "#FFFFFF";
+          timeout = "30";
+        };
+        critical = {
+          background = q "#900000";
+          foreground = q "#ffffff";
+          timeout = "0";
+        };
+      };
+      iconDirs =
+        let icons = "${pkgs.gnome3.adwaita-icon-theme}/share/icons/Adwaita";
+        in [ "${icons}/48x48" "${icons}/scalable" ];
+    };  
   
     gnome3.chrome-gnome-shell.enable = true;
   
