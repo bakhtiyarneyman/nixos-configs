@@ -217,7 +217,6 @@ in {
         always_run_script = "true";
         title = "Dunst";
         class = "Dunst";
-        startup_notification = "true";
         verbosity = "mesg";
         corner_radius = "10";
         force_xinerama = "false";
