@@ -262,6 +262,10 @@ in {
 
     openssh.enable = true;
     printing.enable = true;
+
+    journald.extraConfig = ''
+      SystemMaxUse=50M
+    '';
   };
 
   programs = {
