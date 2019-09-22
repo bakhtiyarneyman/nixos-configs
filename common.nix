@@ -122,13 +122,19 @@ in {
       };
 
       # displayManager.sddm.enable = true;
-      displayManager.gdm = {
-        enable = true;
-        # Autologin is only safe because the disk is encrypted. 
-        # It can lead to an infinite loop if the window manager crashes.
-        autoLogin = {
-          enable = true; 
-          user = "bakhtiyar";
+      displayManager = {
+        # Dim and show lockscreen after time of inactivity.
+        sessionCommands = ''
+          xset s 60 60
+        '';
+        gdm = {
+          enable = true;
+          # Autologin is only safe because the disk is encrypted. 
+          # It can lead to an infinite loop if the window manager crashes.
+          autoLogin = {
+            enable = true; 
+            user = "bakhtiyar";
+          };
         };
       };
 
@@ -158,10 +164,12 @@ in {
       fade = true; 
       fadeSteps = ["0.1" "0.1"];
       shadow = true;
-      inactiveOpacity = "0.8";
-      # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
+      inactiveOpacity = "0.8";      
       extraOptions = ''
+        # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
         mark-ovredir-focused = true;
+        # This is needed for xss-lock. Otherwise locker will just freeze the screen.
+        paint-on-overlay = true;
       '';
     };
 
@@ -298,6 +306,9 @@ in {
     # ];  
     light.enable = true; # Brightness management.
     nm-applet.enable = true; # Wi-fi management.
+    xss-lock = {
+      enable = true;
+    };
     adb.enable = true;
   };
   
