@@ -9,6 +9,7 @@ let
   # This makes it easier to test out configuration changes while still
   # managing them centrally.
   unsafeRef = toString;
+  prettyLock = import ./prettyLock.nix pkgs;
 in {
   imports = [
     ./modules/dunst.nix
@@ -84,6 +85,7 @@ in {
     pavucontrol # Pulse audio volume control.
     libnotify # Notification service API. 
     wmctrl
+    prettyLock
   ];
 
   networking.firewall = {
@@ -123,9 +125,11 @@ in {
 
       # displayManager.sddm.enable = true;
       displayManager = {
-        # Dim and show lockscreen after time of inactivity.
+        # 1. Set wallpaper.
+        # 2. Lock screen after time of inactivity.
         sessionCommands = ''
-          xset s 60 60
+          ${pkgs.feh}/bin/feh --bg-fill ${./wallpaper.jpg}
+          ${pkgs.xorg.xset}/bin/xset s 60 60
         '';
         gdm = {
           enable = true;
@@ -308,6 +312,7 @@ in {
     nm-applet.enable = true; # Wi-fi management.
     xss-lock = {
       enable = true;
+      lockerCommand = "${prettyLock}/bin/prettyLock";
     };
     adb.enable = true;
   };
