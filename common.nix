@@ -110,8 +110,10 @@ in {
     # Enable the X11 windowing system.
     xserver = {
       enable = true;
-      layout = "us";
-      # services.xserver.xkbOptions = "eurosign:e";
+
+      # Keyboard.
+      layout = "us,ru,az";
+      xkbOptions = "grp:alt_shift_toggle";
 
       # Enable touchpad support.
       libinput = {
