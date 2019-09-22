@@ -12,6 +12,7 @@ let
   prettyLock = import ./prettyLock.nix pkgs;
 in {
   imports = [
+    ./modules/blueman.nix
     ./modules/dunst.nix
   ];
 
@@ -277,6 +278,7 @@ in {
         ];  
     };
 
+    blueman.enable = true; # Bluetooth applet. TODO(bakhtiyar): can break when 19.09 lands.
     openssh.enable = true;
     printing.enable = true;
 
