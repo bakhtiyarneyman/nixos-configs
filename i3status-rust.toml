@@ -30,6 +30,12 @@ format = "{1m}"
 block = "sound"
 
 [[block]]
+block = "battery"
+interval = 1
+driver = "upower"
+format = "{percentage}% {time}"
+
+[[block]]
 block = "time"
 interval = 60
 format = "%a %Y-%m-%d %R"

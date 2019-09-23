@@ -148,7 +148,11 @@ in {
           enable = true;
           configFile = unsafeRef ./i3.conf;
           package = pkgs.i3-gaps;
-          extraPackages = with pkgs; [ dmenu i3status-rust ];
+          extraPackages = with pkgs; [ 
+            dmenu 
+            upower
+            (callPackage ./i3status-rust.nix {}) # TODO(bakhtiyar): remove after 19.09 lands.
+          ];
         };
         xmonad = {
           enable = true;
@@ -312,7 +316,7 @@ in {
     # ];  
     light.enable = true; # Brightness management.
     nm-applet.enable = true; # Wi-fi management.
-    xss-lock = {
+    xss-lock = { # Lock on lid action.
       enable = true;
       lockerCommand = "${prettyLock}/bin/prettyLock";
     };
