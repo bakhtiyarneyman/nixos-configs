@@ -11,10 +11,14 @@ in {
 
   config = mkIf cfg.enable {
 
-    systemd.user.services.blueman.enable = true;
-    systemd.user.services.blueman.serviceConfig.ExecStart = [ 
+    systemd.user.services.blueman = {
+      enable = true;
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      serviceConfig.ExecStart = [ 
       "${pkgs.blueman}/bin/blueman-applet" 
-    ];
+      ];
+    };
 
     systemd.packages = [ pkgs.blueman ];
     services.dbus.packages = [ pkgs.blueman ];
