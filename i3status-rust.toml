@@ -2,14 +2,26 @@ theme = "solarized-dark"
 icons = "awesome"
 
 [[block]]
+block = "net"
+device = "wlp0s20f3"
+ssid = true
+bitrate = false
+ip = false
+speed_up = false
+speed_down = false
+graph_up = false
+interval = 5
+
+[[block]]
 block = "disk_space"
 path = "/"
-alias = "/"
+alias = ""
 info_type = "available"
 unit = "GB"
 interval = 20
 warning = 20.0
 alert = 10.0
+show_percentage = true
 
 [[block]]
 block = "memory"
@@ -20,6 +32,15 @@ format_swap = "{SUp}%"
 [[block]]
 block = "cpu"
 interval = 1
+format = "{utilization}% {frequency}GHz"
+
+[[block]]
+block = "temperature"
+collapsed = false
+interval = 1
+good = 35
+format = "{max}°"
+chip = "*-isa-*"
 
 [[block]]
 block = "load"
@@ -35,11 +56,20 @@ block = "sound"
 
 [[block]]
 block = "battery"
-interval = 1
 driver = "upower"
 format = "{percentage}% {time}"
 
+# This dumps "us,ru,az". 
+# [[block]]
+# block = "keyboard_layout"
+# driver = "localebus"
+
+[[block]] 
+block = "custom" 
+command = "xkblayout-state print %s" 
+interval = 0.1
+
 [[block]]
 block = "time"
-interval = 60
-format = "%a %Y-%m-%d %R"
+interval = 1
+format = "%a %Y-%m-%d %T"

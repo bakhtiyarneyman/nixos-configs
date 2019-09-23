@@ -150,7 +150,10 @@ in {
           package = pkgs.i3-gaps;
           extraPackages = with pkgs; [ 
             dmenu 
-            upower
+            # i3status-rust packages.
+            upower # Charging state.
+            lm_sensors # Temperature.
+            xkblayout-state # Keyboard layout (a hack).
             (callPackage ./i3status-rust.nix {}) # TODO(bakhtiyar): remove after 19.09 lands.
           ];
         };
