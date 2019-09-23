@@ -347,6 +347,8 @@ in {
     enableGhostscriptFonts = true;
     fonts = with pkgs; [
       anonymousPro
+      (callPackage ./font-awesome.nix {}).v4
+      (callPackage ./font-awesome.nix {}).v5
       corefonts
       dejavu_fonts
       freefont_ttf
