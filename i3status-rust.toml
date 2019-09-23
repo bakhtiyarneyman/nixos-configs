@@ -27,6 +27,10 @@ interval = 1
 format = "{1m}"
 
 [[block]]
+block = "bluetooth"
+mac = "98:09:CF:FE:72:7B"
+
+[[block]]
 block = "sound"
 
 [[block]]
