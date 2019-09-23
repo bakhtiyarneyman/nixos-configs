@@ -148,6 +148,7 @@ in {
           enable = true;
           configFile = unsafeRef ./i3.conf;
           package = pkgs.i3-gaps;
+          extraPackages = with pkgs; [ dmenu i3status-rust ];
         };
         xmonad = {
           enable = true;
