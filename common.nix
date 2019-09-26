@@ -128,10 +128,11 @@ in {
       displayManager = {
         # 1. Set wallpaper.
         # 2. Lock screen after time of inactivity.
+        # 3. Turn off the screen after even longer time of inactivity.
         sessionCommands = ''
           ${pkgs.feh}/bin/feh --bg-fill ${./wallpaper.jpg}
           ${pkgs.xorg.xset}/bin/xset s 60 60
-          ${pkgs.xorg.xset}/bin/xset d 120 120 120
+          ${pkgs.xorg.xset}/bin/xset dpms 120 120 120
         '';
         gdm = {
           enable = true;
