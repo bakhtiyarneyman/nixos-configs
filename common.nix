@@ -4,7 +4,7 @@
 
 { config, pkgs, ... }:
 
-let 
+let
   # Don't put into /nix/store. Instead use the files in /etc/nixos directly.
   # This makes it easier to test out configuration changes while still
   # managing them centrally.
@@ -38,13 +38,13 @@ in {
   # time.timeZone = "Europe/Amsterdam";
 
   # Don't forget to set a password with ‘passwd’.
-  users = { 
+  users = {
     mutableUsers = false;
     defaultUserShell = pkgs.fish;
     users.bakhtiyar = {
       description = "Bakhtiyar Neyman";
       isNormalUser = true;
-      extraGroups = [ 
+      extraGroups = [
           "wheel" # Enable ‘sudo’ for the user.
           "adbusers"
           "video" # Allow changing brightness via `light`.
@@ -56,13 +56,13 @@ in {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    wget 
+    wget
     neovim
-    fish 
-    peco 
+    fish
+    peco
     google-chrome
     firefox
-    (tor-browser-bundle-bin.override { 
+    (tor-browser-bundle-bin.override {
        mediaSupport = true;
        pulseaudioSupport = true;
     })
@@ -80,11 +80,11 @@ in {
        termite = termite-unwrapped;
        configFile = unsafeRef ./termite.conf;
     })
-    rofi 
+    rofi
     xmobar
     clipmenu # Clipboard manager.
     pavucontrol # Pulse audio volume control.
-    libnotify # Notification service API. 
+    libnotify # Notification service API.
     wmctrl
     prettyLock
   ];
@@ -94,7 +94,7 @@ in {
     allowedTCPPorts = [ 8008 8009 ];
     allowedUDPPortRanges = [ { from = 32768; to = 60999; } ];
   };
-  
+
   sound = {
     enable = true;
     mediaKeys = {
@@ -134,10 +134,10 @@ in {
         '';
         gdm = {
           enable = true;
-          # Autologin is only safe because the disk is encrypted. 
+          # Autologin is only safe because the disk is encrypted.
           # It can lead to an infinite loop if the window manager crashes.
           autoLogin = {
-            enable = true; 
+            enable = true;
             user = "bakhtiyar";
           };
         };
@@ -148,8 +148,8 @@ in {
           enable = true;
           configFile = unsafeRef ./i3.conf;
           package = pkgs.i3-gaps;
-          extraPackages = with pkgs; [ 
-            dmenu 
+          extraPackages = with pkgs; [
+            dmenu
             # i3status-rust packages.
             upower # Charging state.
             lm_sensors # Temperature.
@@ -174,10 +174,10 @@ in {
 
     compton = {
       enable = true;
-      fade = true; 
+      fade = true;
       fadeSteps = ["0.1" "0.1"];
       shadow = true;
-      inactiveOpacity = "0.6";      
+      inactiveOpacity = "0.6";
       extraOptions = ''
         # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
         mark-ovredir-focused = true;
@@ -261,10 +261,10 @@ in {
       iconDirs =
         let icons = "${pkgs.gnome3.adwaita-icon-theme}/share/icons/Adwaita";
         in [ "${icons}/48x48" "${icons}/scalable" ];
-    };  
-  
+    };
+
     gnome3.chrome-gnome-shell.enable = true;
-  
+
     geoclue2.enable = true;
 
     localtime.enable = true;
@@ -276,14 +276,14 @@ in {
 
     actkbd = {
       enable = true;
-      bindings = 
-        let 
+      bindings =
+        let
           light = "${pkgs.light}/bin/light";
           mkBinding = keys: events: command: { inherit keys events command; };
         in [
           (mkBinding [ 224 ] [ "key" "rep" ] "${light} -U 1")
           (mkBinding [ 225 ] [ "key" "rep" ] "${light} -A 1")
-        ];  
+        ];
     };
 
     blueman.enable = true; # Bluetooth applet. TODO(bakhtiyar): can break when 19.09 lands.
@@ -306,17 +306,17 @@ in {
           end
         '';
       };
-    
+
     sway.enable = true;
     # sway.extraPackages = with pkgs; [
     #   xwayland # Wayland bindings.
     #   dmenu # Launcher. Alternative to rofi.
     #   rxvt_unicode # Terminal. Alternative to termite.
     #   termite
-    #   i3status-rust # Status bar. 
+    #   i3status-rust # Status bar.
     #   swaylock # Lock screen.
     #   swayidle # Idle-related tasks.
-    # ];  
+    # ];
     light.enable = true; # Brightness management.
     nm-applet.enable = true; # Wi-fi management.
     xss-lock = { # Lock on lid action.
@@ -325,7 +325,7 @@ in {
     };
     adb.enable = true;
   };
-  
+
   # Allow elevating privileges dynamically via `pkexec`.
   # This doesn't currently help with `vscode` because `sudo-prompt` package is not working right.
   security.polkit = {
@@ -342,8 +342,8 @@ in {
   system = {
     stateVersion = "19.03"; # Did you read the comment?
     autoUpgrade.enable = true;
-  };  
-  
+  };
+
   nixpkgs.config.allowUnfree = true;
   nix.gc = {
     automatic = true;
