@@ -131,6 +131,7 @@ in {
         sessionCommands = ''
           ${pkgs.feh}/bin/feh --bg-fill ${./wallpaper.jpg}
           ${pkgs.xorg.xset}/bin/xset s 60 60
+          ${pkgs.xorg.xset}/bin/xset d 120 120 120
         '';
         gdm = {
           enable = true;
