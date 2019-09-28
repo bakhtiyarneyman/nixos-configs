@@ -142,7 +142,7 @@ in {
             ${pkgs.xorg.xset}/bin/xset s ${toString idleToDimSecs} ${toString dimToLockSecs}
             ${pkgs.xorg.xset}/bin/xset dpms ${screenOffTime} ${screenOffTime} ${screenOffTime}
           '';
-        gdm = {
+        lightdm = {
           enable = true;
           # Autologin is only safe because the disk is encrypted. 
           # It can lead to an infinite loop if the window manager crashes.
