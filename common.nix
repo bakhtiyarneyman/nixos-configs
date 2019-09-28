@@ -10,6 +10,10 @@ let
   # managing them centrally.
   unsafeRef = toString;
   prettyLock = import ./prettyLock.nix pkgs;
+  idleToDimSecs = 60;
+  dimToLockSecs = 10;
+  lockToScreenOffSecs = 10;
+  dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; }; 
 in {
   imports = [
     ./modules/blueman.nix
@@ -127,13 +131,17 @@ in {
       # displayManager.sddm.enable = true;
       displayManager = {
         # 1. Set wallpaper.
-        # 2. Lock screen after time of inactivity.
-        # 3. Turn off the screen after even longer time of inactivity.
-        sessionCommands = ''
-          ${pkgs.feh}/bin/feh --bg-fill ${./wallpaper.jpg}
-          ${pkgs.xorg.xset}/bin/xset s 60 60
-          ${pkgs.xorg.xset}/bin/xset dpms 120 120 120
-        '';
+        # 2. Don't lock the screen by itself.
+        # 3. Turn off the screen after time of inactivity. This triggers a screen lock
+        sessionCommands = 
+          with builtins;
+          let screenOffTime = toString 
+                (idleToDimSecs + dimToLockSecs + lockToScreenOffSecs);
+          in ''
+            ${pkgs.feh}/bin/feh --bg-fill ${./wallpaper.jpg}
+            ${pkgs.xorg.xset}/bin/xset s ${toString idleToDimSecs} ${toString dimToLockSecs}
+            ${pkgs.xorg.xset}/bin/xset dpms ${screenOffTime} ${screenOffTime} ${screenOffTime}
+          '';
         gdm = {
           enable = true;
           # Autologin is only safe because the disk is encrypted. 
@@ -323,7 +331,7 @@ in {
     nm-applet.enable = true; # Wi-fi management.
     xss-lock = { # Lock on lid action.
       enable = true;
-      lockerCommand = "${prettyLock}/bin/prettyLock";
+      lockerCommand = "--notifier=${dim-screen}/bin/dim-screen -- ${prettyLock}/bin/prettyLock";
     };
     adb.enable = true;
   };
