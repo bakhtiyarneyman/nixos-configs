@@ -289,6 +289,7 @@ in {
     blueman.enable = true; # Bluetooth applet. TODO(bakhtiyar): can break when 19.09 lands.
     openssh.enable = true;
     printing.enable = true;
+    tlp.enable = true; # For battery conservation. Powertop disables wired mice.
 
     journald.extraConfig = ''
       SystemMaxUse=50M
@@ -332,8 +333,6 @@ in {
     enable = true;
     adminIdentities = [ "unix-user:bakhtiyar" ];
   };
-
-  powerManagement.powertop.enable = true; # Battery optimizations.
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
