@@ -21,6 +21,7 @@ in pkgs.writeTextFile {
       exit
     end
 
+    ${light} -O # Save state.
     set brightness (light) # Get state.
     set step (math $brightness / ${steps})
     while test $brightness -gt ${minBrightnessPercents'}
