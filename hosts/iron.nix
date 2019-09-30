@@ -9,6 +9,8 @@
     ];
 
   networking.hostName = "iron";
+  services.xserver.videoDrivers = [ "nvidia" "intel" ];
+  boot.kernelPackages = pkgs.linuxPackages;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
