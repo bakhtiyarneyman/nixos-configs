@@ -13,7 +13,7 @@ let
   idleToDimSecs = 60;
   dimToLockSecs = 10;
   lockToScreenOffSecs = 10;
-  dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; }; 
+  dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; };
 in {
   imports = [
     ./modules/blueman.nix
@@ -133,9 +133,9 @@ in {
         # 1. Set wallpaper.
         # 2. Don't lock the screen by itself.
         # 3. Turn off the screen after time of inactivity. This triggers a screen lock
-        sessionCommands = 
+        sessionCommands =
           with builtins;
-          let screenOffTime = toString 
+          let screenOffTime = toString
                 (idleToDimSecs + dimToLockSecs + lockToScreenOffSecs);
           in ''
             ${pkgs.feh}/bin/feh --bg-fill ${./wallpaper.jpg}

@@ -63,7 +63,7 @@ block = "battery"
 driver = "upower"
 format = "{percentage}% {time}"
 
-# This dumps "us,ru,az". 
+# This dumps "us,ru,az".
 # [[block]]
 # block = "keyboard_layout"
 # driver = "localebus"
