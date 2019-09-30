@@ -210,7 +210,7 @@ in {
         padding = "8";
         horizontal_padding = "8";
         frame_width = "0";
-        frame_color = "#aaaaaa";
+        frame_color = ''"#aaaaaa"'';
         separator_color = "auto";
         sort = "yes";
         idle_threshold = "120";
