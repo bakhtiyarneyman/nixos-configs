@@ -29,7 +29,7 @@ in pkgs.writeTextFile {
       set brightness (math $brightness - $step) # Compute next state.
       sleep ${dimStepSeconds'}
     end
-  
+
     ${light} -S ${minBrightnessPercents'}
     sleep 1000000000 &
     wait
