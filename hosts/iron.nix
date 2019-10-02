@@ -9,7 +9,11 @@
     ];
 
   networking.hostName = "iron";
-  services.xserver.videoDrivers = [ "nvidia" "intel" ];
+  services.xserver.videoDrivers = [ "nvidia" ];
+  hardware.nvidia.optimus_prime.enable = true;
+  # Bus ids can be found using lspci.
+  hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
+  hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
   boot.kernelPackages = pkgs.linuxPackages;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
