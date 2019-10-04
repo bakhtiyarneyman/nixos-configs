@@ -34,5 +34,6 @@ writeShellScriptBin "prettyLock" ''
       --time-align=1 \
       --date-align=1 \
       --time-align=1 \
-      --layout-align=1
+      --layout-align=1 \
+      --tiling
 ''
