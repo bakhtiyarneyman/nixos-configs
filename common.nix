@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 let
   # Don't put into /nix/store. Instead use the files in /etc/nixos directly.
@@ -90,6 +90,7 @@ in {
     libnotify # Notification service API.
     wmctrl
     prettyLock
+    fzf
   ];
 
   networking.firewall = {
@@ -307,15 +308,14 @@ in {
 
   programs = {
     fish = {
-        enable = true;
-        # This assumes that peco_plugin has been installed by some means, e.g. via oh-my-fish.
-        interactiveShellInit = ''
-          function fish_user_key_bindings
-            bind \cr 'peco_select_history (commandline -b)'
-            bind \cs 'exec fish'
-          end
-        '';
-      };
+      enable = true;
+      interactiveShellInit =
+        with pkgs;
+        let sourcePluginLoader = p: "source ${p}/loadPlugin.fish";
+        in lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
+          (callPackage ./pkgs/fish/fzf.nix {})
+        ];
+    };
 
     sway.enable = true;
     # sway.extraPackages = with pkgs; [
