@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "1qc6srdg8ar9k7p97yg2q0naqdd260wxkljf0r91gh2hidw583xa";
   };
 
-  installPhase = ./installPhase.sh;
+  installPhase = import ./installPhase.nix;
 
   meta = with stdenv.lib; {
     description = "A fish theme";

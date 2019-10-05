@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "078wzrppw62dz297860n2qdljnnpmhpaj60gw5cl4dbfcij24335";
   };
 
-  installPhase = ./installPhase.sh;
+  installPhase = import ./installPhase.nix;
 
   meta = with stdenv.lib; {
     description = "A fish shell package to make a time interval human readable.";

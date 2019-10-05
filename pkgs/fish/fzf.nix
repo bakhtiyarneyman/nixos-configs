@@ -10,7 +10,7 @@ stdenv.mkDerivation rec {
     sha256 = "1zfn4ii6vq444h5rghsd7biip1x3zkh9nyvzd1l8ma8ja9y6q77x";
   };
 
-  installPhase = ./installPhase.sh;
+  installPhase = import ./installPhase.nix;
 
   meta = with stdenv.lib; {
     description = "Ef-fish-ient fish keybindings for fzf";
