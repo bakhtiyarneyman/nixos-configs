@@ -311,9 +311,10 @@ in {
       enable = true;
       interactiveShellInit =
         with pkgs;
-        let sourcePluginLoader = p: "source ${p}/loadPlugin.fish";
+        let sourcePluginLoader = p:
+              "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
         in lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
-          (callPackage ./pkgs/fish/fzf.nix {})
+          "fzf" "themeAgnoster"
         ];
     };
 
