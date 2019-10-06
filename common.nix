@@ -314,7 +314,7 @@ in {
         let sourcePluginLoader = p:
               "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
         in lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
-          "fzf" "themeAgnoster" "done" "humanizeDuration"
+          "fzf" "themeAgnoster" "done" "humanizeDuration" "z" "getOpts"
         ];
     };
 
