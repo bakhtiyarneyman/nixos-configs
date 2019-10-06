@@ -62,6 +62,7 @@ block = "sound"
 block = "battery"
 driver = "upower"
 format = "{percentage}% {time}"
+device = "DisplayDevice"
 
 # This dumps "us,ru,az".
 # [[block]]
