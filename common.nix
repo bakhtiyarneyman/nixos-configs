@@ -62,7 +62,6 @@ in {
     wget
     neovim
     fish
-    peco
     google-chrome
     firefox
     (tor-browser-bundle-bin.override {
@@ -315,7 +314,13 @@ in {
               "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
         in lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
           "fzf" "themeAgnoster" "done" "humanizeDuration" "z" "getOpts"
-        ];
+        ] + ''
+
+          function fish_user_key_bindings
+            bind \cs 'exec fish'
+          end
+
+        '';
     };
 
     sway.enable = true;
