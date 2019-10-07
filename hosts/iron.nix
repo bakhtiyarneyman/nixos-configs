@@ -11,7 +11,13 @@
 
   networking.hostName = "iron";
   programs.i3status-rust.networkInterface = "eno1";
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver = {
+    videoDrivers = [ "nvidia" ];
+    xrandrHeads = [
+      { output = "DP-4"; primary = true; }
+      { output = "HDMI-0"; }
+    ];
+  };
   hardware.nvidia.optimus_prime.enable = true;
   # Bus ids can be found using lspci.
   hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";

@@ -128,7 +128,6 @@ in {
         naturalScrolling = true;
       };
 
-      # displayManager.sddm.enable = true;
       displayManager = {
         # 1. Set wallpaper.
         # 2. Don't lock the screen by itself.
