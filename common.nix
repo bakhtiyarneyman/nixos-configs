@@ -168,8 +168,7 @@ in {
           configFile = unsafeRef ./i3.conf;
           package = pkgs.i3-gaps;
           extraPackages = with pkgs; [
-            dmenu
-            # i3status-rust packages.
+            rofi # dmenu alternative.
             upower # Charging state.
             lm_sensors # Temperature.
             xkblayout-state # Keyboard layout (a hack).
@@ -334,15 +333,6 @@ in {
 
     i3status-rust.enable = true;
     sway.enable = true;
-    # sway.extraPackages = with pkgs; [
-    #   xwayland # Wayland bindings.
-    #   dmenu # Launcher. Alternative to rofi.
-    #   rxvt_unicode # Terminal. Alternative to termite.
-    #   termite
-    #   i3status-rust # Status bar.
-    #   swaylock # Lock screen.
-    #   swayidle # Idle-related tasks.
-    # ];
     light.enable = true; # Brightness management.
     nm-applet.enable = true; # Wi-fi management.
     xss-lock = { # Lock on lid action.
