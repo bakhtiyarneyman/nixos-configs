@@ -80,6 +80,8 @@ in {
 
         [[block]]
         block = "sound"
+        on_click = "${pkgs.pavucontrol}/bin/pavucontrol"
+        show_volume_when_muted = true
 
         [[block]]
         block = "battery"
