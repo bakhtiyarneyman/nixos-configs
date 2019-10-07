@@ -21,9 +21,14 @@ in {
     ./modules/dunst.nix
   ];
 
-  # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot = {
+    tmpOnTmpfs = true;
+    # Use the systemd-boot EFI boot loader.
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+  };
 
   # Select internationalisation properties.
   # i18n = {
@@ -94,8 +99,12 @@ in {
         # SSH.
         22
         # Chromecast ports.
-        8008 8009 ];
-      allowedUDPPortRanges = [ { from = 32768; to = 60999; } ];
+        8008 8009
+      ];
+      allowedUDPPortRanges = [
+        # Chromecast ports.
+        { from = 32768; to = 60999; }
+      ];
     };
   };
 
