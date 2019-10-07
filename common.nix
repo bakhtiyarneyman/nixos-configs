@@ -158,6 +158,7 @@ in {
             enable = true;
             user = "bakhtiyar";
           };
+          background = unsafeRef ./wallpaper.jpg;
         };
       };
 
