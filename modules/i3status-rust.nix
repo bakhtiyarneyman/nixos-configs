@@ -99,6 +99,7 @@ in {
 
         [[block]]
         block = "time"
+        on_click = "${pkgs.gsimplecal}/bin/gsimplecal"
         interval = 1
         format = "%a %Y-%m-%d %T"
       '';
