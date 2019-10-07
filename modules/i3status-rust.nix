@@ -99,7 +99,7 @@ in {
 
         [[block]]
         block = "time"
-        on_click = "${pkgs.gsimplecal}/bin/gsimplecal"
+        on_click = "${pkgs.gnome3.gnome-calendar}/bin/gnome-calendar"
         interval = 1
         format = "%a %Y-%m-%d %T"
       '';
