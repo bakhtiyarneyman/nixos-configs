@@ -6,9 +6,11 @@
 {
   imports =
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
+     ../modules/i3status-rust.nix
     ];
 
   networking.hostName = "iron";
+  programs.i3status-rust.networkInterface = "eno1";
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia.optimus_prime.enable = true;
   # Bus ids can be found using lspci.

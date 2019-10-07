@@ -16,6 +16,7 @@ let
   dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; };
 in {
   imports = [
+    ./modules/i3status-rust.nix
     ./modules/blueman.nix
     ./modules/dunst.nix
   ];
@@ -163,7 +164,6 @@ in {
             upower # Charging state.
             lm_sensors # Temperature.
             xkblayout-state # Keyboard layout (a hack).
-            (callPackage ./i3status-rust.nix {}) # TODO(bakhtiyar): remove after 19.09 lands.
           ];
         };
         xmonad = {
@@ -323,6 +323,7 @@ in {
         '';
     };
 
+    i3status-rust.enable = true;
     sway.enable = true;
     # sway.extraPackages = with pkgs; [
     #   xwayland # Wayland bindings.

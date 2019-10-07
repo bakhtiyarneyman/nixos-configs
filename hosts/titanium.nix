@@ -9,6 +9,7 @@
     ];
 
   networking.hostName = "titanium";
+  programs.i3status-rust.networkInterface = "wlp0s20f3";
   boot.kernelPackages = pkgs.linuxPackages_5_2;
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
