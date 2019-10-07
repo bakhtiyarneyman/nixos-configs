@@ -15,13 +15,15 @@ in {
       enable = true;
       wantedBy = [ "graphical-session.target" ];
       partOf = [ "graphical-session.target" ];
-      serviceConfig.ExecStart = [ 
-      "${pkgs.blueman}/bin/blueman-applet" 
+      serviceConfig.ExecStart = [
+      "${pkgs.blueman}/bin/blueman-applet"
       ];
     };
 
+    hardware.bluetooth.enable = true;
     systemd.packages = [ pkgs.blueman ];
     services.dbus.packages = [ pkgs.blueman ];
+    environment.systemPackages = [ pkgs.blueman ];
   };
 
 }

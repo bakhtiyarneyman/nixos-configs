@@ -177,7 +177,7 @@ in {
         default = "i3";
       };
 
-      desktopManager.gnome3.enable = true;
+      desktopManager.default = "none";
     };
 
     compton = {

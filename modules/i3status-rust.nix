@@ -107,6 +107,7 @@ in {
       '';
 
     in mkIf cfg.enable {
+      services.upower.enable = true;
       environment.systemPackages = [ i3status-rust ];
     };
 
