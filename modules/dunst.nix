@@ -49,7 +49,7 @@ options.services.dunst = {
       The experimental configuration section for dunst.
     '';
   };
-  
+
   shortcutsConfig = mkOption {
     type = with types; attrsOf str;
     default = {};
@@ -137,10 +137,15 @@ config =
       '';
     });
 
-    systemd.user.services.dunst.serviceConfig.ExecStart = [ "" "${pkgs.dunst}/bin/dunst ${escapeShellArgs dunst-args}" ];
-    # [ "" ... ] is needed to overwrite the ExecStart directive from the upstream service file
-    systemd.user.services.dunst.enable = true;
-
+    systemd.user.services.dunst = {
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      serviceConfig.ExecStart = [
+        # This is needed to overwrite the ExecStart directive from the upstream service file.
+        ""
+        "${pkgs.dunst}/bin/dunst ${escapeShellArgs dunst-args}"
+      ];
+    };
     systemd.packages = [ pkgs.dunst ];
     services.dbus.packages = [ pkgs.dunst ];
   };
