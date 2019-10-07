@@ -25,8 +25,6 @@ in {
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
   # Select internationalisation properties.
   # i18n = {
   #   consoleFont = "Lat2-Terminus16";
@@ -89,10 +87,16 @@ in {
     fzf
   ];
 
-  networking.firewall = {
-    # Chromecast ports.
-    allowedTCPPorts = [ 8008 8009 ];
-    allowedUDPPortRanges = [ { from = 32768; to = 60999; } ];
+  networking = {
+    networkmanager.enable = true;
+    firewall = {
+      allowedTCPPorts = [
+        # SSH.
+        22
+        # Chromecast ports.
+        8008 8009 ];
+      allowedUDPPortRanges = [ { from = 32768; to = 60999; } ];
+    };
   };
 
   sound = {
