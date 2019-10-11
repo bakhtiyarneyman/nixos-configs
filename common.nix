@@ -94,6 +94,7 @@ in {
     vscode
     atom
     android-studio
+    nodePackages.node2nix
   ];
 
   networking = {
