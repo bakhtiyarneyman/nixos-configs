@@ -62,11 +62,14 @@ in {
     # System.
     ntfs3g
     google-drive-ocamlfuse
+    parted
+    gparted
     # Utilities.
     wget
     neovim
     mkpasswd
     file
+    xorg.xdpyinfo
     # UI.
     (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
        termite = termite-unwrapped;
