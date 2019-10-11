@@ -66,6 +66,7 @@ in {
     wget
     neovim
     mkpasswd
+    file
     # UI.
     (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
        termite = termite-unwrapped;
