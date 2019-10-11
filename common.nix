@@ -59,37 +59,41 @@ in {
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    # System.
+    ntfs3g
+    google-drive-ocamlfuse
+    # Utilities.
     wget
     neovim
-    fish
+    mkpasswd
+    # UI.
+    (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
+       termite = termite-unwrapped;
+       configFile = unsafeRef ./termite.conf;
+    })
+    prettyLock
+    rofi
+    pavucontrol # Pulse audio volume control.
+    libnotify # Notification service API.
+    clipmenu # Clipboard manager.
+    xmobar
+    # Browsers.
     google-chrome
     firefox
     (tor-browser-bundle-bin.override {
        mediaSupport = true;
        pulseaudioSupport = true;
     })
-    guake
-    gnomeExtensions.battery-status
+    # Shell packages.
+    fish
+    fzf
+    # Communication.
     skype
-    mkpasswd
-    google-drive-ocamlfuse
+    # Development.
     git
     vscode
     atom
     android-studio
-    ntfs3g
-    (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
-       termite = termite-unwrapped;
-       configFile = unsafeRef ./termite.conf;
-    })
-    rofi
-    xmobar
-    clipmenu # Clipboard manager.
-    pavucontrol # Pulse audio volume control.
-    libnotify # Notification service API.
-    wmctrl
-    prettyLock
-    fzf
   ];
 
   networking = {
