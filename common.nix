@@ -17,7 +17,6 @@ let
 in {
   imports = [
     ./modules/i3status-rust.nix
-    ./modules/blueman.nix
     ./modules/dunst.nix
   ];
 
@@ -126,9 +125,12 @@ in {
     };
   };
 
-  hardware.pulseaudio = {
-    enable = true;
-    package = pkgs.pulseaudioFull; # For bluetooth headphones
+  hardware = {
+    bluetooth.enable = true;
+    pulseaudio = {
+      enable = true;
+      package = pkgs.pulseaudioFull; # For bluetooth headphones
+    };
   };
 
   services = {
@@ -205,12 +207,10 @@ in {
       fadeSteps = ["0.1" "0.1"];
       shadow = true;
       inactiveOpacity = "0.6";
-      extraOptions = ''
+      settings = {
         # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
         mark-ovredir-focused = true;
-        # This is needed for xss-lock. Otherwise locker will just freeze the screen.
-        paint-on-overlay = true;
-      '';
+      };
     };
 
     # Notification service.
@@ -296,10 +296,7 @@ in {
 
     localtime.enable = true;
 
-    redshift = {
-      enable = true;
-      provider = "geoclue2";
-    };
+    redshift.enable = true;
 
     actkbd = {
       enable = true;
@@ -313,7 +310,7 @@ in {
         ];
     };
 
-    blueman.enable = true; # Bluetooth applet. TODO(bakhtiyar): can break when 19.09 lands.
+    blueman.enable = true; # Bluetooth applet.
     openssh.enable = true;
     printing.enable = true;
     tlp.enable = true; # For battery conservation. Powertop disables wired mice.
@@ -347,7 +344,8 @@ in {
     nm-applet.enable = true; # Wi-fi management.
     xss-lock = { # Lock on lid action.
       enable = true;
-      lockerCommand = "--notifier=${dim-screen}/bin/dim-screen -- ${prettyLock}/bin/prettyLock";
+      extraOptions = ["--notifier=${dim-screen}/bin/dim-screen"];
+      lockerCommand = "${prettyLock}/bin/prettyLock";
     };
     adb.enable = true;
   };
@@ -357,6 +355,17 @@ in {
   security.polkit = {
     enable = true;
     adminIdentities = [ "unix-user:bakhtiyar" ];
+  };
+
+  location.provider = "geoclue2";
+
+  systemd.user.services.blueman = {
+    enable = true;
+    wantedBy = [ "graphical-session.target" ];
+    partOf = [ "graphical-session.target" ];
+    serviceConfig.ExecStart = [
+      "${pkgs.blueman}/bin/blueman-applet"
+    ];
   };
 
   # This value determines the NixOS release with which your system is to be
@@ -379,10 +388,10 @@ in {
     enableGhostscriptFonts = true;
     fonts = with pkgs; [
       anonymousPro
-      (callPackage ./font-awesome.nix {}).v4
-      (callPackage ./font-awesome.nix {}).v5
       corefonts
       dejavu_fonts
+      font-awesome_4
+      font-awesome_5
       freefont_ttf
       google-fonts
       inconsolata
