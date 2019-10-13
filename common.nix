@@ -99,6 +99,7 @@ in {
     atom
     android-studio
     nodePackages.node2nix
+    nodePackages.npm
   ];
 
   networking = {
