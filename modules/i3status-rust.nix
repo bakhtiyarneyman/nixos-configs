@@ -27,7 +27,6 @@ in {
         block = "net"
         device = ${q cfg.networkInterface}
         ssid = true
-        signal_strength = true
         bitrate = false
         ip = false
         speed_up = false
