@@ -98,8 +98,6 @@ in {
     vscode
     atom
     android-studio
-    nodePackages.node2nix
-    nodePackages.npm
   ];
 
   networking = {
