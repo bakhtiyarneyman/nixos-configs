@@ -97,7 +97,6 @@ in {
     git
     vscode
     atom
-    android-studio
   ];
 
   networking = {
@@ -367,6 +366,8 @@ in {
     ];
   };
 
+  virtualisation.libvirtd.enable = true;
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
@@ -376,7 +377,11 @@ in {
     autoUpgrade.enable = true;
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    android_sdk.accept_license = true;
+  };
+
   nix.gc = {
     automatic = true;
     options = "--delete-older-than 14d";
