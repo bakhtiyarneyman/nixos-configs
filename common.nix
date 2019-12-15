@@ -97,6 +97,7 @@ in {
     git
     vscode
     atom
+    cachix
   ];
 
   networking = {
@@ -382,9 +383,12 @@ in {
     android_sdk.accept_license = true;
   };
 
-  nix.gc = {
-    automatic = true;
-    options = "--delete-older-than 14d";
+  nix = {
+    trustedUsers = [ "root" "bakhtiyar" ];
+    gc = {
+      automatic = true;
+      options = "--delete-older-than 14d";
+    };
   };
 
   fonts = {
