@@ -95,7 +95,7 @@ in {
     skype
     # Development.
     git
-    vscode
+    (callPackage ./pkgs/vscode.nix {})
     atom
     cachix
   ];
