@@ -35,10 +35,16 @@
 
   boot.initrd.luks.devices."crypted".device = "/dev/disk/by-uuid/9e6715fa-2c8f-4064-b01b-1da6ad54eef8";
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/3C76-84A3";
+  fileSystems = {
+    "/boot" = {
+      device = "/dev/disk/by-uuid/3C76-84A3";
       fsType = "vfat";
     };
+    "/mnt/storage" = {
+      device = "/dev/disk/by-uuid/d838985e-9b04-4d7f-84c7-de7b73186858";
+      fsType = "btrfs";
+    };
+  };
 
   swapDevices = [ ];
 

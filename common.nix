@@ -95,11 +95,9 @@ in {
     skype
     # Development.
     git
-    vscode
+    (callPackage ./pkgs/vscode.nix {})
     atom
-    android-studio
-    nodePackages.node2nix
-    nodePackages.npm
+    cachix
   ];
 
   networking = {
@@ -143,6 +141,14 @@ in {
       # Keyboard.
       layout = "us,ru,az";
       xkbOptions = "grp:alt_shift_toggle";
+
+      inputClassSections = [ 
+        ''
+          Identifier      "mouse"
+          MatchIsPointer  "on"
+          Option          "NaturalScrolling"      "true"
+        ''
+      ];
 
       # Enable touchpad support.
       libinput = {
@@ -369,6 +375,8 @@ in {
     ];
   };
 
+  virtualisation.libvirtd.enable = true;
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
@@ -378,10 +386,17 @@ in {
     autoUpgrade.enable = true;
   };
 
-  nixpkgs.config.allowUnfree = true;
-  nix.gc = {
-    automatic = true;
-    options = "--delete-older-than 14d";
+  nixpkgs.config = {
+    allowUnfree = true;
+    android_sdk.accept_license = true;
+  };
+
+  nix = {
+    trustedUsers = [ "root" "bakhtiyar" ];
+    gc = {
+      automatic = true;
+      options = "--delete-older-than 14d";
+    };
   };
 
   fonts = {
