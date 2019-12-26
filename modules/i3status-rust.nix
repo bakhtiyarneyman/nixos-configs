@@ -22,6 +22,7 @@ in {
         in pkgs.writeText "i3status-rust.toml" ''
         theme = "solarized-dark"
         icons = "awesome"
+        scrolling = "natural"
 
         [[block]]
         block = "net"

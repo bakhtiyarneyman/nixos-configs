@@ -2,16 +2,16 @@
 
 rustPlatform.buildRustPackage rec {
   pname = "i3status-rust";
-  version = "0.11.0";
+  version = "natural_scrolling";
 
   src = fetchFromGitHub {
-    owner = "greshake";
+    owner = "niobium0";
     repo = pname;
-    rev = "v${version}";
-    sha256 = "15083nagd0kzpkay5jxcq5i16yvybd4sh03g9x4q9xq4cy0qwj11";
+    rev = "${version}";
+    sha256 = "1fzmpywlvbqjgm8h742vfzycajvg5wzxgaz135p2gkzz00vx5skh";
   };
 
-  cargoSha256 = "1cbx2jll0bj547dvwzjprzidndbqn1c4c6hmbfgjgdkxmmrpb0r1";
+  cargoSha256 = "1cf3zf48ivxqjlal6m3jq3s5yc6lwkqjzjmfbxmw40c6ia77g9ry";
 
   nativeBuildInputs = [ pkgconfig ];
 
