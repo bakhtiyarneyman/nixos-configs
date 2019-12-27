@@ -98,6 +98,7 @@ in {
     (callPackage ./pkgs/vscode.nix {})
     atom
     cachix
+    meld
   ];
 
   networking = {
