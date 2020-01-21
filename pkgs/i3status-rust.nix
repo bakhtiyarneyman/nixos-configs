@@ -8,10 +8,10 @@ rustPlatform.buildRustPackage rec {
     owner = "niobium0";
     repo = pname;
     rev = "${version}";
-    sha256 = "1fzmpywlvbqjgm8h742vfzycajvg5wzxgaz135p2gkzz00vx5skh";
+    sha256 = "1qjc4mxp9k9bw6vpafpzrrqidfnd4gfy43cv3p0i4mcn8yj2p8xf";
   };
 
-  cargoSha256 = "1cf3zf48ivxqjlal6m3jq3s5yc6lwkqjzjmfbxmw40c6ia77g9ry";
+  cargoSha256 = "1y75kc6p3z5ajvdbbkapnk872rnp0nlr16pn0fnr24zzygbnqhdw";
 
   nativeBuildInputs = [ pkgconfig ];
 
