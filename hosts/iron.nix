@@ -18,6 +18,13 @@
       { output = "HDMI-0"; }
     ];
   };
+
+  virtualisation.docker = {
+    enable = true;
+    enableNvidia = true;
+  };
+
+  hardware.opengl.driSupport32Bit = true;
   hardware.nvidia.optimus_prime.enable = true;
   # Bus ids can be found using lspci.
   hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
@@ -50,4 +57,5 @@
 
   nix.maxJobs = lib.mkDefault 8;
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  users.users.bakhtiyar.extraGroups = [ "docker" ];
 }
