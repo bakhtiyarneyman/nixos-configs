@@ -213,7 +213,7 @@ in {
       enable = true;
       fade = true;
       fadeSteps = ["0.1" "0.1"];
-      shadow = true;
+      shadow = false;
       inactiveOpacity = "0.6";
       settings = {
         # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
