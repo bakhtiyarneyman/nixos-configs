@@ -90,7 +90,7 @@ in {
     })
     # Shell packages.
     fish
-    fzf
+    fzy
     # Communication.
     skype
     # Development.
@@ -336,11 +336,13 @@ in {
         let sourcePluginLoader = p:
               "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
         in lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
-          "fzf" "themeAgnoster" "done" "humanizeDuration" "z" "getOpts"
+          "fzy" "themeAgnoster" "done" "humanizeDuration" "z" "getOpts"
         ] + ''
 
           function fish_user_key_bindings
             bind \cs 'exec fish'
+            bind \cr 'fzy_select_history'
+            bind \co 'fzy_select_directory'
           end
 
         '';
