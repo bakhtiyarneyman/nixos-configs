@@ -27,7 +27,7 @@
   hardware.opengl.driSupport32Bit = true;
   hardware.nvidia.optimus_prime.enable = true;
   # Bus ids can be found using lspci.
-  hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
+  hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:2:0:0";
   hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
@@ -40,11 +40,11 @@
       fsType = "btrfs";
     };
 
-  boot.initrd.luks.devices."crypted".device = "/dev/disk/by-uuid/9e6715fa-2c8f-4064-b01b-1da6ad54eef8";
+  boot.initrd.luks.devices."crypted".device = "/dev/disk/by-uuid/8dcc8ac6-cb24-4d17-a412-c6ca32c02f9b";
 
   fileSystems = {
     "/boot" = {
-      device = "/dev/disk/by-uuid/3C76-84A3";
+      device = "/dev/disk/by-label/boot";
       fsType = "vfat";
     };
     "/mnt/storage" = {
