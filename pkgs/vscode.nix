@@ -6,6 +6,6 @@ symlinkJoin {
   buildInputs = [ makeWrapper ];
   postBuild = ''
     wrapProgram $out/bin/code \
-      --add-flags "--user-data-dir=/etc/nixos/vscode"
+      --add-flags "--user-data-dir=/etc/nixos/vscode/userdata --extensions-dir=/etc/nixos/vscode/extensions"
   '';
 }
