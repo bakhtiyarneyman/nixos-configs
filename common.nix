@@ -214,7 +214,7 @@ in {
       fade = true;
       fadeSteps = ["0.1" "0.1"];
       shadow = false;
-      inactiveOpacity = "0.6";
+      inactiveOpacity = "0.8";
       settings = {
         # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
         mark-ovredir-focused = true;
