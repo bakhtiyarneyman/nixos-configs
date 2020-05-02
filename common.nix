@@ -320,6 +320,9 @@ in {
 
     blueman.enable = true; # Bluetooth applet.
     openssh.enable = true;
+    openvpn.servers.nordvpn = {
+      config = "config " + ./ca-us13.nordvpn.com.tcp443.ovpn ;
+    };
     printing.enable = true;
     tlp.enable = true; # For battery conservation. Powertop disables wired mice.
 
