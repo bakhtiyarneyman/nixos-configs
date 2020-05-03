@@ -93,6 +93,7 @@ in {
     peco
     # Communication.
     skype
+    zoom-us
     # Development.
     git
     (callPackage ./pkgs/vscode.nix {})
