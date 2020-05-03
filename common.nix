@@ -22,6 +22,9 @@ in {
 
   boot = {
     tmpOnTmpfs = true;
+    kernel.sysctl = {      
+      "kernel.sysrq" = 1;
+    };
     kernelPackages = pkgs.linuxPackages_latest;
     # Use the systemd-boot EFI boot loader.
     loader = {
