@@ -415,6 +415,7 @@ in {
       anonymousPro
       corefonts
       dejavu_fonts
+      fira-code
       font-awesome_4
       font-awesome_5
       freefont_ttf
