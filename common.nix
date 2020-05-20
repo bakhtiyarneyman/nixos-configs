@@ -11,7 +11,7 @@ let
   unsafeRef = toString;
   prettyLock = import ./prettyLock.nix pkgs;
   idleToDimSecs = 60;
-  dimToLockSecs = 10;
+  dimToLockSecs = 15;
   lockToScreenOffSecs = 10;
   dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; };
 in {
@@ -171,7 +171,7 @@ in {
                 (idleToDimSecs + dimToLockSecs + lockToScreenOffSecs);
           in ''
             ${pkgs.feh}/bin/feh --bg-fill ${./wallpaper.jpg}
-            ${pkgs.xorg.xset}/bin/xset s ${toString idleToDimSecs} ${toString dimToLockSecs}
+            ${pkgs.xorg.xset}/bin/xset s ${toString idleToDimSecs} ${toString (dimToLockSecs + 5)}
             ${pkgs.xorg.xset}/bin/xset dpms ${screenOffTime} ${screenOffTime} ${screenOffTime}
           '';
         lightdm = {
