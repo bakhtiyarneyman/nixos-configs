@@ -22,7 +22,7 @@ in {
 
   boot = {
     tmpOnTmpfs = true;
-    kernel.sysctl = {      
+    kernel.sysctl = {
       "kernel.sysrq" = 1;
     };
     kernelPackages = pkgs.linuxPackages_latest;
@@ -147,7 +147,7 @@ in {
       layout = "us,ru,az";
       xkbOptions = "grp:alt_shift_toggle";
 
-      inputClassSections = [ 
+      inputClassSections = [
         ''
           Identifier      "mouse"
           MatchIsPointer  "on"
@@ -398,6 +398,7 @@ in {
   nixpkgs.config = {
     allowUnfree = true;
     android_sdk.accept_license = true;
+    permittedInsecurePackages = [ "google-chrome-81.0.4044.138" ];
   };
 
   nix = {
