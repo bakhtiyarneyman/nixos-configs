@@ -31,6 +31,12 @@ in pkgs.writeTextFile {
     end
 
     ${light} -S ${minBrightnessPercents'}
+  
+    set battery /sys/class/power_supply/BAT0/status
+    if test -e $battery && test (cat $battery) = "Discharging"
+      systemctl suspend
+    end
+
     sleep 1000000000 &
     wait
   '';
