@@ -75,10 +75,6 @@ in {
         mac = "98:09:CF:FE:72:7B"
 
         [[block]]
-        block = "bluetooth"
-        mac = "DC:2C:26:A4:97:20"
-
-        [[block]]
         block = "sound"
         on_click = "${pkgs.pavucontrol}/bin/pavucontrol"
         show_volume_when_muted = true
