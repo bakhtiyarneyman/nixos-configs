@@ -72,7 +72,7 @@ in {
 
         [[block]]
         block = "bluetooth"
-        mac = "98:09:CF:FE:72:7B"
+        mac = "98:09:CF:BE:8B:61"
 
         [[block]]
         block = "bluetooth"
