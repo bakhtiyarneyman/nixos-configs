@@ -14,7 +14,7 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-intel" ];
-  boot.blacklistedKernelModules = [ " snd_hda_intel" "snd_soc_skl" ]; # SOF audio should be used instead.
+  boot.blacklistedKernelModules = [ "snd_hda_intel" "snd_soc_skl" ]; # SOF audio should be used instead.
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
