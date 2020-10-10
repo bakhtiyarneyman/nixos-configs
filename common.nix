@@ -87,10 +87,10 @@ in {
     # Browsers.
     google-chrome
     firefox
-    # (tor-browser-bundle-bin.override {
-    #    mediaSupport = true;
-    #    pulseaudioSupport = true;
-    # })
+    (tor-browser-bundle-bin.override {
+       mediaSupport = true;
+       pulseaudioSupport = true;
+    })
     # Shell packages.
     fish
     peco
