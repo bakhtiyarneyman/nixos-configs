@@ -87,15 +87,16 @@ in {
     # Browsers.
     google-chrome
     firefox
-    (tor-browser-bundle-bin.override {
-       mediaSupport = true;
-       pulseaudioSupport = true;
-    })
+    # (tor-browser-bundle-bin.override {
+    #    mediaSupport = true;
+    #    pulseaudioSupport = true;
+    # })
     # Shell packages.
     fish
     peco
     # Communication.
     skype
+    signal-desktop
     zoom-us
     # Development.
     git
@@ -103,6 +104,12 @@ in {
     atom
     cachix
     meld
+    # Image.
+    gimp
+    # Video.
+    vlc
+    guvcview
+    shotcut
   ];
 
   networking = {
