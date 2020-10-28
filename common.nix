@@ -22,7 +22,7 @@ in {
 
   boot = {
     tmpOnTmpfs = true;
-    kernel.sysctl = {      
+    kernel.sysctl = {
       "kernel.sysrq" = 1;
     };
     kernelPackages = pkgs.linuxPackages_latest;
@@ -87,15 +87,16 @@ in {
     # Browsers.
     google-chrome
     firefox
-    (tor-browser-bundle-bin.override {
-       mediaSupport = true;
-       pulseaudioSupport = true;
-    })
+    # (tor-browser-bundle-bin.override {
+    #    mediaSupport = true;
+    #    pulseaudioSupport = true;
+    # })
     # Shell packages.
     fish
     peco
     # Communication.
     skype
+    signal-desktop
     zoom-us
     # Development.
     git
@@ -103,6 +104,12 @@ in {
     atom
     cachix
     meld
+    # Image.
+    gimp
+    # Video.
+    vlc
+    guvcview
+    shotcut
   ];
 
   networking = {
@@ -147,7 +154,7 @@ in {
       layout = "us,ru,az";
       xkbOptions = "grp:alt_shift_toggle";
 
-      inputClassSections = [ 
+      inputClassSections = [
         ''
           Identifier      "mouse"
           MatchIsPointer  "on"
@@ -392,12 +399,17 @@ in {
   # should.
   system = {
     stateVersion = "19.03"; # Did you read the comment?
-    autoUpgrade.enable = true;
+    autoUpgrade = {
+      allowReboot = false;
+      enable = true;
+      channel = https://nixos.org/channels/nixos-20.09;
+    };
   };
 
   nixpkgs.config = {
     allowUnfree = true;
     android_sdk.accept_license = true;
+    permittedInsecurePackages = [ "google-chrome-81.0.4044.138" ];
   };
 
   nix = {
@@ -415,6 +427,7 @@ in {
       anonymousPro
       corefonts
       dejavu_fonts
+      fira-code
       font-awesome_4
       font-awesome_5
       freefont_ttf
