@@ -104,6 +104,7 @@ in {
     atom
     cachix
     meld
+    python3
     # Image.
     gimp
     # Video.
@@ -181,16 +182,17 @@ in {
             ${pkgs.xorg.xset}/bin/xset s ${toString idleToDimSecs} ${toString (dimToLockSecs + 5)}
             ${pkgs.xorg.xset}/bin/xset dpms ${screenOffTime} ${screenOffTime} ${screenOffTime}
           '';
+        # Autologin is only safe because the disk is encrypted.
+        # It can lead to an infinite loop if the window manager crashes.
+        autoLogin = {
+          enable = true;
+          user = "bakhtiyar";
+        };
         lightdm = {
           enable = true;
-          # Autologin is only safe because the disk is encrypted.
-          # It can lead to an infinite loop if the window manager crashes.
-          autoLogin = {
-            enable = true;
-            user = "bakhtiyar";
-          };
           background = unsafeRef ./wallpaper.jpg;
         };
+        defaultSession = "none+i3";
       };
 
       windowManager = {
@@ -214,18 +216,15 @@ in {
             haskellPackages.xmonad
           ];
         };
-        default = "i3";
       };
-
-      desktopManager.default = "none";
     };
 
     compton = {
       enable = true;
       fade = true;
-      fadeSteps = ["0.1" "0.1"];
+      fadeSteps = [0.1 0.1];
       shadow = false;
-      inactiveOpacity = "0.8";
+      inactiveOpacity = 0.8;
       settings = {
         # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
         mark-ovredir-focused = true;
@@ -399,7 +398,11 @@ in {
   # should.
   system = {
     stateVersion = "19.03"; # Did you read the comment?
-    autoUpgrade.enable = true;
+    autoUpgrade = {
+      allowReboot = false;
+      enable = true;
+      channel = https://nixos.org/channels/nixos-20.09;
+    };
   };
 
   nixpkgs.config = {

@@ -25,10 +25,12 @@
   };
 
   hardware.opengl.driSupport32Bit = true;
-  hardware.nvidia.optimus_prime.enable = true;
-  # Bus ids can be found using lspci.
-  hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:2:0:0";
-  hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
+  hardware.nvidia.prime = {
+    sync.enable = true;
+    # Bus ids can be found using lspci.
+    nvidiaBusId = "PCI:2:0:0";
+    intelBusId = "PCI:0:2:0";
+  };
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
