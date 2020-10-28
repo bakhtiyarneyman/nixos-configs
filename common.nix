@@ -399,7 +399,11 @@ in {
   # should.
   system = {
     stateVersion = "19.03"; # Did you read the comment?
-    autoUpgrade.enable = true;
+    autoUpgrade = {
+      allowReboot = false;
+      enable = true;
+      channel = https://nixos.org/channels/nixos-20.09;
+    };
   };
 
   nixpkgs.config = {
