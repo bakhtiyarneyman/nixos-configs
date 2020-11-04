@@ -85,6 +85,7 @@ in {
     clipmenu # Clipboard manager.
     xmobar
     # Browsers.
+    (chromium.override { enableVaapi = true; })
     google-chrome
     firefox
     # (tor-browser-bundle-bin.override {
@@ -104,6 +105,7 @@ in {
     atom
     cachix
     meld
+    python3
     # Image.
     gimp
     # Video.
@@ -135,12 +137,25 @@ in {
       volumeStep = "1%";
     };
   };
+  nixpkgs.config.packageOverrides = pkgs: {
+    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+  };
 
   hardware = {
     bluetooth.enable = true;
     pulseaudio = {
       enable = true;
       package = pkgs.pulseaudioFull; # For bluetooth headphones
+    };
+    opengl = {
+      enable = true;
+      driSupport32Bit = true;
+      extraPackages = with pkgs; [
+        intel-media-driver # LIBVA_DRIVER_NAME=iHD
+        vaapiIntel         # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
+        vaapiVdpau
+        libvdpau-va-gl
+      ];
     };
   };
 
@@ -181,16 +196,17 @@ in {
             ${pkgs.xorg.xset}/bin/xset s ${toString idleToDimSecs} ${toString (dimToLockSecs + 5)}
             ${pkgs.xorg.xset}/bin/xset dpms ${screenOffTime} ${screenOffTime} ${screenOffTime}
           '';
+        # Autologin is only safe because the disk is encrypted.
+        # It can lead to an infinite loop if the window manager crashes.
+        autoLogin = {
+          enable = true;
+          user = "bakhtiyar";
+        };
         lightdm = {
           enable = true;
-          # Autologin is only safe because the disk is encrypted.
-          # It can lead to an infinite loop if the window manager crashes.
-          autoLogin = {
-            enable = true;
-            user = "bakhtiyar";
-          };
           background = unsafeRef ./wallpaper.jpg;
         };
+        defaultSession = "none+i3";
       };
 
       windowManager = {
@@ -214,18 +230,15 @@ in {
             haskellPackages.xmonad
           ];
         };
-        default = "i3";
       };
-
-      desktopManager.default = "none";
     };
 
     compton = {
       enable = true;
       fade = true;
-      fadeSteps = ["0.1" "0.1"];
+      fadeSteps = [0.1 0.1];
       shadow = false;
-      inactiveOpacity = "0.8";
+      inactiveOpacity = 0.8;
       settings = {
         # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
         mark-ovredir-focused = true;

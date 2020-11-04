@@ -7,7 +7,7 @@ stdenv.mkDerivation rec {
     owner = "fishpkg";
     repo = name;
     rev = "${version}";
-    sha256 = "078wzrppw62dz297860n2qdljnnpmhpaj60gw5cl4dbfcij24335";
+    sha256 = "09sbhawnidwq389nbpn1kjsxkgq19grab56r9vjx6cxwvsng7rqw";
   };
 
   installPhase = import ./installPhase.nix;
