@@ -24,7 +24,6 @@
     enableNvidia = true;
   };
 
-  hardware.opengl.driSupport32Bit = true;
   hardware.nvidia.prime = {
     sync.enable = true;
     # Bus ids can be found using lspci.

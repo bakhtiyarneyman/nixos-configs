@@ -85,6 +85,7 @@ in {
     clipmenu # Clipboard manager.
     xmobar
     # Browsers.
+    (chromium.override { enableVaapi = true; })
     google-chrome
     firefox
     # (tor-browser-bundle-bin.override {
@@ -136,12 +137,25 @@ in {
       volumeStep = "1%";
     };
   };
+  nixpkgs.config.packageOverrides = pkgs: {
+    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+  };
 
   hardware = {
     bluetooth.enable = true;
     pulseaudio = {
       enable = true;
       package = pkgs.pulseaudioFull; # For bluetooth headphones
+    };
+    opengl = {
+      enable = true;
+      driSupport32Bit = true;
+      extraPackages = with pkgs; [
+        intel-media-driver # LIBVA_DRIVER_NAME=iHD
+        vaapiIntel         # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
+        vaapiVdpau
+        libvdpau-va-gl
+      ];
     };
   };
 
