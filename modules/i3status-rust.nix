@@ -13,6 +13,11 @@ in {
       default = "eno1";
       description = "An interface from /sys/class/net";
     };
+    extraConfig = mkOption {
+      type = types.str;
+      default = "";
+      description = "Extra configuration";
+    };
   };
 
   config =
@@ -75,10 +80,6 @@ in {
         mac = "98:09:CF:BE:8B:61"
 
         [[block]]
-        block = "bluetooth"
-        mac = "DC:2C:26:A4:97:20"
-
-        [[block]]
         block = "sound"
         on_click = "${pkgs.pavucontrol}/bin/pavucontrol"
         show_volume_when_muted = true
@@ -104,9 +105,11 @@ in {
         on_click = "${pkgs.gnome3.gnome-calendar}/bin/gnome-calendar"
         interval = 1
         format = "%a %Y-%m-%d %T"
-      '';
+
+        ${cfg.extraConfig}
+      '' ;
       i3status-rust = pkgs.writeShellScriptBin "i3status-rs" ''
-        ${pkgs.callPackage ../pkgs/i3status-rust.nix {}}/bin/i3status-rs ${configFile}
+        ${pkgs.i3status-rust}/bin/i3status-rs ${configFile}
       '';
 
     in mkIf cfg.enable {
