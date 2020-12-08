@@ -98,6 +98,7 @@ in {
     # Communication.
     skype
     signal-desktop
+    tdesktop # Telegram.
     zoom-us
     # Development.
     git
