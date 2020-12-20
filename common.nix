@@ -112,17 +112,22 @@ in {
     # Video.
     vlc
     guvcview
-    shotcut
+    # TODO(bakhtiyar): change to stock shotcut as soon as melt issue is fixed.
+    (libsForQt514.callPackage ./pkgs/shotcut.nix {
+      libmlt = mlt;
+    })
   ];
 
   networking = {
     networkmanager.enable = true;
     firewall = {
+      enable = true;
+      logRefusedConnections = true;
       allowedTCPPorts = [
         # SSH.
         22
         # Chromecast ports.
-        8008 8009
+        8008 8009 8010 8443
       ];
       allowedUDPPortRanges = [
         # Chromecast ports.
@@ -364,7 +369,7 @@ in {
         let sourcePluginLoader = p:
               "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
         in lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
-          "peco" "themeAgnoster" "done" "humanizeDuration" "z" "getOpts"
+          "peco" "themeAgnoster" "done" "humantime" "z" "getOpts"
         ] + ''
 
           function fish_user_key_bindings
