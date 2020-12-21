@@ -1,13 +1,13 @@
 { stdenv, fetchFromGitHub }:
 stdenv.mkDerivation rec {
   name = "done";
-  version = "1.8.1";
+  version = "1.14.10";
 
   src = fetchFromGitHub {
     owner = "franciscolourenco";
     repo = name;
     rev = "${version}";
-    sha256 = "0as2hk9zjl3yiz956xdhz6n8aq4drr7s592681cdb7sa1gv2p69y";
+    sha256 = "1fn4q2clm0n9agb9f2vx1zj3g785kfjyyfdr2w3zzmsjaa8kcxqr";
   };
 
   installPhase = import ./installPhase.nix;
