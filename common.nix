@@ -358,6 +358,12 @@ in {
     #   config = "config " + ./ca-us13.nordvpn.com.tcp443.ovpn ;
     # };
     printing.enable = true;
+    avahi = {
+      enable = true;
+      # Important to resolve .local domains of printers, otherwise you get an error
+      # like  "Impossible to connect to XXX.local: Name or service not known"
+      nssmdns = true;
+    };
     tlp.enable = true; # For battery conservation. Powertop disables wired mice.
 
     journald.extraConfig = ''
