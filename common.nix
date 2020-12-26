@@ -71,6 +71,7 @@ in {
     wget
     neovim
     mkpasswd
+    libsecret # For gnome-keyring.
     file
     xorg.xdpyinfo
     # UI.
@@ -328,7 +329,10 @@ in {
         in [ "${icons}/48x48" "${icons}/scalable" ];
     };
 
-    gnome3.chrome-gnome-shell.enable = true;
+    gnome3 = {
+      chrome-gnome-shell.enable = true;
+      gnome-keyring.enable = true;
+    };
 
     geoclue2.enable = true;
 
