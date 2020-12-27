@@ -85,6 +85,7 @@ in {
     libnotify # Notification service API.
     clipmenu # Clipboard manager.
     xmobar
+    krusader
     # Browsers.
     (chromium.override { enableVaapi = true; })
     google-chrome
@@ -473,4 +474,10 @@ in {
     ];
   };
 
+  # Icons for Krusader.
+  qt5 = {
+    enable = true;
+    platformTheme = "gnome";
+    style = "adwaita-dark";
+  };
 }
