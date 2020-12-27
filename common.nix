@@ -87,6 +87,7 @@ in {
     clipmenu # Clipboard manager.
     xmobar
     krusader
+    breeze-icons
     # Browsers.
     (chromium.override { enableVaapi = true; })
     google-chrome
@@ -416,26 +417,21 @@ in {
 
   location.provider = "geoclue2";
 
-  systemd.user.services = {
-    blueman = {
+  systemd.user.services =
+    let autostart = cmd: {
       enable = true;
       wantedBy = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      serviceConfig.ExecStart = [
-        "${pkgs.blueman}/bin/blueman-applet"
-      ];
+      requires = [ "graphical-session.target" ];
+      after = [ "graphical-session.target" ];
+      serviceConfig.ExecStart = [ cmd ];
     };
 
-    # USB disk automounting.
-    udiskie = {
-      enable = true;
-      wantedBy = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
-      serviceConfig.ExecStart = [
-        "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader"
-      ];
+    in {
+      blueman = autostart "${pkgs.blueman}/bin/blueman-applet";
+      # USB disk automounting.
+      udiskie = autostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
+      rescuetime = autostart "${pkgs.rescuetime}/bin/rescuetime";
     };
-  };
 
   virtualisation.libvirtd.enable = true;
 
@@ -455,7 +451,6 @@ in {
   nixpkgs.config = {
     allowUnfree = true;
     android_sdk.accept_license = true;
-    permittedInsecurePackages = [ "google-chrome-81.0.4044.138" ];
   };
 
   nix = {
@@ -486,12 +481,5 @@ in {
       ttf_bitstream_vera
       ubuntu_font_family
     ];
-  };
-
-  # Icons for Krusader.
-  qt5 = {
-    enable = true;
-    platformTheme = "gnome";
-    style = "adwaita-dark";
   };
 }
