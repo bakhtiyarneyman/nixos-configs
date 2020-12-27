@@ -417,28 +417,21 @@ in {
 
   location.provider = "geoclue2";
 
-  systemd.user.services = {
-    blueman = {
+  systemd.user.services =
+    let autostart = cmd: {
       enable = true;
       wantedBy = [ "graphical-session.target" ];
       requires = [ "graphical-session.target" ];
       after = [ "graphical-session.target" ];
-      serviceConfig.ExecStart = [
-        "${pkgs.blueman}/bin/blueman-applet"
-      ];
+      serviceConfig.ExecStart = [ cmd ];
     };
 
-    # USB disk automounting.
-    udiskie = {
-      enable = true;
-      wantedBy = [ "graphical-session.target" ];
-      requires = [ "graphical-session.target" ];
-      after = [ "graphical-session.target" ];
-      serviceConfig.ExecStart = [
-        "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader"
-      ];
+    in {
+      blueman = autostart "${pkgs.blueman}/bin/blueman-applet";
+      # USB disk automounting.
+      udiskie = autostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
+      rescuetime = autostart "${pkgs.rescuetime}/bin/rescuetime";
     };
-  };
 
   virtualisation.libvirtd.enable = true;
 
