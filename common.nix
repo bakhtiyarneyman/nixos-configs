@@ -421,7 +421,8 @@ in {
     blueman = {
       enable = true;
       wantedBy = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
+      requires = [ "graphical-session.target" ];
+      after = [ "graphical-session.target" ];
       serviceConfig.ExecStart = [
         "${pkgs.blueman}/bin/blueman-applet"
       ];
@@ -431,7 +432,8 @@ in {
     udiskie = {
       enable = true;
       wantedBy = [ "graphical-session.target" ];
-      partOf = [ "graphical-session.target" ];
+      requires = [ "graphical-session.target" ];
+      after = [ "graphical-session.target" ];
       serviceConfig.ExecStart = [
         "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader"
       ];
