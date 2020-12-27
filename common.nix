@@ -87,6 +87,7 @@ in {
     clipmenu # Clipboard manager.
     xmobar
     krusader
+    breeze-icons
     # Browsers.
     (chromium.override { enableVaapi = true; })
     google-chrome
@@ -486,12 +487,5 @@ in {
       ttf_bitstream_vera
       ubuntu_font_family
     ];
-  };
-
-  # Icons for Krusader.
-  qt5 = {
-    enable = true;
-    platformTheme = "gnome";
-    style = "adwaita-dark";
   };
 }
