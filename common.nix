@@ -451,7 +451,6 @@ in {
   nixpkgs.config = {
     allowUnfree = true;
     android_sdk.accept_license = true;
-    permittedInsecurePackages = [ "google-chrome-81.0.4044.138" ];
   };
 
   nix = {
