@@ -74,6 +74,7 @@ in {
     libsecret # For gnome-keyring.
     file
     xorg.xdpyinfo
+    udiskie # USB disk automounting.
     # UI.
     (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
        termite = termite-unwrapped;
@@ -395,6 +396,7 @@ in {
 
     i3status-rust.enable = true;
     sway.enable = true;
+    gnome-disks.enable = true; # GUI USB disk mounting.
     light.enable = true; # Brightness management.
     nm-applet.enable = true; # Wi-fi management.
     xss-lock = { # Lock on lid action.
@@ -414,13 +416,25 @@ in {
 
   location.provider = "geoclue2";
 
-  systemd.user.services.blueman = {
-    enable = true;
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    serviceConfig.ExecStart = [
-      "${pkgs.blueman}/bin/blueman-applet"
-    ];
+  systemd.user.services = {
+    blueman = {
+      enable = true;
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      serviceConfig.ExecStart = [
+        "${pkgs.blueman}/bin/blueman-applet"
+      ];
+    };
+
+    # USB disk automounting.
+    udiskie = {
+      enable = true;
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      serviceConfig.ExecStart = [
+        "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader"
+      ];
+    };
   };
 
   virtualisation.libvirtd.enable = true;
