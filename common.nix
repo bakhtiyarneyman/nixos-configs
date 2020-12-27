@@ -117,6 +117,8 @@ in {
     (libsForQt514.callPackage ./pkgs/shotcut.nix {
       libmlt = mlt;
     })
+    # Personal.
+    rescuetime
   ];
 
   networking = {
