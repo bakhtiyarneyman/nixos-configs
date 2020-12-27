@@ -1,20 +1,20 @@
 { stdenv, fetchFromGitHub }:
 stdenv.mkDerivation rec {
-  name = "fish-humanize-duration";
-  version = "master";
+  name = "humantime.fish";
+  version = "main";
 
   src = fetchFromGitHub {
-    owner = "fishpkg";
+    owner = "jorgebucaran";
     repo = name;
     rev = "${version}";
-    sha256 = "09sbhawnidwq389nbpn1kjsxkgq19grab56r9vjx6cxwvsng7rqw";
+    sha256 = "0avlk8hryd9h0cj1a97dcbh38031qf2005bf2f6hi8kmqmxw1apl";
   };
 
   installPhase = import ./installPhase.nix;
 
   meta = with stdenv.lib; {
     description = "A fish shell package to make a time interval human readable.";
-    homepage = https://github.com/fishpkg/fish-humanize-duration;
+    homepage = https://github.com/jorgebucaran/humantime.fish;
     license = licenses.unlicense;
     platforms = platforms.linux;
   };

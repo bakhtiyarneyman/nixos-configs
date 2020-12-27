@@ -71,8 +71,10 @@ in {
     wget
     neovim
     mkpasswd
+    libsecret # For gnome-keyring.
     file
     xorg.xdpyinfo
+    udiskie # USB disk automounting.
     # UI.
     (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
        termite = termite-unwrapped;
@@ -84,20 +86,22 @@ in {
     libnotify # Notification service API.
     clipmenu # Clipboard manager.
     xmobar
+    krusader
     # Browsers.
     (chromium.override { enableVaapi = true; })
     google-chrome
     firefox
-    # (tor-browser-bundle-bin.override {
-    #    mediaSupport = true;
-    #    pulseaudioSupport = true;
-    # })
+    (tor-browser-bundle-bin.override {
+       mediaSupport = true;
+       pulseaudioSupport = true;
+    })
     # Shell packages.
     fish
     peco
     # Communication.
     skype
     signal-desktop
+    tdesktop # Telegram.
     zoom-us
     # Development.
     git
@@ -111,17 +115,24 @@ in {
     # Video.
     vlc
     guvcview
-    shotcut
+    # TODO(bakhtiyar): change to stock shotcut as soon as melt issue is fixed.
+    (libsForQt514.callPackage ./pkgs/shotcut.nix {
+      libmlt = mlt;
+    })
+    # Personal.
+    rescuetime
   ];
 
   networking = {
     networkmanager.enable = true;
     firewall = {
+      enable = true;
+      logRefusedConnections = true;
       allowedTCPPorts = [
         # SSH.
         22
         # Chromecast ports.
-        8008 8009
+        8008 8009 8010 8443
       ];
       allowedUDPPortRanges = [
         # Chromecast ports.
@@ -322,7 +333,10 @@ in {
         in [ "${icons}/48x48" "${icons}/scalable" ];
     };
 
-    gnome3.chrome-gnome-shell.enable = true;
+    gnome3 = {
+      chrome-gnome-shell.enable = true;
+      gnome-keyring.enable = true;
+    };
 
     geoclue2.enable = true;
 
@@ -344,10 +358,16 @@ in {
 
     blueman.enable = true; # Bluetooth applet.
     openssh.enable = true;
-    openvpn.servers.nordvpn = {
-      config = "config " + ./ca-us13.nordvpn.com.tcp443.ovpn ;
-    };
+    # openvpn.servers.nordvpn = {
+    #   config = "config " + ./ca-us13.nordvpn.com.tcp443.ovpn ;
+    # };
     printing.enable = true;
+    avahi = {
+      enable = true;
+      # Important to resolve .local domains of printers, otherwise you get an error
+      # like  "Impossible to connect to XXX.local: Name or service not known"
+      nssmdns = true;
+    };
     tlp.enable = true; # For battery conservation. Powertop disables wired mice.
 
     journald.extraConfig = ''
@@ -363,7 +383,7 @@ in {
         let sourcePluginLoader = p:
               "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
         in lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
-          "peco" "themeAgnoster" "done" "humanizeDuration" "z" "getOpts"
+          "peco" "themeAgnoster" "done" "humantime" "z" "getOpts"
         ] + ''
 
           function fish_user_key_bindings
@@ -376,6 +396,7 @@ in {
 
     i3status-rust.enable = true;
     sway.enable = true;
+    gnome-disks.enable = true; # GUI USB disk mounting.
     light.enable = true; # Brightness management.
     nm-applet.enable = true; # Wi-fi management.
     xss-lock = { # Lock on lid action.
@@ -395,13 +416,25 @@ in {
 
   location.provider = "geoclue2";
 
-  systemd.user.services.blueman = {
-    enable = true;
-    wantedBy = [ "graphical-session.target" ];
-    partOf = [ "graphical-session.target" ];
-    serviceConfig.ExecStart = [
-      "${pkgs.blueman}/bin/blueman-applet"
-    ];
+  systemd.user.services = {
+    blueman = {
+      enable = true;
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      serviceConfig.ExecStart = [
+        "${pkgs.blueman}/bin/blueman-applet"
+      ];
+    };
+
+    # USB disk automounting.
+    udiskie = {
+      enable = true;
+      wantedBy = [ "graphical-session.target" ];
+      partOf = [ "graphical-session.target" ];
+      serviceConfig.ExecStart = [
+        "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader"
+      ];
+    };
   };
 
   virtualisation.libvirtd.enable = true;
@@ -455,4 +488,10 @@ in {
     ];
   };
 
+  # Icons for Krusader.
+  qt5 = {
+    enable = true;
+    platformTheme = "gnome";
+    style = "adwaita-dark";
+  };
 }
