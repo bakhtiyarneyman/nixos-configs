@@ -430,7 +430,6 @@ in {
       blueman = autostart "${pkgs.blueman}/bin/blueman-applet";
       # USB disk automounting.
       udiskie = autostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
-      rescuetime = autostart "${pkgs.rescuetime}/bin/rescuetime";
     };
 
   virtualisation.libvirtd.enable = true;
