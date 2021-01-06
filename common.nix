@@ -396,6 +396,7 @@ in {
     };
 
     i3status-rust.enable = true;
+    file-roller.enable = true;
     sway.enable = true;
     gnome-disks.enable = true; # GUI USB disk mounting.
     light.enable = true; # Brightness management.
