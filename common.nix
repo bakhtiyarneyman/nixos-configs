@@ -92,10 +92,6 @@ in {
     (chromium.override { enableVaapi = true; })
     google-chrome
     firefox
-    (tor-browser-bundle-bin.override {
-       mediaSupport = true;
-       pulseaudioSupport = true;
-    })
     # Shell packages.
     fish
     peco
@@ -120,8 +116,12 @@ in {
     (libsForQt514.callPackage ./pkgs/shotcut.nix {
       libmlt = mlt;
     })
-    # Personal.
-    rescuetime
+    # Privacy
+    monero-gui
+    (tor-browser-bundle-bin.override {
+       mediaSupport = true;
+       pulseaudioSupport = true;
+    })
   ];
 
   networking = {
