@@ -25,7 +25,7 @@ in {
     kernel.sysctl = {
       "kernel.sysrq" = 1;
     };
-    kernelPackages = pkgs.linuxPackages_latest;
+    kernelPackages = pkgs.linuxPackages;
     # Use the systemd-boot EFI boot loader.
     loader = {
       systemd-boot.enable = true;
@@ -370,6 +370,8 @@ in {
       nssmdns = true;
     };
     tlp.enable = true; # For battery conservation. Powertop disables wired mice.
+
+    i2p.enable = true;
 
     journald.extraConfig = ''
       SystemMaxUse=50M
