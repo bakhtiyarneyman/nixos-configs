@@ -25,7 +25,7 @@ in {
     kernel.sysctl = {
       "kernel.sysrq" = 1;
     };
-    kernelPackages = pkgs.linuxPackages;
+    kernelPackages = pkgs.linuxPackages_latest;
     # Use the systemd-boot EFI boot loader.
     loader = {
       systemd-boot.enable = true;
@@ -75,6 +75,7 @@ in {
     file
     xorg.xdpyinfo
     udiskie # USB disk automounting.
+    unzip
     # UI.
     (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
        termite = termite-unwrapped;
