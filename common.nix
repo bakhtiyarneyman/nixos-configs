@@ -25,7 +25,6 @@ in {
     kernel.sysctl = {
       "kernel.sysrq" = 1;
     };
-    kernelPackages = pkgs.linuxPackages;
     # Use the systemd-boot EFI boot loader.
     loader = {
       systemd-boot.enable = true;
@@ -54,6 +53,7 @@ in {
           "wheel" # Enable ‘sudo’ for the user.
           "adbusers"
           "video" # Allow changing brightness via `light`.
+          "networkmanager"
       ];
       hashedPassword = "$6$.9aOljbRDW00nl$vRfj6ZVwgWXLTw2Ti/I55ov9nNl6iQAqAuauCiVhoRWIv5txKFIb49FKY0X3dgVqE61rPOqBh8qQSk61P2lZI1";
     };
@@ -169,6 +169,7 @@ in {
         libvdpau-va-gl
       ];
     };
+    video.hidpi.enable = true;
   };
 
   services = {
@@ -352,8 +353,8 @@ in {
           light = "${pkgs.light}/bin/light";
           mkBinding = keys: events: command: { inherit keys events command; };
         in [
-          (mkBinding [ 224 ] [ "key" "rep" ] "${light} -U 1")
-          (mkBinding [ 225 ] [ "key" "rep" ] "${light} -A 1")
+          (mkBinding [ 224 ] [ "key" "rep" ] "${light} -U 5")
+          (mkBinding [ 225 ] [ "key" "rep" ] "${light} -A 5")
         ];
     };
 
@@ -437,12 +438,7 @@ in {
 
   virtualisation.libvirtd.enable = true;
 
-  # This value determines the NixOS release with which your system is to be
-  # compatible, in order to avoid breaking some software such as database
-  # servers. You should change this only after NixOS release notes say you
-  # should.
   system = {
-    stateVersion = "19.03"; # Did you read the comment?
     autoUpgrade = {
       allowReboot = false;
       enable = true;
