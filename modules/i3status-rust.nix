@@ -22,12 +22,41 @@ in {
 
   config =
     let
-      configFile =
-        let q = x: ''"${x}"'';
-        in pkgs.writeText "i3status-rust.toml" ''
-        theme = "solarized-dark"
+      q = x: ''"${x}"'';
+      black = "#282c34";
+      green = "#7a9f60";
+      blue = "#3b84c0";
+      yellow = "#d19a66";
+      red = "#be5046";
+      magenta = "#9a52af";
+      # green = "#98c379";
+      # blue = "#61afef";
+      # yellow = "#e5c07b";
+      # red = "#e06c75";
+      # magenta  = "#c678dd";
+      white = "#abb2bf";
+      themeFile = pkgs.writeText "onedark.toml" ''
+        idle_bg = "${black}" # black
+        idle_fg = "${white}" # base1
+        info_bg = "${green}" # blue
+        info_fg = "${black}" # black
+        good_bg = "${blue}" # green
+        good_fg = "${black}" # black
+        warning_bg = "${yellow}" # yellow
+        warning_fg = "${black}" # black
+        critical_bg = "${red}" # red
+        critical_fg = "${black}" # black
+        separator = "\ue0b2"
+        separator_bg = "auto"
+        separator_fg = "auto"
+        alternating_tint_bg = "#000000"
+        alternating_tint_fg = "#000000"
+      '';
+      configFile = pkgs.writeText "i3status-rust.toml" ''
         icons = "awesome"
         scrolling = "natural"
+        [theme]
+        file = "${themeFile}"
 
         [[block]]
         block = "net"
@@ -41,15 +70,14 @@ in {
         interval = 5
 
         [[block]]
+        block = "hueshift"
+
+        [[block]]
         block = "disk_space"
         path = "/"
         alias = ""
-        info_type = "available"
-        unit = "GB"
-        interval = 20
-        warning = 20.0
-        alert = 10.0
-        show_percentage = true
+        info_type = "used"
+        format = "{icon} {percentage}"
 
         [[block]]
         block = "memory"
@@ -60,13 +88,13 @@ in {
         [[block]]
         block = "cpu"
         interval = 1
-        format = "{utilization}% {frequency}GHz"
+        format = "{utilization} {frequency}"
 
         [[block]]
         block = "temperature"
         collapsed = false
         interval = 1
-        good = 35
+        good = -100
         format = "{max}°"
         chip = "*-isa-*"
 
@@ -89,6 +117,13 @@ in {
         driver = "upower"
         format = "{percentage}% {time}"
         device = "DisplayDevice"
+        info = 100
+        warning = 50
+        critical = 20
+        good = 101
+        [block.color_overrides]
+        good_bg = "${black}"
+        good_fg = "${white}"
 
         # This dumps "us,ru,az".
         # [[block]]
@@ -108,8 +143,10 @@ in {
 
         ${cfg.extraConfig}
       '' ;
-      i3status-rust = pkgs.writeShellScriptBin "i3status-rs" ''
-        ${pkgs.i3status-rust}/bin/i3status-rs ${configFile}
+      i3status-rust =
+        let unstable = import <nixos-unstable> { config = { allowUnfree = true; }; };
+      in pkgs.writeShellScriptBin "i3status-rs" ''
+        ${unstable.i3status-rust}/bin/i3status-rs ${configFile}
       '';
 
     in mkIf cfg.enable {
