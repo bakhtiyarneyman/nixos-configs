@@ -377,6 +377,8 @@ in {
     journald.extraConfig = ''
       SystemMaxUse=50M
     '';
+
+    clipmenu.enable = true;
   };
 
   programs = {
