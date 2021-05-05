@@ -77,6 +77,8 @@ in {
         path = "/"
         alias = ""
         info_type = "used"
+        alert = 90
+        warning = 80
         format = "{icon} {percentage}"
 
         [[block]]
@@ -143,10 +145,8 @@ in {
 
         ${cfg.extraConfig}
       '' ;
-      i3status-rust =
-        let unstable = import <nixos-unstable> { config = { allowUnfree = true; }; };
-      in pkgs.writeShellScriptBin "i3status-rs" ''
-        ${unstable.i3status-rust}/bin/i3status-rs ${configFile}
+      i3status-rust = pkgs.writeShellScriptBin "i3status-rs" ''
+        ${(import <unstable> {}).i3status-rust}/bin/i3status-rs ${configFile}
       '';
 
     in mkIf cfg.enable {
