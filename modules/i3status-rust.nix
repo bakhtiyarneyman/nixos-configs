@@ -126,9 +126,9 @@ in {
         good_fg = "${white}"
 
         # This dumps "us,ru,az".
-        [[block]]
-        block = "keyboard_layout"
-        driver = "localebus"
+        # [[block]]
+        # block = "keyboard_layout"
+        # driver = "localebus"
 
         # [[block]]
         # block = "custom"
