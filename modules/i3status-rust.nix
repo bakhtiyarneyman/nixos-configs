@@ -49,8 +49,8 @@ in {
         separator = "\ue0b2"
         separator_bg = "auto"
         separator_fg = "auto"
-        alternating_tint_bg = "#000000"
-        alternating_tint_fg = "#000000"
+        alternating_tint_bg = "#111111"
+        alternating_tint_fg = "#111111"
       '';
       configFile = pkgs.writeText "i3status-rust.toml" ''
         icons = "awesome"
