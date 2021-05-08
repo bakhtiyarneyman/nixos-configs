@@ -8,7 +8,7 @@
     [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
     ];
 
-  networking.hostName = "titanium";
+  networking.hostName = "silk";
   programs.i3status-rust = {
     networkInterface = "wlp0s20f3";
   };
@@ -58,4 +58,5 @@
      AttrEventCodeDisable=ABS_MT_PRESSURE;ABS_PRESSURE;
    '';
   };
+  hardware.firmware = [(import <unstable> {}).firmwareLinuxNonfree];
 }
