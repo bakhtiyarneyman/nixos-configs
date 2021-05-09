@@ -20,35 +20,27 @@
   };
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-  boot.initrd.kernelModules = [ ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
-  boot.kernelModules = [ "kvm-intel" ];
   boot.kernelParams = [ "i8042.dumbkbd" ];
-  boot.extraModulePackages = [ ];
-
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/9300d74d-1638-411a-b269-5dc1814fb27e";
-      fsType = "btrfs";
-    };
-
   boot.initrd.luks.devices."crypted".device = "/dev/disk/by-uuid/92e89be8-e335-4f26-b7fc-d824692ec5b1";
 
-
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/C962-8DCE";
+  fileSystems = {
+    "/" = {
+      device = "/dev/disk/by-uuid/9300d74d-1638-411a-b269-5dc1814fb27e";
+      fsType = "btrfs";
+    };
+    "/boot" = {
+      device = "/dev/disk/by-uuid/C962-8DCE";
       fsType = "vfat";
     };
-
-  swapDevices = [ { label = "swap"; } ];
-
-  nix.maxJobs = lib.mkDefault 8;
-  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+  };
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
   system.stateVersion = "20.09";
+  hardware.firmware = [(import <unstable> {}).firmwareLinuxNonfree];
   services.xserver = {
     dpi = 200;
     monitorSection = ''
@@ -64,5 +56,4 @@
      AttrEventCodeDisable=ABS_MT_PRESSURE;ABS_PRESSURE;
    '';
   };
-  hardware.firmware = [(import <unstable> {}).firmwareLinuxNonfree];
 }

@@ -30,14 +30,11 @@ in {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
+    kernelModules = [ "kvm-intel" "v4l2loopback-dc" "snd-aloop" ];
+    extraModulePackages = [
+      (pkgs.callPackage ./pkgs/v4l2loopback-dc.nix { kernel = config.boot.kernelPackages.kernel; })
+    ];
   };
-
-  # Select internationalisation properties.
-  # i18n = {
-  #   consoleFont = "Lat2-Terminus16";
-  #   consoleKeyMap = "us";
-  #   defaultLocale = "en_US.UTF-8";
-  # };
 
   # This workaround is necessary even if service.localtime is enabled.
   time.timeZone = "America/Los_Angeles";
@@ -123,6 +120,7 @@ in {
        mediaSupport = true;
        pulseaudioSupport = true;
     })
+    (pkgs.callPackage ./pkgs/droidcam.nix {})
   ];
 
   networking = {
@@ -483,4 +481,9 @@ in {
       ubuntu_font_family
     ];
   };
+
+  swapDevices = [ { label = "swap"; } ];
+  nix.maxJobs = lib.mkDefault 8;
+  powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
+
 }
