@@ -34,6 +34,9 @@ in {
     extraModulePackages = [
       (pkgs.callPackage ./pkgs/v4l2loopback-dc.nix { kernel = config.boot.kernelPackages.kernel; })
     ];
+    extraModprobeConfig = ''
+      options v4l2loopback-dc width=1920 height=1080
+    '';
   };
 
   # This workaround is necessary even if service.localtime is enabled.
@@ -121,6 +124,7 @@ in {
        pulseaudioSupport = true;
     })
     (pkgs.callPackage ./pkgs/droidcam.nix {})
+    obs-studio
   ];
 
   networking = {
