@@ -106,10 +106,6 @@ in {
         format = "{1m}"
 
         [[block]]
-        block = "bluetooth"
-        mac = "98:09:CF:BE:8B:61"
-
-        [[block]]
         block = "sound"
         on_click = "${pkgs.pavucontrol}/bin/pavucontrol"
         show_volume_when_muted = true
@@ -133,6 +129,13 @@ in {
         # driver = "localebus"
 
         # [[block]]
+        # block = "ibus"
+        # [block.mappings]
+        # "xkb:us::eng" = "EN"
+        # "xkb:ru::rus" = "RU"
+        # "xkb:az::aze" = "AZ"
+
+        # [[block]]
         # block = "custom"
         # command = "xkblayout-state print %s"
         # interval = 0.5
@@ -142,6 +145,11 @@ in {
         on_click = "${pkgs.gnome3.gnome-calendar}/bin/gnome-calendar"
         interval = 1
         format = "%a %Y-%m-%d %T"
+
+        [[block]]
+        block = "bluetooth"
+        mac = "98:09:CF:BE:8B:61"
+        label = " OP"
 
         ${cfg.extraConfig}
       '' ;
