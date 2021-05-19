@@ -385,6 +385,7 @@ in {
     '';
 
     clipmenu.enable = true;
+    fwupd.enable = true;
   };
 
   programs = {
