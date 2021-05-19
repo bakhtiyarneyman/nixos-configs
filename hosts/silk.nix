@@ -22,6 +22,9 @@
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
   boot.kernelPackages = pkgs.linuxPackages_latest;
   boot.kernelParams = [ "i8042.dumbkbd" ];
+  boot.extraModprobeConfig = ''
+    options snd-intel-dspcfg dsp_driver=1
+  '';
   boot.initrd.luks.devices."crypted".device = "/dev/disk/by-uuid/92e89be8-e335-4f26-b7fc-d824692ec5b1";
 
   fileSystems = {
