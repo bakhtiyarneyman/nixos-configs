@@ -77,6 +77,7 @@ in {
     udiskie # USB disk automounting.
     unzip
     # UI.
+    alacritty
     (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
        termite = termite-unwrapped;
        configFile = unsafeRef ./termite.conf;
@@ -110,6 +111,8 @@ in {
     python3
     # Image.
     gimp
+    # Audio.
+    audacity
     # Video.
     vlc
     guvcview
