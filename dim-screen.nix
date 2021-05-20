@@ -3,42 +3,44 @@
 let
   light = "${pkgs.light}/bin/light";
   fish = "${pkgs.fish}/bin/fish";
-  steps = builtins.toString (builtins.div dimSeconds dimStepSeconds);
+  dimSeconds' = builtins.toString dimSeconds;
   dimStepSeconds' = builtins.toString dimStepSeconds;
   minBrightnessPercents' = builtins.toString minBrightnessPercents;
+  battery = "/sys/class/power_supply/BAT1/status";
 in pkgs.writeTextFile {
   name = "dim-screen";
   executable = true;
   destination = "/bin/dim-screen";
   text = ''
-    #!${fish}
+    #!${pkgs.python3}/bin/python3
 
-    function exit_handler --on-process-exit %self
-      ${light} -I # Restore state.
-    end
+    import os, signal, time
 
-    function signal_handler --on-signal SIGTERM --on-signal SIGINT
-      exit
-    end
+    def restore(sig, frame):
+      print("Restoring brightness")
+      os.system("${light} -I")
+      exit(0)
 
-    ${light} -O # Save state.
-    set brightness (light) # Get state.
-    set step (math $brightness / ${steps})
-    while test $brightness -gt ${minBrightnessPercents'}
-      ${light} -S $brightness # Set state.
-      set brightness (math $brightness - $step) # Compute next state.
-      sleep ${dimStepSeconds'}
-    end
+    signal.signal(signal.SIGTERM, restore)
+    signal.signal(signal.SIGINT, restore)
 
-    ${light} -S ${minBrightnessPercents'}
-  
-    set battery /sys/class/power_supply/BAT0/status
-    if test -e $battery && test (cat $battery) = "Discharging"
-      systemctl suspend
-    end
+    steps = int(${dimSeconds'} / ${dimStepSeconds'})
 
-    sleep 1000000000 &
-    wait
+    os.system('${light} -O') # Save state.
+    brightness = float(os.popen('${light}').read()) # Get state.
+    step = brightness / steps
+    while brightness > ${minBrightnessPercents'}:
+      os.system("${light} -S {}".format(brightness))
+      brightness -= step
+      time.sleep(${dimStepSeconds'})
+
+    os.system('${light} -S {}'.format(${minBrightnessPercents'}))
+
+    if os.path.exists("${battery}") and open("${battery}").read() == "Discharging":
+      print("Battery is discharging, invoke suspend")
+      os.system("systemctl suspend")
+
+    signal.pause()
   '';
   checkPhase = ''
     ${fish} -n $out
