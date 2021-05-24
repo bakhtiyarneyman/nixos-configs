@@ -36,7 +36,7 @@ in pkgs.writeTextFile {
 
     os.system('${light} -S {}'.format(${minBrightnessPercents'}))
 
-    if os.path.exists("${battery}") and open("${battery}").read() == "Discharging":
+    if os.path.exists("${battery}") and open("${battery}").read() == "Discharging\n":
       print("Battery is discharging, invoke suspend")
       os.system("systemctl suspend")
 
