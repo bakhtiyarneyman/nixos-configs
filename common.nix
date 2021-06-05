@@ -124,10 +124,6 @@ in {
     unzip
     # UI.
     alacritty
-    (callPackage <nixpkgs/pkgs/applications/misc/termite/wrapper.nix> {
-       termite = termite-unwrapped;
-       configFile = unsafeRef ./termite.conf;
-    })
     prettyLock
     rofi
     pavucontrol # Pulse audio volume control.
@@ -137,7 +133,6 @@ in {
     krusader
     breeze-icons
     # Browsers.
-    (chromium.override { enableVaapi = true; })
     google-chrome
     firefox
     # Shell packages.
@@ -172,7 +167,7 @@ in {
        mediaSupport = true;
        pulseaudioSupport = true;
     })
-    (pkgs.callPackage ./pkgs/droidcam.nix {})
+    # (pkgs.callPackage ./pkgs/droidcam.nix {})
     obs-studio
   ];
 
@@ -245,7 +240,7 @@ in {
       # Enable touchpad support.
       libinput = {
         enable = true;
-        naturalScrolling = true;
+        touchpad.naturalScrolling = true;
       };
 
       displayManager = {
@@ -387,7 +382,7 @@ in {
         in [ "${icons}/48x48" "${icons}/scalable" ];
     };
 
-    gnome3 = {
+    gnome = {
       chrome-gnome-shell.enable = true;
       gnome-keyring.enable = true;
     };
@@ -515,7 +510,7 @@ in {
   };
 
   fonts = {
-    enableFontDir = true;
+    fontDir.enable = true;
     enableGhostscriptFonts = true;
     fonts = with pkgs; [
       anonymousPro
