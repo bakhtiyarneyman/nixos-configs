@@ -46,6 +46,7 @@
   hardware.firmware = [(import <unstable> {}).firmwareLinuxNonfree];
   services.xserver = {
     dpi = 200;
+    videoDrivers = [ "modesetting" ];
     monitorSection = ''
       DisplaySize 310 174 # mm.
     '';
