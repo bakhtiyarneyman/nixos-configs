@@ -228,6 +228,7 @@ in {
       # Keyboard.
       layout = "us,ru,az";
       xkbOptions = "grp:alt_shift_toggle";
+      dpi = 175;
 
       # Enable touchpad support.
       libinput = {
