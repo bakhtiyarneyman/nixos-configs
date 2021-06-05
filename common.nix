@@ -229,18 +229,11 @@ in {
       layout = "us,ru,az";
       xkbOptions = "grp:alt_shift_toggle";
 
-      inputClassSections = [
-        ''
-          Identifier      "mouse"
-          MatchIsPointer  "on"
-          Option          "NaturalScrolling"      "true"
-        ''
-      ];
-
       # Enable touchpad support.
       libinput = {
         enable = true;
         touchpad.naturalScrolling = true;
+        mouse.naturalScrolling = true;
       };
 
       displayManager = {
