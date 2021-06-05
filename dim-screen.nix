@@ -43,6 +43,6 @@ in pkgs.writeTextFile {
     signal.pause()
   '';
   checkPhase = ''
-    ${fish} -n $out
+    ${pkgs.python3}/bin/python3 -m py_compile $out/bin/dim-screen
   '';
 }
