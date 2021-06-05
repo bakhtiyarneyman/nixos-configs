@@ -39,6 +39,52 @@ in {
     '';
   };
 
+  # i18n = {
+  #   inputMethod = {
+  #     enabled = "ibus";
+  #     ibus.engines = with pkgs.ibus-engines; [ m17n ];
+  #   };
+  # };
+
+  console = {
+    # packages =  with pkgs; [
+    #   anonymousPro
+    #   corefonts
+    #   dejavu_fonts
+    #   fira-code
+    #   font-awesome_4
+    #   font-awesome_5
+    #   freefont_ttf
+    #   google-fonts
+    #   inconsolata
+    #   liberation_ttf
+    #   powerline-fonts
+    #   source-code-pro
+    #   terminus_font
+    #   ttf_bitstream_vera
+    #   ubuntu_font_family
+    # ];
+    # font = "Inconsolata for Powerline:style=Medium";
+    colors = [
+      "282c34"
+      "e06c75"
+      "98c379"
+      "e5c07b"
+      "61afef"
+      "c678dd"
+      "56b6c2"
+      "5c6370"
+      "abb2bf"
+      "be5046"
+      "7a9f60"
+      "d19a66"
+      "3b84c0"
+      "9a52af"
+      "3c909b"
+      "abb2bf" # Use white for gray.
+    ];
+  };
+
   # This workaround is necessary even if service.localtime is enabled.
   time.timeZone = "America/Los_Angeles";
 
