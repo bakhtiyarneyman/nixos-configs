@@ -122,6 +122,13 @@ in {
     xorg.xdpyinfo
     udiskie # USB disk automounting.
     unzip
+    exa # Better ls.
+    procs # Better ps.
+    bat # Better cat.
+    bottom # Better top.
+    fd # Better find.
+    dust # Better du.
+    sd # Better sed.
     # UI.
     alacritty
     prettyLock
