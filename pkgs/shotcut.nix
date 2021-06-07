@@ -1,11 +1,11 @@
-{ stdenv, fetchFromGitHub, fetchpatch, mkDerivation, SDL2, frei0r, gettext, mlt
+{ lib, fetchFromGitHub, fetchpatch, mkDerivation, SDL2, frei0r, gettext, mlt
 , jack1, pkgconfig, qtbase, qtmultimedia, qtwebkit, qtx11extras, qtwebsockets
 , qtquickcontrols, qtgraphicaleffects, libmlt, qmake, qttools, genericUpdater
 , common-updater-scripts
 }:
 
-assert stdenv.lib.versionAtLeast libmlt.version "6.22.1";
-assert stdenv.lib.versionAtLeast mlt.version "6.22.1";
+assert lib.versionAtLeast libmlt.version "6.22.1";
+assert lib.versionAtLeast mlt.version "6.22.1";
 
 mkDerivation rec {
   pname = "shotcut";
@@ -28,7 +28,7 @@ mkDerivation rec {
 
   NIX_CFLAGS_COMPILE = "-I${libmlt}/include/mlt++ -I${libmlt}/include/mlt";
   qmakeFlags = [
-    "QMAKE_LRELEASE=${stdenv.lib.getDev qttools}/bin/lrelease"
+    "QMAKE_LRELEASE=${lib.getDev qttools}/bin/lrelease"
     "SHOTCUT_VERSION=${version}"
     "DEFINES+=SHOTCUT_NOUPGRADE"
   ];
@@ -43,7 +43,7 @@ mkDerivation rec {
 
   qtWrapperArgs = [
     "--prefix FREI0R_PATH : ${frei0r}/lib/frei0r-1"
-    "--prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath [jack1 SDL2]}"
+    "--prefix LD_LIBRARY_PATH : ${lib.makeLibraryPath [jack1 SDL2]}"
     "--prefix PATH : ${mlt}/bin"
     ];
 
@@ -58,7 +58,7 @@ mkDerivation rec {
     rev-prefix = "v";
   };
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A free, open source, cross-platform video editor";
     longDescription = ''
       An official binary for Shotcut, which includes all the

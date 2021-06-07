@@ -1,4 +1,4 @@
-{ stdenv, fetchzip, kernel }:
+{ stdenv, lib, fetchzip, kernel }:
 
 stdenv.mkDerivation rec {
   pname = "v4l2loopback-dc";
@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
     cp v4l2loopback-dc.ko $out/lib/modules/${KVER}/kernels/media/video/
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "DroidCam kernel module v4l2loopback-dc";
     homepage = https://github.com/aramg/droidcam;
   };

@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub }:
+{ stdenv, lib, fetchFromGitHub }:
 stdenv.mkDerivation rec {
   name = "fish-getopts";
   version = "1.0.0";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   installPhase = import ./installPhase.nix;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Parse CLI options in fish";
     homepage = https://github.com/jorgebucaran/fish-getopts;
     license = licenses.mit;

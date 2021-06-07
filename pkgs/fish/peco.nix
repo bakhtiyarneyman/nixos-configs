@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub }:
+{ stdenv, lib, fetchFromGitHub }:
 stdenv.mkDerivation rec {
   name = "plugin-peco";
   version = "master";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   installPhase = import ./installPhase.nix;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Browse your fish history with peco";
     homepage = https://github.com/oh-my-fish/plugin-peco;
     license = licenses.mit;

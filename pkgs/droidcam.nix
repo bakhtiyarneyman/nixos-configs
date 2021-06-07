@@ -1,4 +1,4 @@
-{ stdenv, fetchzip, pkgconfig, ffmpeg, gtk3-x11, libjpeg, libusbmuxd, alsaLib, speex, libappindicator }:
+{ stdenv, lib, fetchzip, pkgconfig, ffmpeg, gtk3-x11, libjpeg, libusbmuxd, alsaLib, speex, libappindicator }:
 
 stdenv.mkDerivation rec {
   pname = "droidcam";
@@ -26,7 +26,7 @@ stdenv.mkDerivation rec {
     cp droidcam droidcam-cli $out/bin/
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "DroidCam Linux client";
     homepage = https://github.com/aramg/droidcam;
   };

@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub }:
+{ stdenv, lib, fetchFromGitHub }:
 stdenv.mkDerivation rec {
   name = "z";
   version = "master";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   installPhase = import ./installPhase.nix;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "z tracks the directories you visit.";
     homepage = https://github.com/jethrokuan/z;
     license = licenses.mit;

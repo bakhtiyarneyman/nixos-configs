@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub }:
+{ stdenv, lib, fetchFromGitHub }:
 stdenv.mkDerivation rec {
   name = "done";
   version = "1.14.10";
@@ -12,7 +12,7 @@ stdenv.mkDerivation rec {
 
   installPhase = import ./installPhase.nix;
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "A fish-shell package to automatically receive notifications when long processes finish.";
     homepage = https://github.com/franciscolourenco/done;
     license = licenses.mit;
