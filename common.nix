@@ -410,8 +410,8 @@ in {
           light = "${pkgs.light}/bin/light";
           mkBinding = keys: events: command: { inherit keys events command; };
         in [
-          (mkBinding [ 224 ] [ "key" "rep" ] "${light} -U 5")
-          (mkBinding [ 225 ] [ "key" "rep" ] "${light} -A 5")
+          (mkBinding [ 224 ] [ "key" "rep" ] "${light} -T 0.707")
+          (mkBinding [ 225 ] [ "key" "rep" ] "${light} -T 1.414")
         ];
     };
 
