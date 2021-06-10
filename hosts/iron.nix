@@ -50,6 +50,7 @@
       { output = "DP-4"; primary = true; }
       { output = "HDMI-0"; }
     ];
+    dpi = 175;
   };
 
   virtualisation.docker = {

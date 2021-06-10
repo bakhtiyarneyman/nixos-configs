@@ -46,9 +46,11 @@
   hardware.firmware = [(import <unstable> {}).firmwareLinuxNonfree];
   services.xserver = {
     videoDrivers = [ "modesetting" ];
+    # DPI overrides this.
     monitorSection = ''
       DisplaySize 310 174 # mm.
     '';
+    dpi = 220;
   };
   environment.etc."libinput/local-overrides.quirks" = {
     text = ''
