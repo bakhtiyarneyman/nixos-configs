@@ -139,6 +139,11 @@ in {
     xmobar
     krusader
     breeze-icons
+    # Hardware.
+    psmisc
+    pciutils
+    glxinfo
+    inxi
     # Browsers.
     google-chrome
     firefox
