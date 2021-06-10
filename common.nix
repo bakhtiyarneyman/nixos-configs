@@ -294,15 +294,18 @@ in {
       };
     };
 
-    compton = {
+    picom = {
       enable = true;
       fade = true;
       fadeSteps = [0.1 0.1];
       shadow = false;
       inactiveOpacity = 0.8;
+      # vSync = true; # Should have helped with screen tearing but didn't.
       settings = {
         # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
         mark-ovredir-focused = true;
+        # Fixes screen tearing in full screen mode.
+        unredir-if-possible = true;
       };
     };
 
