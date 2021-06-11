@@ -455,6 +455,17 @@ in {
             bind \cr 'peco_select_history (commandline -b)'
           end
 
+          function list
+            ${pkgs.exa}/bin/exa -l --icons --color=always | ${pkgs.bat}/bin/bat -
+          end
+
+          function goin -w cd
+            cd $argv; and list
+          end
+
+          function goto -w z
+            z $argv; and list
+          end
         '';
     };
 
