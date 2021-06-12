@@ -127,7 +127,7 @@ in {
     bat # Better cat.
     bottom # Better top.
     fd # Better find.
-    dust # Better du.
+    du-dust # Better du.
     sd # Better sed.
     # UI.
     alacritty
