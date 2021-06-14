@@ -145,7 +145,9 @@ in {
     glxinfo
     inxi
     # Browsers.
-    google-chrome
+    (google-chrome.override {
+      commandLineArgs = "--enable-features=VaapiVideoDecoder";
+    })
     firefox
     # Shell packages.
     fish
