@@ -107,81 +107,89 @@ in {
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    # System.
-    ntfs3g
-    google-drive-ocamlfuse
-    parted
-    gparted
-    # Utilities.
-    wget
-    neovim
-    mkpasswd
-    libsecret # For gnome-keyring.
-    file
-    xorg.xdpyinfo
-    udiskie # USB disk automounting.
-    unzip
-    exa # Better ls.
-    procs # Better ps.
-    bat # Better cat.
-    bottom # Better top.
-    fd # Better find.
-    du-dust # Better du.
-    sd # Better sed.
-    # UI.
-    alacritty
-    prettyLock
-    rofi
-    pavucontrol # Pulse audio volume control.
-    libnotify # Notification service API.
-    clipmenu # Clipboard manager.
-    xmobar
-    krusader
-    breeze-icons
-    # Hardware.
-    psmisc
-    pciutils
-    glxinfo
-    inxi
-    # Browsers.
-    google-chrome
-    firefox
-    # Shell packages.
-    fish
-    peco
-    # Communication.
-    skype
-    signal-desktop
-    tdesktop # Telegram.
-    zoom-us
-    # Development.
-    git
-    (callPackage ./pkgs/vscode.nix {})
-    atom
-    cachix
-    meld
-    python3
-    # Image.
-    gimp
-    # Audio.
-    audacity
-    # Video.
-    vlc
-    guvcview
-    # TODO(bakhtiyar): change to stock shotcut as soon as melt issue is fixed.
-    (libsForQt514.callPackage ./pkgs/shotcut.nix {
-      libmlt = mlt;
-    })
-    # Privacy
-    monero-gui
-    (tor-browser-bundle-bin.override {
-       mediaSupport = true;
-       pulseaudioSupport = true;
-    })
-    # (pkgs.callPackage ./pkgs/droidcam.nix {})
-    obs-studio
-  ];
+  environment = {
+    systemPackages = with pkgs; [
+      # System.
+      ntfs3g
+      google-drive-ocamlfuse
+      parted
+      gparted
+      # Utilities.
+      wget
+      neovim
+      mkpasswd
+      libsecret # For gnome-keyring.
+      file
+      xorg.xdpyinfo
+      udiskie # USB disk automounting.
+      unzip
+      exa # Better ls.
+      procs # Better ps.
+      bat # Better cat.
+      bottom # Better top.
+      fd # Better find.
+      du-dust # Better du.
+      sd # Better sed.
+      # UI.
+      alacritty
+      prettyLock
+      rofi
+      pavucontrol # Pulse audio volume control.
+      libnotify # Notification service API.
+      clipmenu # Clipboard manager.
+      xmobar
+      krusader
+      breeze-icons
+      # Hardware.
+      psmisc
+      pciutils
+      glxinfo
+      inxi
+      # Browsers.
+      google-chrome
+      firefox
+      # Shell packages.
+      fish
+      peco
+      # Communication.
+      skype
+      signal-desktop
+      tdesktop # Telegram.
+      zoom-us
+      # Development.
+      git
+      (callPackage ./pkgs/vscode.nix {})
+      atom
+      cachix
+      meld
+      python3
+      # Image.
+      gimp
+      # Audio.
+      audacity
+      # Video.
+      vlc
+      guvcview
+      # TODO(bakhtiyar): change to stock shotcut as soon as melt issue is fixed.
+      (libsForQt514.callPackage ./pkgs/shotcut.nix {
+        libmlt = mlt;
+      })
+      # Privacy
+      monero-gui
+      (tor-browser-bundle-bin.override {
+        mediaSupport = true;
+        pulseaudioSupport = true;
+      })
+      # (pkgs.callPackage ./pkgs/droidcam.nix {})
+      obs-studio
+    ];
+    etc."xdg/mimeapps.list" = {
+      text = ''
+        [Default Applications]
+        video/mp4=vlc.desktop;
+      '';
+    };
+  };
 
   networking = {
     networkmanager.enable = true;
