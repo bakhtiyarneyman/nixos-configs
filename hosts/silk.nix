@@ -11,12 +11,6 @@
   networking.hostName = "silk";
   programs.i3status-rust = {
     networkInterface = "wlp0s20f3";
-    extraConfig = ''
-      [[block]]
-      block = "bluetooth"
-      mac = "9B:5F:02:59:DB:63"
-      label = " ARI"
-    '';
   };
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];

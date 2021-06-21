@@ -151,6 +151,11 @@ in {
         mac = "98:09:CF:BE:8B:61"
         label = " OP"
 
+        [[block]]
+        block = "bluetooth"
+        mac = "9B:5F:02:59:DB:63"
+        label = " ARI"
+
         ${cfg.extraConfig}
       '' ;
       i3status-rust = pkgs.writeShellScriptBin "i3status-rs" ''
