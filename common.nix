@@ -401,7 +401,7 @@ in {
 
     geoclue2.enable = true;
 
-    localtime.enable = true;
+    # localtime.enable = true; // This doesn't work and only generates errors.
 
     redshift.enable = true;
 
