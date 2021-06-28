@@ -168,13 +168,13 @@ in {
       vlc
       guvcview
       shotcut
+      obs-studio
       # Privacy
       monero-gui
       (tor-browser-bundle-bin.override {
         mediaSupport = true;
         pulseaudioSupport = true;
       })
-      obs-studio
     ];
     etc."xdg/mimeapps.list" = {
       text = ''
