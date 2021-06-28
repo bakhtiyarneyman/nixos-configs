@@ -170,10 +170,7 @@ in {
       # Video.
       vlc
       guvcview
-      # TODO(bakhtiyar): change to stock shotcut as soon as melt issue is fixed.
-      (libsForQt514.callPackage ./pkgs/shotcut.nix {
-        libmlt = mlt;
-      })
+      shotcut
       # Privacy
       monero-gui
       (tor-browser-bundle-bin.override {
