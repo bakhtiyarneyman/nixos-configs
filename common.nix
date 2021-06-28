@@ -321,11 +321,11 @@ in {
       enable = true;
       globalConfig = {
         monitor = "0";
-        follow = "keyboard";
-        geometry = "300x5-30+20";
+        follow = "";
+        geometry = "0x5-30+20";
         indicate_hidden = "yes";
         shrink = "true";
-        transparency = "40";
+        transparency = "0";
         notification_height = "0";
         separator_height = "3";
         padding = "8";
@@ -351,7 +351,7 @@ in {
         max_icon_size = "32";
         sticky_history = "yes";
         history_length = "100";
-        dmenu = "${pkgs.dmenu}/bin/dmenu -p dunst:";
+        dmenu = "${pkgs.rofi}/bin/rofi -dmenu -theme /etc/nixos/onedark.rasi -p dunst";
         browser = "${pkgs.google-chrome}/bin/google-chrome-stable -new-tab";
         always_run_script = "true";
         title = "Dunst";
