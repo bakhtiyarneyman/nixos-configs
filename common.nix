@@ -30,12 +30,9 @@ in {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
-    kernelModules = [ "kvm-intel" "v4l2loopback-dc" "snd-aloop" ];
-    extraModulePackages = [
-      (pkgs.callPackage ./pkgs/v4l2loopback-dc.nix { kernel = config.boot.kernelPackages.kernel; })
-    ];
+    kernelModules = [ "kvm-intel" ];
     extraModprobeConfig = ''
-      options v4l2loopback-dc width=1920 height=1080
+      options v4l2loopback exclusive_caps=1 video_nr=9 card_label="DroidCam"
     '';
   };
 
@@ -177,7 +174,6 @@ in {
         mediaSupport = true;
         pulseaudioSupport = true;
       })
-      # (pkgs.callPackage ./pkgs/droidcam.nix {})
       obs-studio
     ];
     etc."xdg/mimeapps.list" = {
@@ -486,6 +482,7 @@ in {
       lockerCommand = "${prettyLock}/bin/prettyLock";
     };
     adb.enable = true;
+    droidcam.enable = true;
   };
 
   # Allow elevating privileges dynamically via `pkexec`.
