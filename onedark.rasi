@@ -55,7 +55,12 @@ entry {
 listview {
   spacing: 5px;
   dynamic: true;
-  scrollbar: false;
+  scrollbar: true;
+}
+
+scrollbar {
+  handle-width: 20;
+  handle-color: @blue;
 }
 
 element {
