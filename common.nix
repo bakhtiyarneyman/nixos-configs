@@ -133,7 +133,6 @@ in {
       rofi
       pavucontrol # Pulse audio volume control.
       libnotify # Notification service API.
-      clipmenu # Clipboard manager.
       xmobar
       krusader
       breeze-icons
