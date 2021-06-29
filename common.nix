@@ -319,8 +319,7 @@ in {
     dunst = {
       enable = true;
       globalConfig = {
-        monitor = "0";
-        follow = "";
+        follow = "keyboard";
         geometry = "0x5-30+20";
         indicate_hidden = "yes";
         shrink = "true";
