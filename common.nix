@@ -472,7 +472,10 @@ in {
 
     i3status-rust.enable = true;
     file-roller.enable = true;
-    sway.enable = true;
+    sway = {
+      enable = true;
+      extraOptions = ["--config=${unsafeRef ./i3.conf}"];
+    };
     gnome-disks.enable = true; # GUI USB disk mounting.
     light.enable = true; # Brightness management.
     nm-applet.enable = true; # Wi-fi management.
