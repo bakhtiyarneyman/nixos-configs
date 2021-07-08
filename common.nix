@@ -170,7 +170,7 @@ in {
       obs-studio
       # Privacy
       monero-gui
-      (tor-browser-bundle-bin.override {
+      ((import <unstable> {}).pkgs.tor-browser-bundle-bin.override {
         mediaSupport = true;
         pulseaudioSupport = true;
       })
