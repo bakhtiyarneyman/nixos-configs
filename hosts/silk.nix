@@ -14,7 +14,7 @@
   };
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = (import <unstable> {}).pkgs.linuxPackages_latest;
   boot.kernelParams = [ "i8042.dumbkbd" ];
   boot.extraModprobeConfig = ''
     options snd-intel-dspcfg dsp_driver=1
