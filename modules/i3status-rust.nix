@@ -61,12 +61,7 @@ in {
         [[block]]
         block = "net"
         device = ${q cfg.networkInterface}
-        ssid = true
-        bitrate = false
-        ip = false
-        speed_up = false
-        speed_down = false
-        graph_up = false
+        format = "{ssid} {signal_strength}"
         interval = 5
 
         [[block]]
@@ -84,8 +79,8 @@ in {
         [[block]]
         block = "memory"
         display_type = "memory"
-        format_mem = "{Mup}%"
-        format_swap = "{SUp}%"
+        format_mem = "{mem_used_percents}"
+        format_swap = "{swap_used_percents}"
 
         [[block]]
         block = "cpu"
@@ -97,7 +92,7 @@ in {
         collapsed = false
         interval = 1
         good = -100
-        format = "{max}°"
+        format = "{max}"
         chip = "*-isa-*"
 
         [[block]]
@@ -113,13 +108,13 @@ in {
         [[block]]
         block = "battery"
         driver = "upower"
-        format = "{percentage}% {time}"
+        format = "{percentage} {time}"
         device = "DisplayDevice"
         info = 100
         warning = 50
         critical = 20
         good = 101
-        [block.color_overrides]
+        [block.theme_overrides]
         good_bg = "${black}"
         good_fg = "${white}"
 
@@ -149,12 +144,14 @@ in {
         [[block]]
         block = "bluetooth"
         mac = "98:09:CF:BE:8B:61"
-        label = " OP"
+        format_unavailable = " OP"
+        format = " OP"
 
         [[block]]
         block = "bluetooth"
         mac = "9B:5F:02:59:DB:63"
-        label = " ARI"
+        format_unavailable = " ARI"
+        format = " ARI"
 
         ${cfg.extraConfig}
       '' ;
