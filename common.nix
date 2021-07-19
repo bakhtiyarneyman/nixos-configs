@@ -132,6 +132,7 @@ in {
       prettyLock
       rofi
       pavucontrol # Pulse audio volume control.
+      pulseaudio # For pactl to be used from i3.
       libnotify # Notification service API.
       xmobar
       krusader
@@ -201,23 +202,13 @@ in {
     };
   };
 
-  sound = {
-    enable = true;
-    mediaKeys = {
-      enable = true;
-      volumeStep = "1%";
-    };
-  };
+  sound.enable = true;
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
   };
 
   hardware = {
     bluetooth.enable = true;
-    pulseaudio = {
-      enable = true;
-      package = pkgs.pulseaudioFull; # For bluetooth headphones
-    };
     opengl = {
       enable = true;
       driSupport32Bit = true;
@@ -313,6 +304,38 @@ in {
         # Fixes screen tearing in full screen mode.
         unredir-if-possible = true;
       };
+    };
+
+    pipewire = {
+      enable = true;
+      alsa.enable = true;
+      pulse.enable = true;
+      media-session.config.bluez-monitor.rules = [
+        {
+          # Matches all cards
+          matches = [ { "device.name" = "~bluez_card.*"; } ];
+          actions = {
+            "update-props" = {
+              "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
+              # mSBC is not expected to work on all headset + adapter combinations.
+              "bluez5.msbc-support" = true;
+              # SBC-XQ is not expected to work on all headset + adapter combinations.
+              "bluez5.sbc-xq-support" = true;
+            };
+          };
+        }
+        {
+          matches = [
+            # Matches all sources
+            { "node.name" = "~bluez_input.*"; }
+            # Matches all outputs
+            { "node.name" = "~bluez_output.*"; }
+          ];
+          actions = {
+            "node.pause-on-idle" = false;
+          };
+        }
+      ];
     };
 
     # Notification service.
