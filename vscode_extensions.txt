@@ -3,10 +3,8 @@ bbenoist.Nix
 bmalehorn.vscode-fish
 dbaeumer.vscode-eslint
 eamodio.gitlens
-GrapeCity.gc-excelviewer
 haskell.haskell
 justusadam.language-haskell
-ms-azuretools.vscode-docker
 ms-python.python
 ms-python.vscode-pylance
 ms-toolsai.jupyter
