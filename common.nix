@@ -292,17 +292,24 @@ in {
     picom = {
       enable = true;
       fade = true;
-      fadeSteps = [0.1 0.1];
+      fadeSteps = [0.2 0.2];
+      fadeDelta = 30;
       shadow = false;
       inactiveOpacity = 0.8;
       # Creates artifacts on scrolling, but vSync doesn't work otherwise, which leads to tearing.
       experimentalBackends = true;
+      backend = "glx"; # "xrender" is extraordinarily slow when blurring.
       vSync = true;
       settings = {
         # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
         mark-ovredir-focused = true;
-        # Fixes screen tearing in full screen mode.
-        unredir-if-possible = true;
+        # Setting this to `true` should improve the performance, but unfortunately is not compatible with i3lock-color blurring the bg.
+        unredir-if-possible = false;
+        blur = {
+          method= "gaussian";
+          size = 30;
+          deviation = 10;
+        };
       };
     };
 
