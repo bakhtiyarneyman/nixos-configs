@@ -350,7 +350,7 @@ in {
       enable = true;
       globalConfig = {
         follow = "keyboard";
-        geometry = "0x5-30+20";
+        geometry = "500x5-50-50";
         indicate_hidden = "yes";
         shrink = "true";
         transparency = "0";
