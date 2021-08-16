@@ -305,6 +305,7 @@ in {
         mark-ovredir-focused = true;
         # Setting this to `true` should improve the performance, but unfortunately is not compatible with i3lock-color blurring the bg.
         unredir-if-possible = false;
+        xrender-sync-fence = true;
         blur = {
           method= "gaussian";
           size = 30;
