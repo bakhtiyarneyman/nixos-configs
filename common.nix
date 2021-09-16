@@ -230,7 +230,7 @@ in {
 
       # Keyboard.
       layout = "us,ru,az";
-      xkbOptions = "grp:alt_shift_toggle";
+      xkbOptions = "grp:win_space_toggle";
 
       # Enable touchpad support.
       libinput = {
