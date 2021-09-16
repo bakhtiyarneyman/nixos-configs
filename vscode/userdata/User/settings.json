@@ -26,4 +26,5 @@
   "git.confirmSync": false,
   "oneDarkPro.vivid": false,
   "window.menuBarVisibility": "toggle",
+  "workbench.editor.closeEmptyGroups": false,
 }
