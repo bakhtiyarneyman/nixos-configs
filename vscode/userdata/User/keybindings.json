@@ -2,13 +2,11 @@
 [
   {
     "key": "shift+alt+left",
-    "command": "workbench.action.moveEditorToLeftGroup",
-    "when": "editorFocus"
+    "command": "workbench.action.moveEditorToLeftGroup"
   },
   {
     "key": "shift+alt+right",
-    "command": "workbench.action.moveEditorToRightGroup",
-    "when": "editorFocus"
+    "command": "workbench.action.moveEditorToRightGroup"
   },
   {
     "key": "alt+left",
@@ -36,7 +34,7 @@
     "when": "replaceActive && searchViewletVisible && !findWidgetVisible"
   },
   {
-    "key": "ctrl+pagedown",
+    "key": "ctrl+down",
     "command": "editor.action.moveLinesDownAction",
     "when": "editorTextFocus && !editorReadonly"
   },
@@ -63,13 +61,11 @@
   },
   {
     "key": "shift+alt+up",
-    "command": "workbench.action.moveEditorToAboveGroup",
-    "when": "editorFocus"
+    "command": "workbench.action.moveEditorToAboveGroup"
   },
   {
     "key": "shift+alt+down",
-    "command": "workbench.action.moveEditorToBelowGroup",
-    "when": "editorFocus"
+    "command": "workbench.action.moveEditorToBelowGroup"
   },
   {
     "key": "shift+alt+1",
@@ -250,7 +246,7 @@
     "when": "editorHasDefinitionProvider && editorTextFocus && !isInEmbeddedEditor"
   },
   {
-    "key": "shift+pageup",
+    "key": "alt+z",
     "command": "workbench.action.navigateBack"
   },
   {
@@ -258,17 +254,7 @@
     "command": "-workbench.action.navigateBack"
   },
   {
-    "key": "ctrl+shift+up",
-    "command": "cursorPageUpSelect",
-    "when": "textInputFocus"
-  },
-  {
-    "key": "shift+pageup",
-    "command": "-cursorPageUpSelect",
-    "when": "textInputFocus"
-  },
-  {
-    "key": "ctrl+pageup",
+    "key": "ctrl+up",
     "command": "editor.action.moveLinesUpAction",
     "when": "editorTextFocus && !editorReadonly"
   },
@@ -278,22 +264,12 @@
     "when": "editorTextFocus && !editorReadonly"
   },
   {
-    "key": "shift+pagedown",
+    "key": "shift+alt+z",
     "command": "workbench.action.navigateForward"
   },
   {
     "key": "ctrl+shift+-",
     "command": "-workbench.action.navigateForward"
-  },
-  {
-    "key": "ctrl+shift+down",
-    "command": "cursorPageDownSelect",
-    "when": "textInputFocus"
-  },
-  {
-    "key": "shift+pagedown",
-    "command": "-cursorPageDownSelect",
-    "when": "textInputFocus"
   },
   {
     "key": "alt+right",
@@ -304,27 +280,7 @@
     "command": "-workbench.action.focusRightGroup"
   },
   {
-    "key": "ctrl+up",
-    "command": "cursorPageUp",
-    "when": "textInputFocus"
-  },
-  {
-    "key": "pageup",
-    "command": "-cursorPageUp",
-    "when": "textInputFocus"
-  },
-  {
-    "key": "ctrl+down",
-    "command": "cursorPageDown",
-    "when": "textInputFocus"
-  },
-  {
-    "key": "pagedown",
-    "command": "-cursorPageDown",
-    "when": "textInputFocus"
-  },
-  {
-    "key": "pagedown",
+    "key": "ctrl+pagedown",
     "command": "workbench.action.editor.nextChange",
     "when": "editorTextFocus"
   },
@@ -334,7 +290,7 @@
     "when": "editorTextFocus"
   },
   {
-    "key": "pageup",
+    "key": "ctrl+pageup",
     "command": "workbench.action.editor.previousChange",
     "when": "editorTextFocus"
   },
@@ -384,4 +340,107 @@
     "key": "ctrl+j",
     "command": "-workbench.action.togglePanel"
   },
+  {
+    "key": "alt+f5",
+    "command": "-workbench.action.compareEditor.nextChange",
+    "when": "textCompareEditorVisible"
+  },
+  {
+    "key": "shift+alt+f5",
+    "command": "-workbench.action.compareEditor.previousChange",
+    "when": "textCompareEditorVisible"
+  },
+  {
+    "key": "ctrl+alt+s",
+    "command": "git.stageChange"
+  },
+  {
+    "key": "ctrl+alt+s",
+    "command": "git.stageSelectedRanges",
+    "when": "isInDiffEditor"
+  },
+  {
+    "key": "ctrl+k ctrl+alt+s",
+    "command": "-git.stageSelectedRanges",
+    "when": "isInDiffEditor"
+  },
+  {
+    "key": "ctrl+alt+d",
+    "command": "editor.action.selectHighlights",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "-editor.action.selectHighlights",
+    "when": "editorFocus"
+  },
+  {
+    "key": "ctrl+alt+d",
+    "command": "addCursorsAtSearchResults",
+    "when": "fileMatchOrMatchFocus && searchViewletVisible"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "-addCursorsAtSearchResults",
+    "when": "fileMatchOrMatchFocus && searchViewletVisible"
+  },
+  {
+    "key": "ctrl+alt+d",
+    "command": "selectAllSearchEditorMatches",
+    "when": "inSearchEditor"
+  },
+  {
+    "key": "ctrl+shift+l",
+    "command": "-selectAllSearchEditorMatches",
+    "when": "inSearchEditor"
+  },
+  {
+    "key": "ctrl+alt+l",
+    "command": "editor.action.copyLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+alt+up",
+    "command": "-editor.action.copyLinesUpAction",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+shift+pageup",
+    "command": "scrollPageUp",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+shift+pagedown",
+    "command": "scrollPageDown",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "alt+pagedown",
+    "command": "-scrollPageDown",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "alt+z",
+    "command": "-editor.action.toggleWordWrap"
+  },
+  {
+    "key": "ctrl+shift+up",
+    "command": "scrollLineUp",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+up",
+    "command": "-scrollLineUp",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+shift+down",
+    "command": "scrollLineDown",
+    "when": "textInputFocus"
+  },
+  {
+    "key": "ctrl+down",
+    "command": "-scrollLineDown",
+    "when": "textInputFocus"
+  }
 ]

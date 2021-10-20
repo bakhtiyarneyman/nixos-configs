@@ -27,4 +27,8 @@
   "oneDarkPro.vivid": false,
   "window.menuBarVisibility": "toggle",
   "workbench.editor.closeEmptyGroups": false,
+  "editor.suggestSelection": "first",
+  "gradle.nestedProjects": true,
+  "gradle.showStoppedDaemons": true,
+  "window.zoomLevel": -1,
 }
