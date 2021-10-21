@@ -153,6 +153,12 @@ in {
         format_unavailable = " ARI"
         format = " ARI"
 
+        [[block]]
+        block = "bluetooth"
+        mac = "20:DF:B9:C8:29:13"
+        format_unavailable = " DS"
+        format = " DS"
+
         ${cfg.extraConfig}
       '' ;
       i3status-rust = pkgs.writeShellScriptBin "i3status-rs" ''
