@@ -1,3 +1,9 @@
+configuration {
+  combi {
+    display-name: "Launch";
+  }
+}
+
 * {
   black:      #000000;
   red:        #e06c75;
@@ -48,31 +54,32 @@ textbox-prompt-colon {
   text-color: @text-alt;
 }
 
-entry {
-  margin: 0px 10px;
-}
 
 listview {
-  spacing: 5px;
-  dynamic: true;
+  spacing: 0.5em;
   scrollbar: true;
 }
 
 scrollbar {
-  handle-width: 20;
+  handle-width: 1ch;
   handle-color: @blue;
-}
-
-element {
-  padding: 5px;
-  text-color: @text-alt;
-  highlight: bold #95ee8f;
-  border-radius: 3px;
 }
 
 element selected {
   background-color: @emphasis;
   text-color: @text;
+}
+
+element-icon {
+  size: 1.5em;
+  padding: 0.1em;
+  vertical-align: 0.5;
+}
+
+element-text {
+  text-color: inherit;
+  padding: 0.4ch;
+  vertical-align: 0.5;
 }
 
 element urgent, element selected urgent {
@@ -84,15 +91,15 @@ element active, element selected active {
 }
 
 message {
-  padding: 5px;
-  border-radius: 3px;
   background-color: @emphasis;
-  border: 1px;
-  border-color: @cyan;
+
+}
+
+button {
+  horizontal-align: 0.5;
 }
 
 button selected {
-  padding: 5px;
-  border-radius: 3px;
+
   background-color: @emphasis;
 }
