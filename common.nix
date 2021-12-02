@@ -252,16 +252,13 @@ in {
             ${pkgs.xorg.xset}/bin/xset s ${toString idleToDimSecs} ${toString (dimToLockSecs + 5)}
             ${pkgs.xorg.xset}/bin/xset dpms ${screenOffTime} ${screenOffTime} ${screenOffTime}
           '';
+        gdm = {
+          enable = true;
+          wayland = false;
+        };
         # Autologin is only safe because the disk is encrypted.
         # It can lead to an infinite loop if the window manager crashes.
-        autoLogin = {
-          enable = true;
-          user = "bakhtiyar";
-        };
-        lightdm = {
-          enable = true;
-          background = unsafeRef ./wallpaper.jpg;
-        };
+        autoLogin.user = "bakhtiyar";
         defaultSession = "none+i3";
       };
 
