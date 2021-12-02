@@ -148,6 +148,7 @@ config =
     };
     systemd.packages = [ pkgs.dunst ];
     services.dbus.packages = [ pkgs.dunst ];
+    environment.systemPackages = [ pkgs.dunst ];
   };
 
 }
