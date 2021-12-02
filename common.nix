@@ -162,6 +162,7 @@ in {
       python3
       # Image.
       gimp
+      inkscape
       # Audio.
       audacity
       # Video.
