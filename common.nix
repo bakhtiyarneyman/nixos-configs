@@ -501,7 +501,11 @@ in {
     file-roller.enable = true;
     sway = {
       enable = true;
-      extraOptions = ["--config=${unsafeRef ./i3.conf}"];
+      extraOptions = [
+        "--config=${unsafeRef ./i3.conf}"
+        "--unsupported-gpu"
+        "--my-next-gpu-wont-be-nvidia"
+      ];
     };
     gnome-disks.enable = true; # GUI USB disk mounting.
     light.enable = true; # Brightness management.
