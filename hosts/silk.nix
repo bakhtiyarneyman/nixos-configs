@@ -45,6 +45,7 @@
       DisplaySize 310 174 # mm.
     '';
     dpi = 220;
+    displayManager.gdm.enable = true;
   };
   environment.etc."libinput/local-overrides.quirks" = {
     text = ''

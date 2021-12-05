@@ -51,6 +51,7 @@
       { output = "HDMI-0"; }
     ];
     dpi = 175;
+    displayManager.lightdm.enable = true;
   };
 
   virtualisation.docker = {
