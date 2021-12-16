@@ -323,6 +323,9 @@ in {
               "bluez5.msbc-support" = true;
               # SBC-XQ is not expected to work on all headset + adapter combinations.
               "bluez5.sbc-xq-support" = true;
+              "bluez5.enable-hw-volume" = true;
+              "bluez5.enable-faststream" = true;
+              "bluez5.enable-a2dp-duplex" = true;
             };
           };
         }
