@@ -461,6 +461,7 @@ in {
 
     clipmenu.enable = true;
     fwupd.enable = true;
+    onedrive.enable=true;
   };
 
   programs = {
