@@ -380,7 +380,7 @@ in {
         sticky_history = "yes";
         history_length = "100";
         dmenu = "${pkgs.rofi}/bin/rofi -dmenu -theme /etc/nixos/onedark.rasi -p dunst";
-        browser = "${pkgs.google-chrome}/bin/google-chrome-stable -new-tab";
+        browser = "${pkgs.firefox}/bin/firefox";
         always_run_script = "true";
         title = "Dunst";
         class = "Dunst";
