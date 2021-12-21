@@ -161,9 +161,15 @@ in {
 
         ${cfg.extraConfig}
       '' ;
-      i3status-rust = pkgs.writeShellScriptBin "i3status-rs" ''
-        ${(import <unstable> {}).i3status-rust}/bin/i3status-rs ${configFile}
-      '';
+      i3status-rust = pkgs.symlinkJoin {
+        name = "i3status-rust";
+        paths = [ pkgs.i3status-rust ];
+        buildInputs = [ pkgs.makeWrapper ];
+        postBuild = ''
+          wrapProgram $out/bin/i3status-rs \
+            --add-flags "${configFile}"
+        '';
+      };
 
     in mkIf cfg.enable {
       services.upower.enable = true;
