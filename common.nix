@@ -160,6 +160,7 @@ in {
       cachix
       meld
       python3
+      rnix-lsp
       # Image.
       gimp
       inkscape
