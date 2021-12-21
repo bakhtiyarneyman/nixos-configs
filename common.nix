@@ -521,6 +521,7 @@ in {
     };
     adb.enable = true;
     droidcam.enable = true;
+    seahorse.enable = true;
   };
 
   # Allow elevating privileges dynamically via `pkexec`.
