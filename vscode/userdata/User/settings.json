@@ -32,4 +32,5 @@
   "gradle.showStoppedDaemons": true,
   "window.zoomLevel": -1,
   "telemetry.telemetryLevel": "off",
+  "haskell.updateBehavior": "never-check",
 }
