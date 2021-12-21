@@ -495,6 +495,8 @@ in {
           function goto -w z
             z $argv; and list
           end
+
+          alias nix-shell-fish 'nix-shell --run fish'
         '';
     };
 
