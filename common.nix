@@ -289,7 +289,6 @@ in {
       fadeSteps = [0.2 0.2];
       fadeDelta = 30;
       shadow = false;
-      inactiveOpacity = 0.8;
       # Creates artifacts on scrolling, but vSync doesn't work otherwise, which leads to tearing.
       experimentalBackends = true;
       backend = "glx"; # "xrender" is extraordinarily slow when blurring.
@@ -300,11 +299,13 @@ in {
         # Setting this to `true` should improve the performance, but unfortunately is not compatible with i3lock-color blurring the bg.
         unredir-if-possible = false;
         xrender-sync-fence = true;
-        blur = {
-          method= "gaussian";
-          size = 30;
-          deviation = 10;
-        };
+        inactive-dim = 0.2;
+        # TODO(bakhtiyar): to slow.
+        # blur = {
+        #   method= "gaussian";
+        #   size = 30;
+        #   deviation = 10;
+        # };
       };
     };
 

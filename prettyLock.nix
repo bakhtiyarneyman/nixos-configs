@@ -27,7 +27,8 @@ writeShellScriptBin "prettyLock" ''
     --date-align=1 \
     --layout-align=2 \
     --greeter-align=0 \
-    --color="00000020" \
+    --image=${./wallpaper.jpg} \
+    --color="000000ff" \
     --keyhl-color="6060f0ff" \
     --bshl-color="c678ddff" \
     --separator-color="00000000" \
