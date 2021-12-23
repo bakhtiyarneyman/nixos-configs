@@ -48,7 +48,7 @@
     videoDrivers = [ "nvidia" ];
     xrandrHeads = [
       { output = "DP-4"; primary = true; }
-      { output = "HDMI-0"; }
+      { output = "DP-2"; }
     ];
     dpi = 175;
     displayManager.lightdm.enable = true;
