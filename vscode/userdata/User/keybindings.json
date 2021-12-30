@@ -24,7 +24,11 @@
     "when": "panelFocus" },
   { "key": "alt+right", "command": "workbench.action.focusRightGroup" },
   { "key": "alt+space", "command": "workbench.action.toggleEditorWidths" },
-  { "key": "alt+tab", "command": "workbench.action.compareEditor.focusOtherSide" },
+  {
+    "key": "alt+tab",
+    "command": "workbench.action.compareEditor.focusOtherSide",
+    "when": "textCompareEditorActive"
+  },
   { "key": "alt+up", "command": "-editor.action.moveLinesUpAction",
     "when": "editorTextFocus && !editorReadonly" },
   { "key": "alt+up", "command": "workbench.action.focusAboveGroup" },
@@ -96,5 +100,20 @@
     "key": "ctrl+pageup",
     "command": "workbench.action.compareEditor.previousChange",
     "when": "textCompareEditorVisible"
+  },
+  {
+    "key": "alt+tab",
+    "command": "git.openChangeEditor",
+    "when": "!textCompareEditorActive"
+  },
+  {
+    "key": "alt+escape",
+    "command": "git.openFile",
+    "when": "textCompareEditorActive"
+  },
+  {
+    "key": "ctrl+w",
+    "command": "workbench.action.closeEditorsAndGroup",
+    "when": "activeEditorGroupEmpty"
   }
 ]

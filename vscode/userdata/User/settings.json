@@ -33,4 +33,8 @@
   "window.zoomLevel": -1,
   "telemetry.telemetryLevel": "off",
   "haskell.updateBehavior": "never-check",
+  "purescript.formatter": "purs-tidy",
+  "purescript.buildOpenedFiles": true,
+  "purescript.buildCommand": "spago build --purs-args '--json-errors --codegen corefn'",
+  "purescript.addSpagoSources": false,
 }
