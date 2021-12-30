@@ -498,6 +498,10 @@ in {
           end
 
           alias nix-shell-fish 'nix-shell --run fish'
+
+          function bluetoothctl
+              command bluetoothctl paired-devices; and command bluetoothctl
+          end
         '';
     };
 
