@@ -127,6 +127,7 @@ in {
       fd # Better find.
       du-dust # Better du.
       sd # Better sed.
+      cryptomator
       # UI.
       alacritty
       prettyLock
