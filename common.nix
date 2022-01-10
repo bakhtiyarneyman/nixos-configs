@@ -599,7 +599,13 @@ in {
   };
 
   swapDevices = [ { label = "swap"; } ];
-  nix.maxJobs = lib.mkDefault 8;
+  nix = {
+    maxJobs = lib.mkDefault 8;
+    package = pkgs.nix_2_4;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+  };
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
 }
