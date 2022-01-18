@@ -154,6 +154,7 @@ in {
       signal-desktop
       tdesktop # Telegram.
       zoom-us
+      discord
       # Development.
       git
       (callPackage ./pkgs/vscode.nix {})
