@@ -53,7 +53,7 @@ in {
         alternating_tint_fg = "#111111"
       '';
       configFile = pkgs.writeText "i3status-rust.toml" ''
-        icons = "awesome"
+        icons = "awesome5"
         scrolling = "natural"
         [theme]
         file = "${themeFile}"

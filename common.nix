@@ -580,10 +580,16 @@ in {
   fonts = {
     fontDir.enable = true;
     enableGhostscriptFonts = true;
+    fontconfig.defaultFonts = {
+      monospace = ["Fira Mono"];
+      sansSerif = ["Fira Sans"];
+      serif = ["Lora"];
+    };
     fonts = with pkgs; [
       anonymousPro
       corefonts
       dejavu_fonts
+      fira
       fira-code
       font-awesome_4
       font-awesome_5
@@ -591,6 +597,7 @@ in {
       google-fonts
       inconsolata
       liberation_ttf
+      noto-fonts-emoji
       powerline-fonts
       source-code-pro
       terminus_font
