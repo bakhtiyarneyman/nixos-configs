@@ -39,24 +39,10 @@ in {
   # };
 
   console = {
-    # packages =  with pkgs; [
-    #   anonymousPro
-    #   corefonts
-    #   dejavu_fonts
-    #   fira-code
-    #   font-awesome_4
-    #   font-awesome_5
-    #   freefont_ttf
-    #   google-fonts
-    #   inconsolata
-    #   liberation_ttf
-    #   powerline-fonts
-    #   source-code-pro
-    #   terminus_font
-    #   ttf_bitstream_vera
-    #   ubuntu_font_family
-    # ];
-    # font = "Inconsolata for Powerline:style=Medium";
+    packages =  with pkgs; [
+      powerline-fonts
+    ];
+    font = "ter-powerline-v14n";
     colors = [
       "282c34"
       "e06c75"
