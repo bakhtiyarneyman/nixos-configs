@@ -531,6 +531,9 @@ in {
       blueman = autostart "${pkgs.blueman}/bin/blueman-applet";
       # USB disk automounting.
       udiskie = autostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
+      signal = autostart "${pkgs.signal-desktop}/bin/signal-desktop";
+      telegram = autostart "${pkgs.tdesktop}/bin/telegram-desktop";
+      discord = autostart "${pkgs.discord}/bin/discord";
     };
 
   virtualisation.libvirtd.enable = true;
