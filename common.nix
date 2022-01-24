@@ -42,7 +42,7 @@ in {
     packages =  with pkgs; [
       powerline-fonts
     ];
-    font = "ter-powerline-v14n";
+    font = "ter-powerline-v32n";
     colors = [
       "282c34"
       "e06c75"
