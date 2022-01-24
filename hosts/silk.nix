@@ -4,17 +4,12 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports =
-    [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-    ];
-
-  networking.hostName = "silk";
   programs.i3status-rust = {
     networkInterface = "wlp0s20f3";
   };
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-  boot.kernelPackages = (import <unstable> {}).pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
   boot.kernelParams = [ "i8042.dumbkbd" ];
   boot.extraModprobeConfig = ''
     options snd-intel-dspcfg dsp_driver=1
@@ -37,7 +32,7 @@
   # servers. You should change this only after NixOS release notes say you
   # should.
   system.stateVersion = "20.09";
-  hardware.firmware = [(import <unstable> {}).firmwareLinuxNonfree];
+  hardware.firmware = [pkgs.unstable.firmwareLinuxNonfree];
   services.xserver = {
     videoDrivers = [ "modesetting" ];
     # DPI overrides this.

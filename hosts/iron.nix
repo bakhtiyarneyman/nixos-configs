@@ -2,14 +2,7 @@
 # and may be overwritten by future invocations.  Please make changes
 # to /etc/nixos/configuration.nix instead.
 { config, lib, pkgs, boot, ... }:
-
 {
-  imports =
-    [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-     ../modules/i3status-rust.nix
-    ];
-
-  networking.hostName = "iron";
   programs.i3status-rust.networkInterface = "eno1";
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];

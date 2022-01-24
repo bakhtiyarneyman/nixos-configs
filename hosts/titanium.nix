@@ -4,11 +4,6 @@
 { config, lib, pkgs, ... }:
 
 {
-  imports =
-    [ <nixpkgs/nixos/modules/installer/scan/not-detected.nix>
-    ];
-
-  networking.hostName = "titanium";
   programs.i3status-rust = {
     networkInterface = "wlp0s20f3";
     extraConfig = ''

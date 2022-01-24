@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, hostName, ... }:
 
 let
   # Don't put into /nix/store. Instead use the files in /etc/nixos directly.
@@ -15,11 +15,6 @@ let
   lockToScreenOffSecs = 10;
   dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; };
 in {
-  imports = [
-    ./modules/i3status-rust.nix
-    ./modules/dunst.nix
-  ];
-
   boot = {
     tmpOnTmpfs = true;
     kernel.sysctl = {
@@ -175,7 +170,7 @@ in {
       obs-studio
       # Privacy
       monero-gui
-      ((import <unstable> {}).pkgs.tor-browser-bundle-bin.override {
+      (unstable.pkgs.tor-browser-bundle-bin.override {
         mediaSupport = true;
         pulseaudioSupport = true;
       })
@@ -189,6 +184,7 @@ in {
   };
 
   networking = {
+    inherit hostName;
     networkmanager.enable = true;
     firewall = {
       enable = true;
@@ -325,10 +321,10 @@ in {
               "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
               # mSBC is not expected to work on all headset + adapter combinations.
               "bluez5.msbc-support" = true;
-              # SBC-XQ is not expected to work on all headset + adapter combinations.
-              "bluez5.sbc-xq-support" = true;
+              "bluez5.enable-sbc-xq"    = true;
               "bluez5.enable-hw-volume" = true;
               "bluez5.enable-faststream" = true;
+              "bluez5.enable-faststream-duplex" = true;
               "bluez5.enable-a2dp-duplex" = true;
             };
           };
@@ -560,7 +556,7 @@ in {
     autoUpgrade = {
       allowReboot = false;
       enable = true;
-      channel = https://nixos.org/channels/nixos-20.09;
+      flake = "/etc/nixos";
     };
   };
 
@@ -570,11 +566,16 @@ in {
   };
 
   nix = {
+    package = pkgs.nix_2_4;
     trustedUsers = [ "root" "bakhtiyar" ];
     gc = {
       automatic = true;
       options = "--delete-older-than 14d";
     };
+    maxJobs = lib.mkDefault 8;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
   };
 
   fonts = {
@@ -607,13 +608,6 @@ in {
   };
 
   swapDevices = [ { label = "swap"; } ];
-  nix = {
-    maxJobs = lib.mkDefault 8;
-    package = pkgs.nix_2_4;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-  };
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
 }
