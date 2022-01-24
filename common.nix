@@ -203,9 +203,6 @@ in {
   };
 
   sound.enable = true;
-  nixpkgs.config.packageOverrides = pkgs: {
-    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
-  };
 
   hardware = {
     bluetooth.enable = true;
@@ -563,6 +560,7 @@ in {
   nixpkgs.config = {
     allowUnfree = true;
     android_sdk.accept_license = true;
+    config.packageOverrides.vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
   };
 
   nix = {
