@@ -36,7 +36,7 @@
     monitorSection = ''
       DisplaySize 285 190 # mm.
     '';
-    dpi = 160;
+    dpi = 150;
     displayManager.gdm.enable = true;
   };
 
