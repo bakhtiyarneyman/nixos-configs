@@ -360,8 +360,8 @@ in {
         always_run_script = "true";
         corner_radius = "10";
         force_xinerama = "false";
-        mouse_left_click = "do_action";
-        mouse_middle_click = "context";
+        mouse_left_click = "context";
+        mouse_middle_click = "close_all";
         mouse_right_click = "close_current";
         icon_path =
           let categories = [
@@ -377,8 +377,10 @@ in {
                 "emotes"
                 "panel"
               ];
+              prefix = x: "${pkgs.kora-icon-theme}/share/icons/kora/${x}";
           in lib.concatStringsSep ":"
-          (map (category: "${pkgs.kora-icon-theme}/share/icons/kora/${category}/scalable") categories);
+              (map prefix
+                (map (category: "${category}/scalable") categories ++ [ "panel/24" ]));
       };
       experimentalConfig = {
         per_monitor_dpi = "true";
