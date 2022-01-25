@@ -341,7 +341,7 @@ in {
         separator_color = "foreground";
         sort = "false";
         idle_threshold = "120";
-        font = "Fira Sans 9";
+        font = "Fira Sans 12";
         line_height = "0";
         markup = "full";
         format = ''"<span size="larger" weight="light">%s</span> <span size="smaller" weight="bold" fgalpha="50%%">%a</span>\n%b"'';
