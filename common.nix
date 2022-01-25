@@ -5,10 +5,6 @@
 { config, pkgs, lib, hostName, ... }:
 
 let
-  # Don't put into /nix/store. Instead use the files in /etc/nixos directly.
-  # This makes it easier to test out configuration changes while still
-  # managing them centrally.
-  unsafeRef = toString;
   prettyLock = import ./prettyLock.nix pkgs;
   idleToDimSecs = 60;
   dimToLockSecs = 15;
@@ -244,7 +240,7 @@ in {
       windowManager = {
         i3 = {
           enable = true;
-          configFile = unsafeRef ./i3.conf;
+          configFile = ./i3.conf;
           package = pkgs.i3-gaps;
           extraPackages = with pkgs; [
             rofi # dmenu alternative.
@@ -491,7 +487,7 @@ in {
     sway = {
       enable = true;
       extraOptions = [
-        "--config=${unsafeRef ./i3.conf}"
+        "--config=${./i3.conf}"
         "--unsupported-gpu"
         "--my-next-gpu-wont-be-nvidia"
       ];
