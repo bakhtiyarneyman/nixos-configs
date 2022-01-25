@@ -15,17 +15,6 @@ options.services.dunst = {
 
   enable = mkEnableOption "the dunst notifications daemon";
 
-  iconDirs = mkOption {
-    type = with types; listOf path;
-    default = [];
-    example = literalExample ''
-      [ "''${pkgs.gnome3.adwaita-icon-theme}/share/icons/Adwaita/48x48" ]
-    '';
-    description = ''
-      Paths to icon folders.
-    '';
-  };
-
   extraArgs = mkOption {
     type = with types; listOf str;
     default = [];
@@ -120,11 +109,8 @@ config =
       urgency_critical = cfg.urgencyConfig.critical;
     } // cfg.rules;
 
-    iconPath = concatStringsSep ":" cfg.iconDirs;
-
     dunst-args = [
       "-config" (pkgs.writeText "dunstrc" dunstConfig)
-      "-icon_path" iconPath
     ] ++ cfg.extraArgs;
 
   in mkIf cfg.enable {

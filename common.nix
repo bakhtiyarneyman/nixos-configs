@@ -327,75 +327,75 @@ in {
       enable = true;
       globalConfig = {
         follow = "keyboard";
-        geometry = "500x5-50-50";
-        indicate_hidden = "yes";
+        width = "(0, 300)";
+        height = "200";
+        notification_limit = "5";
+        origin = "top-right";
+        offset = "50x50";
         shrink = "true";
-        transparency = "0";
-        notification_height = "0";
-        separator_height = "3";
+        separator_height = "1";
         padding = "8";
         horizontal_padding = "8";
-        frame_width = "0";
-        frame_color = ''"#aaaaaa"'';
-        separator_color = "auto";
-        sort = "yes";
+        text_icon_padding = "8";
+        frame_width = "1";
+        separator_color = "foreground";
+        sort = "false";
         idle_threshold = "120";
-        font = "Ubuntu 12";
+        font = "Fira Sans 9";
         line_height = "0";
         markup = "full";
-        format = ''"<b>%s</b>\n%b"'';
-        alignment = "center";
+        format = ''"<span size="larger" weight="light">%s</span> <span size="smaller" weight="bold" fgalpha="50%%">%a</span>\n%b"'';
+        alignment = "left";
         show_age_threshold = "60";
         word_wrap = "yes";
         ellipsize = "middle";
         ignore_newline = "no";
-        stack_duplicates = "true";
         hide_duplicate_count = "false";
         show_indicators = "yes";
         icon_position = "left";
-        max_icon_size = "32";
+        # max_icon_size = "64";
         sticky_history = "yes";
         history_length = "100";
         dmenu = "${pkgs.rofi}/bin/rofi -dmenu -theme /etc/nixos/onedark.rasi -p dunst";
-        browser = "${pkgs.firefox}/bin/firefox";
         always_run_script = "true";
-        title = "Dunst";
-        class = "Dunst";
-        verbosity = "mesg";
         corner_radius = "10";
         force_xinerama = "false";
         mouse_left_click = "do_action";
-        mouse_middle_click = "close_all";
+        mouse_middle_click = "context";
         mouse_right_click = "close_current";
+        icon_path =
+          let categories = [
+                "actions"
+                "places"
+                "animations"
+                "devices"
+                "status"
+                "apps"
+                "emblems"
+                "mimetypes"
+                "categories"
+                "emotes"
+                "panel"
+              ];
+          in lib.concatStringsSep ":"
+          (map (category: "${pkgs.kora-icon-theme}/share/icons/kora/${category}/scalable") categories);
       };
       experimentalConfig = {
         per_monitor_dpi = "true";
       };
-      shortcutsConfig = {
-        close = "mod4+BackSpace";
-        history = "mod4+shift+BackSpace";
-        context = "mod4+period";
+      urgencyConfig =
+        let q = s: ''"${s}"'';
+            urgency = bg: fg: timeout: {
+              background = q bg;
+              foreground = q fg;
+              frame_color = q fg;
+              timeout = toString timeout;
+            };
+        in {
+        low = urgency "#282c34" "#abb2bf" 10;
+        normal = urgency "#61afef" "#282c34" 30;
+        critical = urgency "#ff0000" "#ffffff" 0;
       };
-      urgencyConfig = let q = s: ''"${s}"''; in {
-        low = {
-          background = q "#203040";
-          foreground = q "#909090";
-          timeout = "10";
-        };
-        normal = {
-          background = q "#203040";
-          foreground = q "#FFFFFF";
-          timeout = "30";
-        };
-        critical = {
-          background = q "#900000";
-          foreground = q "#ffffff";
-          timeout = "0";
-        };
-      };
-      iconDirs =
-        let icons = "${pkgs.gnome3.adwaita-icon-theme}/share/icons/Adwaita";
-        in [ "${icons}/48x48" "${icons}/scalable" ];
     };
 
     gnome = {
