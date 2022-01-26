@@ -102,8 +102,10 @@ in {
 
         [[block]]
         block = "sound"
+        driver = "pulseaudio"
         on_click = "${pkgs.pavucontrol}/bin/pavucontrol"
         show_volume_when_muted = true
+        headphones_indicator = true
 
         [[block]]
         block = "battery"

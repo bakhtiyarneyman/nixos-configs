@@ -187,7 +187,17 @@ in {
   sound.enable = true;
 
   hardware = {
-    bluetooth.enable = true;
+    bluetooth = {
+      enable = true;
+      settings = {
+        General = {
+          FastConnectable = "true"; # Energy-inefficient.
+          ControllerMode = "dual";
+          JustWorksRepairing = "confirm";
+          Experimental = "true";
+        };
+      };
+    };
     opengl = {
       enable = true;
       driSupport32Bit = true;
@@ -297,14 +307,12 @@ in {
           matches = [ { "device.name" = "~bluez_card.*"; } ];
           actions = {
             "update-props" = {
-              "bluez5.reconnect-profiles" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
-              # mSBC is not expected to work on all headset + adapter combinations.
-              "bluez5.msbc-support" = true;
-              "bluez5.enable-sbc-xq"    = true;
-              "bluez5.enable-hw-volume" = true;
-              "bluez5.enable-faststream" = true;
-              "bluez5.enable-faststream-duplex" = true;
-              "bluez5.enable-a2dp-duplex" = true;
+              "bluez5.auto-connect" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
+              "bluez5.enable-sbc-xq" = true;
+	            "bluez5.enable-msbc" = true;
+	            "bluez5.enable-hw-volume" = true;
+	            "bluez5.enable-faststream" = true;
+	            "bluez5.enable-a2dp-duplex" = true;
             };
           };
         }
