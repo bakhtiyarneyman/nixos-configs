@@ -147,13 +147,13 @@ in {
         block = "bluetooth"
         mac = "98:09:CF:BE:8B:61"
         format_unavailable = " OP"
-        format = " OP"
+        format = " OP {percentage}"
 
         [[block]]
         block = "bluetooth"
         mac = "9B:5F:02:59:DB:63"
         format_unavailable = " ARI"
-        format = " ARI"
+        format = " ARI {percentage}"
 
         [[block]]
         block = "bluetooth"
