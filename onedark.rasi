@@ -21,7 +21,7 @@ configuration {
   spacing: 0;
   background-color: transparent;
 
-  font: "Inconsolata 32";
+  font: "Fira Sans 32";
   text-color: @text-alt;
 }
 
