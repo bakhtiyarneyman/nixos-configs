@@ -327,8 +327,8 @@ in {
       enable = true;
       globalConfig = {
         follow = "keyboard";
-        width = "(0, 300)";
-        height = "200";
+        width = "(0, 500)";
+        height = "300";
         notification_limit = "5";
         origin = "top-right";
         offset = "50x50";
