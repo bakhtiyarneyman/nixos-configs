@@ -34,6 +34,12 @@
   "explorer.openEditors.visible": 0,
   "nix.enableLanguageServer": true,
   "haskell.trace.server": "messages",
+  "terminal.external.linuxExec": "alacritty --config-file /etc/nixos/alacritty.yml",
+  "terminal.integrated.defaultProfile.linux": "fish",
   "terminal.explorerKind": "external",
-  "terminal.external.linuxExec": "alacritty",
+  "purescript.buildOpenedFiles": true,
+  "python.analysis.typeCheckingMode": "strict",
+  "purescript.codegenTargets": [
+    "corefn"
+  ],
 }
