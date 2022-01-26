@@ -11,7 +11,7 @@ else
   while [ $i -le $n ]
     if [ $sinkDescriptions[$i] = $selection ]
       pactl set-default-sink $sinkIds[$i]
-      dunstify --urgency low --replace=$APP_ID --appname " " "Audio output set" $selection
+      dunstify --urgency low --icon "audio-speakers" --replace=$APP_ID --appname " " "Audio output set" $selection
       exit 0
     end
     set i (math "$i + 1")

@@ -41,16 +41,16 @@ mainbox {
 
 inputbar {
   margin: 0px 0px 20px 0px;
-  children: [prompt, textbox-prompt-colon, entry, case-indicator];
+  children: [prompt, textbox-prompt, entry, case-indicator];
 }
 
 prompt {
   text-color: @blue;
 }
 
-textbox-prompt-colon {
+textbox-prompt {
   expand: false;
-  str: ":";
+  str: "       ";
   text-color: @text-alt;
 }
 
@@ -100,6 +100,5 @@ button {
 }
 
 button selected {
-
   background-color: @emphasis;
 }
