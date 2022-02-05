@@ -135,8 +135,7 @@ in
       discord
       # Development.
       git
-      (callPackage ./pkgs/vscode.nix { })
-      atom
+      vscode
       cachix
       meld
       python3
