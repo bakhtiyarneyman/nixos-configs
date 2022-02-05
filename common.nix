@@ -161,6 +161,7 @@ in
       text = ''
         [Default Applications]
         video/mp4=vlc.desktop;
+        video/mkv=vlc.desktop;
       '';
     };
   };
