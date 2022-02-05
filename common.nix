@@ -105,7 +105,7 @@ in
       fd # Better find.
       du-dust # Better du.
       sd # Better sed.
-      (callPackage ./pkgs/cryptomator.nix { }) # TODO(bakhtiyar): remove when version 1.6.4 get upstreamed.
+      cryfs
       # UI.
       alacritty
       prettyLock
