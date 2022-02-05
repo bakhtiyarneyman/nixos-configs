@@ -10,7 +10,8 @@ let
   dimToLockSecs = 15;
   lockToScreenOffSecs = 10;
   dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; };
-in {
+in
+{
   boot = {
     tmpOnTmpfs = true;
     kernel.sysctl = {
@@ -35,7 +36,7 @@ in {
   # };
 
   console = {
-    packages =  with pkgs; [
+    packages = with pkgs; [
       powerline-fonts
     ];
     font = "ter-powerline-v32n";
@@ -70,10 +71,10 @@ in {
       description = "Bakhtiyar Neyman";
       isNormalUser = true;
       extraGroups = [
-          "wheel" # Enable ‘sudo’ for the user.
-          "adbusers"
-          "video" # Allow changing brightness via `light`.
-          "networkmanager"
+        "wheel" # Enable ‘sudo’ for the user.
+        "adbusers"
+        "video" # Allow changing brightness via `light`.
+        "networkmanager"
       ];
       hashedPassword = "$6$.9aOljbRDW00nl$vRfj6ZVwgWXLTw2Ti/I55ov9nNl6iQAqAuauCiVhoRWIv5txKFIb49FKY0X3dgVqE61rPOqBh8qQSk61P2lZI1";
     };
@@ -134,7 +135,7 @@ in {
       discord
       # Development.
       git
-      (callPackage ./pkgs/vscode.nix {})
+      (callPackage ./pkgs/vscode.nix { })
       atom
       cachix
       meld
@@ -175,7 +176,10 @@ in {
         # SSH.
         22
         # Chromecast ports.
-        8008 8009 8010 8443
+        8008
+        8009
+        8010
+        8443
       ];
       allowedUDPPortRanges = [
         # Chromecast ports.
@@ -203,7 +207,7 @@ in {
       driSupport32Bit = true;
       extraPackages = with pkgs; [
         intel-media-driver # LIBVA_DRIVER_NAME=iHD
-        vaapiIntel         # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
+        vaapiIntel # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
         vaapiVdpau
         libvdpau-va-gl
       ];
@@ -235,8 +239,9 @@ in {
         sessionCommands =
           with builtins;
           let screenOffTime = toString
-                (idleToDimSecs + dimToLockSecs + lockToScreenOffSecs);
-          in ''
+            (idleToDimSecs + dimToLockSecs + lockToScreenOffSecs);
+          in
+          ''
             ${pkgs.feh}/bin/feh --bg-fill ${./wallpaper.jpg}
             ${pkgs.xorg.xset}/bin/xset s ${toString idleToDimSecs} ${toString (dimToLockSecs + 5)}
             ${pkgs.xorg.xset}/bin/xset dpms ${screenOffTime} ${screenOffTime} ${screenOffTime}
@@ -274,7 +279,7 @@ in {
     picom = {
       enable = true;
       fade = true;
-      fadeSteps = [0.2 0.2];
+      fadeSteps = [ 0.2 0.2 ];
       fadeDelta = 30;
       shadow = false;
       # Creates artifacts on scrolling, but vSync doesn't work otherwise, which leads to tearing.
@@ -304,15 +309,15 @@ in {
       media-session.config.bluez-monitor.rules = [
         {
           # Matches all cards
-          matches = [ { "device.name" = "~bluez_card.*"; } ];
+          matches = [{ "device.name" = "~bluez_card.*"; }];
           actions = {
             "update-props" = {
               "bluez5.auto-connect" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
               "bluez5.enable-sbc-xq" = true;
-	            "bluez5.enable-msbc" = true;
-	            "bluez5.enable-hw-volume" = true;
-	            "bluez5.enable-faststream" = true;
-	            "bluez5.enable-a2dp-duplex" = true;
+              "bluez5.enable-msbc" = true;
+              "bluez5.enable-hw-volume" = true;
+              "bluez5.enable-faststream" = true;
+              "bluez5.enable-a2dp-duplex" = true;
             };
           };
         }
@@ -372,40 +377,44 @@ in {
         mouse_middle_click = "close_all";
         mouse_right_click = "close_current";
         icon_path =
-          let categories = [
-                "actions"
-                "places"
-                "animations"
-                "devices"
-                "status"
-                "apps"
-                "emblems"
-                "mimetypes"
-                "categories"
-                "emotes"
-                "panel"
-              ];
-              prefix = x: "${pkgs.kora-icon-theme}/share/icons/kora/${x}";
-          in lib.concatStringsSep ":"
-              (map prefix
-                (map (category: "${category}/scalable") categories ++ [ "panel/24" ]));
+          let
+            categories = [
+              "actions"
+              "places"
+              "animations"
+              "devices"
+              "status"
+              "apps"
+              "emblems"
+              "mimetypes"
+              "categories"
+              "emotes"
+              "panel"
+            ];
+            prefix = x: "${pkgs.kora-icon-theme}/share/icons/kora/${x}";
+          in
+          lib.concatStringsSep ":"
+            (map prefix
+              (map (category: "${category}/scalable") categories ++ [ "panel/24" ]));
       };
       experimentalConfig = {
         per_monitor_dpi = "true";
       };
       urgencyConfig =
-        let q = s: ''"${s}"'';
-            urgency = bg: fg: timeout: {
-              background = q bg;
-              foreground = q fg;
-              frame_color = q fg;
-              timeout = toString timeout;
-            };
-        in {
-        low = urgency "#282c34" "#abb2bf" 10;
-        normal = urgency "#61afef" "#282c34" 30;
-        critical = urgency "#ff0000" "#ffffff" 0;
-      };
+        let
+          q = s: ''"${s}"'';
+          urgency = bg: fg: timeout: {
+            background = q bg;
+            foreground = q fg;
+            frame_color = q fg;
+            timeout = toString timeout;
+          };
+        in
+        {
+          low = urgency "#282c34" "#abb2bf" 10;
+          normal = urgency "#61afef" "#282c34" 30;
+          critical = urgency "#ff0000" "#ffffff" 0;
+        };
     };
 
     gnome = {
@@ -425,7 +434,8 @@ in {
         let
           light = "${pkgs.light}/bin/light";
           mkBinding = keys: events: command: { inherit keys events command; };
-        in [
+        in
+        [
           (mkBinding [ 224 ] [ "key" "rep" ] "${light} -T 0.707")
           (mkBinding [ 225 ] [ "key" "rep" ] "${light} -T 1.414")
         ];
@@ -453,7 +463,7 @@ in {
 
     clipmenu.enable = true;
     fwupd.enable = true;
-    onedrive.enable=true;
+    onedrive.enable = true;
   };
 
   programs = {
@@ -462,9 +472,15 @@ in {
       interactiveShellInit =
         with pkgs;
         let sourcePluginLoader = p:
-              "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
-        in lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
-          "peco" "themeAgnoster" "done" "humantime" "z" "getOpts"
+          "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
+        in
+        lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
+          "peco"
+          "themeAgnoster"
+          "done"
+          "humantime"
+          "z"
+          "getOpts"
         ] + ''
 
           function fish_user_key_bindings
@@ -505,9 +521,10 @@ in {
     gnome-disks.enable = true; # GUI USB disk mounting.
     light.enable = true; # Brightness management.
     nm-applet.enable = true; # Wi-fi management.
-    xss-lock = { # Lock on lid action.
+    xss-lock = {
+      # Lock on lid action.
       enable = true;
-      extraOptions = ["--notifier=${dim-screen}/bin/dim-screen"];
+      extraOptions = [ "--notifier=${dim-screen}/bin/dim-screen" ];
       lockerCommand = "${prettyLock}/bin/prettyLock";
     };
     adb.enable = true;
@@ -533,7 +550,8 @@ in {
       serviceConfig.ExecStart = [ cmd ];
     };
 
-    in {
+    in
+    {
       blueman = autostart "${pkgs.blueman}/bin/blueman-applet";
       # USB disk automounting.
       udiskie = autostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
@@ -575,9 +593,9 @@ in {
     fontDir.enable = true;
     enableGhostscriptFonts = true;
     fontconfig.defaultFonts = {
-      monospace = ["Fira Mono"];
-      sansSerif = ["Fira Sans"];
-      serif = ["Lora"];
+      monospace = [ "Fira Mono" ];
+      sansSerif = [ "Fira Sans" ];
+      serif = [ "Lora" ];
     };
     fonts = with pkgs; [
       anonymousPro
@@ -600,7 +618,7 @@ in {
     ];
   };
 
-  swapDevices = [ { label = "swap"; } ];
+  swapDevices = [{ label = "swap"; }];
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
 }
