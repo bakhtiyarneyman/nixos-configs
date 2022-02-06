@@ -1,13 +1,12 @@
 { stdenv, lib, fetchFromGitHub }:
 stdenv.mkDerivation rec {
   name = "theme-agnoster";
-  version = "master";
 
   src = fetchFromGitHub {
-    owner = "niobium0";
+    owner = "bakhtiyarneyman";
     repo = name;
-    rev = "${version}";
-    sha256 = "1i0zmq9j8fhl16w90r0lwrzf6k441xpkdyg7cwygh7vavm2wndzs";
+    rev = "5fa01f12329cc45a15364af33a7f11ac0aab843a";
+    sha256 = "1n282fahrixaz2zl7nvv9ag41asm8gldnzxhg0pbx2lf9a2grqn5";
   };
 
   installPhase = import ./installPhase.nix;
