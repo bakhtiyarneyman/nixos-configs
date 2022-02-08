@@ -1,8 +1,9 @@
 
-{pkgs, dimSeconds ? 10, dimStepSeconds ? 0.05, minBrightnessPercents ? 1}:
+{pkgs, dimSeconds ? 10, dimStepSeconds ? 0.1, minBrightnessPercents ? 1}:
 let
   light = "${pkgs.light}/bin/light";
   fish = "${pkgs.fish}/bin/fish";
+  dunstify = "${pkgs.dunst}/bin/dunstify";
   dimSeconds' = builtins.toString dimSeconds;
   dimStepSeconds' = builtins.toString dimStepSeconds;
   minBrightnessPercents' = builtins.toString minBrightnessPercents;
@@ -29,12 +30,18 @@ in pkgs.writeTextFile {
     os.system('${light} -O') # Save state.
     brightness = float(os.popen('${light}').read()) # Get state.
     step = brightness / steps
-    while brightness > ${minBrightnessPercents'}:
+    ARBITRARY_NOTIFICATION_ID = 3873
+    timeToLock = ${dimSeconds'}
+    while timeToLock > 0:
       os.system("${light} -S {}".format(brightness))
+      os.system("${dunstify} --appname dim-screen --replace {} 'Screen will be locked in {:.0f} seconds'".format(ARBITRARY_NOTIFICATION_ID, timeToLock))
+
       brightness -= step
+      timeToLock -= ${dimStepSeconds'}
       time.sleep(${dimStepSeconds'})
 
     os.system('${light} -S {}'.format(${minBrightnessPercents'}))
+    os.system("${dunstify} --close {}".format(ARBITRARY_NOTIFICATION_ID))
 
     if os.path.exists("${battery}") and open("${battery}").read() == "Discharging\n":
       print("Battery is discharging, invoke suspend")
