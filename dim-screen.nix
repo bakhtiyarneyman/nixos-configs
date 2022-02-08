@@ -20,6 +20,7 @@ in pkgs.writeTextFile {
     def restore(sig, frame):
       print("Restoring brightness")
       os.system("${light} -I")
+      os.system("${dunstify} --close {}".format(ARBITRARY_NOTIFICATION_ID))
       exit(0)
 
     signal.signal(signal.SIGTERM, restore)
