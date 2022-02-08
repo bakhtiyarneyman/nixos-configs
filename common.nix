@@ -180,6 +180,8 @@ in
         8009
         8010
         8443
+        # Development web server.
+        1234
       ];
       allowedUDPPortRanges = [
         # Chromecast ports.
