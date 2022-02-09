@@ -475,8 +475,11 @@ in
         with pkgs;
         let sourcePluginLoader = p:
           "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
-        in
-        lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
+        in ''
+           set -g color_status_nonzero_bg brred
+           set -g color_status_nonzero_str white
+           set -g color_status_nonzero_indicator 💀
+        '' + lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
           "peco"
           "themeAgnoster"
           "done"
