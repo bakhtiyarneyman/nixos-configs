@@ -14,6 +14,7 @@ stdenv.mkDerivation rec {
 
     mkdir -p $out/share/themes
     cp --recursive Adwaita-One-Dark $out/share/themes
+    patch $out/share/themes/Adwaita-One-Dark/gtk-3.0/gtk-dark.css ${./adwaita-one-dark.patch}
 
     runHook postInstall
   '';
