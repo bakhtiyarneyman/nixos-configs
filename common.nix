@@ -115,7 +115,9 @@ in
       libnotify # Notification service API.
       xmobar
       krusader
+      # Themes.
       breeze-icons
+      (callPackage ./pkgs/adwaita-one-dark.nix {})
       # Hardware.
       psmisc
       pciutils
@@ -157,12 +159,22 @@ in
         pulseaudioSupport = true;
       })
     ];
-    etc."xdg/mimeapps.list" = {
-      text = ''
-        [Default Applications]
-        video/mp4=vlc.desktop;
-        video/mkv=vlc.desktop;
-      '';
+    etc = {
+      "xdg/mimeapps.list" = {
+        text = ''
+          [Default Applications]
+          video/mp4=vlc.desktop;
+          video/mkv=vlc.desktop;
+        '';
+      };
+      "xdg/gtk-3.0/settings.ini" = {
+        text = ''
+          [Settings]
+          gtk-theme-name = Adwaita-One-Dark
+          gtk-application-prefer-dark-theme = true
+          gtk-icon-theme-name = kora
+        '';
+      };
     };
   };
 
