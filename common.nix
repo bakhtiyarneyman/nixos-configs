@@ -581,12 +581,12 @@ in
 
   virtualisation.libvirtd.enable = true;
 
-  system = {
-    autoUpgrade = {
-      allowReboot = false;
-      enable = true;
-      flake = "/etc/nixos";
-    };
+  system.autoUpgrade = {
+    allowReboot = false;
+    enable = true;
+    flake = "/etc/nixos";
+    flags = [ "--update-input" "nixpkgs" "--update-input" "nixpkgs-unstable" "--commit-lock-file" ];
+    randomizedDelaySec = "45min";
   };
 
   nixpkgs.config = {
