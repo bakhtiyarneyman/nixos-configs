@@ -838,7 +838,29 @@
 <   box-shadow: none;
 ---
 >   background-color: @background;
-2854,2862d2419
+2835a2402
+>   margin: 1px;
+2837,2839c2404,2406
+<   border-color: #121417;
+<   border-width: 1px;
+<   background-color: #1d2026;
+---
+>   border-color: @blue;
+>   border-style: none;
+>   border-width: 3px;
+2842,2846c2409
+<   border-color: #16191d;
+<   background-color: #22252c;
+< }
+< notebook > header tabs {
+<   margin: -1px;
+---
+>   border-color: @magenta;
+2850,2861c2413
+< }
+< notebook > header.top > tabs {
+<   margin-bottom: -2px;
+< }
 < notebook > header.top > tabs > tab:hover {
 <   box-shadow: inset 0 -4px #121417;
 < }
@@ -847,8 +869,12 @@
 < }
 < notebook > header.top > tabs > tab:checked {
 <   box-shadow: inset 0 -4px #4D78CC;
+---
+>   padding-bottom: 5px;
+2866,2903c2418,2430
+< notebook > header.bottom > tabs {
+<   margin-top: -2px;
 < }
-2869,2877d2425
 < notebook > header.bottom > tabs > tab:hover {
 <   box-shadow: inset 0 4px #121417;
 < }
@@ -858,7 +884,12 @@
 < notebook > header.bottom > tabs > tab:checked {
 <   box-shadow: inset 0 4px #4D78CC;
 < }
-2884,2892d2431
+< notebook > header.left {
+<   border-right-style: solid;
+< }
+< notebook > header.left > tabs {
+<   margin-right: -2px;
+< }
 < notebook > header.left > tabs > tab:hover {
 <   box-shadow: inset -4px 0 #121417;
 < }
@@ -868,551 +899,613 @@
 < notebook > header.left > tabs > tab:checked {
 <   box-shadow: inset -4px 0 #4D78CC;
 < }
-2899,2907d2437
+< notebook > header.right {
+<   border-left-style: solid;
+< }
+< notebook > header.right > tabs {
+<   margin-left: -2px;
+< }
 < notebook > header.right > tabs > tab:hover {
 <   box-shadow: inset 4px 0 #121417;
 < }
 < notebook > header.right > tabs > tab:backdrop {
 <   box-shadow: none;
-< }
+---
+> 
+> 
+> notebook > header > tabs > tab {
+>   min-height: 30px;
+>   min-width: 30px;
+>   padding: 3px 12px;
+>   outline-offset: -5px;
+>   font-weight: normal;
+>   border-width: 3px;
+>   border-style: none;
+>   border-bottom-style: solid;
+>   margin-bottom: 3px;
+>   border-color: @blue;
+2905,2906c2432,2433
 < notebook > header.right > tabs > tab:checked {
 <   box-shadow: inset 4px 0 #4D78CC;
-< }
+---
+> notebook > header > tabs > tab:hover {
+>   border-color: lighter(@blue);
+2908,2909c2435,2436
+< notebook > header.top > tabs > arrow {
+<   border-top-style: none;
+---
+> notebook > header > tabs > tab:checked {
+>   border-color: darker(@blue);
+2911,2912c2438,2442
+< notebook > header.bottom > tabs > arrow {
+<   border-bottom-style: none;
+---
+> /* notebook > header > tabs > tab:active:hover {
+>   border-color: darker(@blue);
+> } */
+> notebook > header > tabs > tab:backdrop {
+>   border-color: @magenta;
 2956d2485
 <   box-shadow: none;
-2962,2964d2490
+2962,3006d2490
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-2971c2497
+< }
+< notebook > header tab {
+<   min-height: 30px;
+<   min-width: 30px;
+<   padding: 3px 12px;
+<   outline-offset: -5px;
 <   color: #EEEEEC;
----
->   color: @foreground;
-2977c2503
+<   font-weight: normal;
+<   border-width: 1px;
+<   border-color: transparent;
+< }
+< notebook > header tab:hover {
 <   color: #EEEEEC;
----
->   color: @foreground;
-2992c2518
+<   background-color: #1f2228;
+< }
+< notebook > header tab:hover.reorderable-page {
+<   border-color: rgba(18, 20, 23, 0.3);
+<   background-color: rgba(40, 44, 52, 0.2);
+< }
+< notebook > header tab:backdrop {
+<   color: #63666b;
+< }
+< notebook > header tab:backdrop.reorderable-page {
+<   border-color: transparent;
+<   background-color: transparent;
+< }
+< notebook > header tab:checked {
 <   color: #EEEEEC;
----
->   color: @foreground;
-3006c2532
+< }
+< notebook > header tab:checked.reorderable-page {
+<   border-color: rgba(18, 20, 23, 0.5);
+<   background-color: rgba(40, 44, 52, 0.5);
+< }
+< notebook > header tab:checked.reorderable-page:hover {
+<   background-color: rgba(40, 44, 52, 0.7);
+< }
+< notebook > header tab:backdrop:checked {
+<   color: #8b8d90;
+< }
+< notebook > header tab:backdrop:checked.reorderable-page {
+<   border-color: #16191d;
 <   background-color: #282C34;
----
->   background-color: @background;
-3155c2681
+3155c2639
 <   background-color: #EEEEEC;
 ---
 >   background-color: @foreground;
-3161c2687
+3161c2645
 <   background-color: #EEEEEC;
 ---
 >   background-color: @foreground;
-3202,3204d2727
+3202,3204d2685
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3211,3213d2733
+3211,3213d2691
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3220,3222d2739
+3220,3222d2697
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3229,3231d2745
+3229,3231d2703
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3238,3240d2751
+3238,3240d2709
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3247,3249d2757
+3247,3249d2715
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3277c2785
+3277c2743
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3279d2786
+3279d2744
 <   text-shadow: 0 1px rgba(0, 0, 0, 0.1);
-3286d2792
+3286d2750
 <   text-shadow: 0 1px rgba(29, 53, 99, 0.5), 0 0 2px rgba(255, 255, 255, 0.6);
-3292d2797
+3292d2755
 <   text-shadow: none;
-3298d2802
+3298d2760
 <   text-shadow: none;
-3318c2822
+3318c2780
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3323,3324c2827
+3323,3324c2785
 <   background-image: linear-gradient(to bottom, #2f333d 20%, #282c34 90%);
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.07);
 ---
 >   background-image: linear-gradient(to bottom, #2f333d 20%, @background 90%);
-3330c2833
+3330c2791
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3334d2836
+3334d2794
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.07);
-3343,3345d2844
+3343,3345d2802
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-3351,3354c2850
+3351,3354c2808
 <   background-image: image(#282C34);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 ---
 >   background-image: image(@background);
-3363,3365d2858
+3363,3365d2816
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-3380d2872
+3380d2830
 <   box-shadow: none;
-3383d2874
+3383d2832
 <   -gtk-icon-shadow: none;
-3396d2886
+3396d2844
 <   box-shadow: none;
-3399d2888
+3399d2846
 <   -gtk-icon-shadow: none;
-3412d2900
+3412d2858
 <   box-shadow: none;
-3415d2902
+3415d2860
 <   -gtk-icon-shadow: none;
-3428d2914
+3428d2872
 <   box-shadow: none;
-3431d2916
+3431d2874
 <   -gtk-icon-shadow: none;
-3439c2924
+3439c2882
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3444d2928
+3444d2886
 <   box-shadow: none;
-3447d2930
+3447d2888
 <   -gtk-icon-shadow: none;
-3455c2938
+3455c2896
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3460d2942
+3460d2900
 <   box-shadow: none;
-3463d2944
+3463d2902
 <   -gtk-icon-shadow: none;
-3471c2952
+3471c2910
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3476d2956
+3476d2914
 <   box-shadow: none;
-3479d2958
+3479d2916
 <   -gtk-icon-shadow: none;
-3492d2970
+3492d2928
 <   box-shadow: none;
-3495d2972
+3495d2930
 <   -gtk-icon-shadow: none;
-3534c3011
+3534c2969
 <   background-image: linear-gradient(to bottom, #333842 20%, #282C34 90%);
 ---
 >   background-image: linear-gradient(to bottom, #333842 20%, @background 90%);
-3536,3537c3013
+3536,3537c2971
 <   box-shadow: 0 1px rgba(0, 0, 0, 0.05);
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3543,3546d3018
+3543,3546d2976
 < check:active,
 < radio:active {
 <   box-shadow: inset 0 1px 1px 0px black;
 < }
-3549d3020
+3549d2978
 <   box-shadow: none;
-3554,3556c3025,3026
+3554,3556c2983,2984
 <   background-image: image(#282C34);
 <   box-shadow: none;
 <   color: #EEEEEC;
 ---
 >   background-image: image(@background);
 >   color: @foreground;
-3560d3029
+3560d2987
 <   box-shadow: none;
-3568,3569c3037
+3568,3569c2995
 <   box-shadow: 0 1px rgba(0, 0, 0, 0.05);
 <   color: #FFFFFF;
 ---
 >   color: @background;
-3575,3578d3042
+3575,3578d3000
 < check:checked:active,
 < radio:checked:active {
 <   box-shadow: inset 0 1px 1px 0px black;
 < }
-3581d3044
+3581d3002
 <   box-shadow: none;
-3587d3049
+3587d3007
 <   box-shadow: none;
-3592d3053
+3592d3011
 <   box-shadow: none;
-3600d3060
+3600d3018
 <   box-shadow: 0 1px rgba(0, 0, 0, 0.05);
-3607,3610d3066
+3607,3610d3024
 < check:indeterminate:active,
 < radio:indeterminate:active {
 <   box-shadow: inset 0 1px 1px 0px black;
 < }
-3613d3068
+3613d3026
 <   box-shadow: none;
-3619d3073
+3619d3031
 <   box-shadow: none;
-3624d3077
+3624d3035
 <   box-shadow: none;
-3633c3086
+3633c3044
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3638,3640d3090
+3638,3640d3048
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.1);
 <   text-shadow: 0 1px black;
 <   -gtk-icon-shadow: 0 1px black;
-3645c3095
+3645c3053
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3650,3652d3099
+3650,3652d3057
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.1);
 <   text-shadow: 0 1px black;
 <   -gtk-icon-shadow: 0 1px black;
-3662,3664d3108
+3662,3664d3066
 <   box-shadow: none;
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3669c3113
+3669c3071
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3674,3676d3117
+3674,3676d3075
 <   box-shadow: none;
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3685,3687d3125
+3685,3687d3083
 <   box-shadow: none;
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3707,3708d3144
+3707,3708d3102
 <   box-shadow: none;
 <   -gtk-icon-shadow: none;
-3875c3311
+3875c3269
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3881d3316
+3881d3274
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.07);
-3888c3323
+3888c3281
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3891,3892c3326
+3891,3892c3284
 <   background-image: linear-gradient(to bottom, #282C34 20%, #1f2228 90%);
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.07);
 ---
 >   background-image: linear-gradient(to bottom, @background 20%, #1f2228 90%);
-3901,3903d3334
+3901,3903d3292
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-3909,3912c3340
+3909,3912c3298
 <   background-image: image(#282C34);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 ---
 >   background-image: image(@background);
-3918,3920d3345
+3918,3920d3303
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-3926c3351
+3926c3309
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3931,3933d3355
+3931,3933d3313
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.1);
 <   text-shadow: 0 1px black;
 <   -gtk-icon-shadow: 0 1px black;
-3944,3946d3365
+3944,3946d3323
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.1);
 <   text-shadow: 0 1px black;
 <   -gtk-icon-shadow: 0 1px black;
-3956,3958d3374
+3956,3958d3332
 <   box-shadow: none;
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3968,3970d3383
+3968,3970d3341
 <   box-shadow: none;
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-3974c3387
+3974c3345
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-3979,3981d3391
+3979,3981d3349
 <   box-shadow: none;
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-4049d3458
+4049d3416
 <   box-shadow: none;
-4066d3474
+4066d3432
 <   box-shadow: none;
-4083d3490
+4083d3448
 <   box-shadow: none;
-4100d3506
+4100d3464
 <   box-shadow: none;
-4117d3522
+4117d3480
 <   box-shadow: none;
-4134d3538
+4134d3496
 <   box-shadow: none;
-4151d3554
+4151d3512
 <   box-shadow: none;
-4168d3570
+4168d3528
 <   box-shadow: none;
-4185d3586
+4185d3544
 <   box-shadow: none;
-4202d3602
+4202d3560
 <   box-shadow: none;
-4219d3618
+4219d3576
 <   box-shadow: none;
-4236d3634
+4236d3592
 <   box-shadow: none;
-4253d3650
+4253d3608
 <   box-shadow: none;
-4270d3666
+4270d3624
 <   box-shadow: none;
-4287d3682
+4287d3640
 <   box-shadow: none;
-4304d3698
+4304d3656
 <   box-shadow: none;
-4321d3714
+4321d3672
 <   box-shadow: none;
-4338d3730
+4338d3688
 <   box-shadow: none;
-4355d3746
+4355d3704
 <   box-shadow: none;
-4372d3762
+4372d3720
 <   box-shadow: none;
-4389d3778
+4389d3736
 <   box-shadow: none;
-4406d3794
+4406d3752
 <   box-shadow: none;
-4423d3810
+4423d3768
 <   box-shadow: none;
-4440d3826
+4440d3784
 <   box-shadow: none;
-4550d3935
+4550d3893
 <   box-shadow: none;
-4581d3965
+4581d3923
 <   box-shadow: none;
-4618d4001
+4618d3959
 <   box-shadow: inset 0 0 0 1px rgba(77, 120, 204, 0);
-4624d4006
+4624d3964
 <   box-shadow: none;
-4663c4045
+4663c4003
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-4681d4062
+4681d4020
 <   box-shadow: none;
-4714d4094
+4714d4052
 <   box-shadow: none;
-4723d4102
+4723d4060
 <   box-shadow: none;
-4732d4110
+4732d4068
 <   box-shadow: none;
-4741d4118
+4741d4076
 <   box-shadow: none;
-4750d4126
+4750d4084
 <   box-shadow: none;
-4759d4134
+4759d4092
 <   box-shadow: none;
-4768d4142
+4768d4100
 <   box-shadow: none;
-4777d4150
+4777d4108
 <   box-shadow: none;
-4828,4830d4200
+4828,4830d4158
 < row.activatable:active {
 <   box-shadow: inset 0 2px 2px -2px rgba(0, 0, 0, 0.2);
 < }
-4834,4836d4203
+4834,4836d4161
 < row.activatable:selected:active {
 <   box-shadow: inset 0 2px 3px -1px rgba(0, 0, 0, 0.5);
 < }
-4841c4208
+4841c4166
 <   background-color: #4D78CC;
 ---
 >   background-color: #c678dd;
-4908c4275
+4908c4233
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-4936c4303
+4936c4261
 <   background-color: #282C34;
 ---
 >   background-color: @background;
-4969c4336
+4969c4294
 <   border-bottom: 1px solid #282C34;
 ---
 >   border-bottom: 1px solid @background;
-4973d4339
+4973d4297
 <   box-shadow: none;
-5084,5086d4449
+5084,5086d4407
 < placessidebar row:selected:active {
 <   box-shadow: none;
 < }
-5098d4460
+5098d4418
 <   box-shadow: inset 0 1px #4E9A06, inset 0 -1px #4E9A06;
-5142c4504
+5142c4462
 <   background-color: #282C34;
 ---
 >   background-color: @background;
-5147c4509
+5147c4467
 <   background-color: #282C34;
 ---
 >   background-color: @background;
-5192,5194d4553
+5192,5194d4511
 < infobar.info, infobar.question, infobar.warning, infobar.error {
 <   text-shadow: none;
 < }
-5200,5203c4559
+5200,5203c4517
 <   color: #EEEEEC;
 < }
 < infobar.info:backdrop, infobar.question:backdrop, infobar.warning:backdrop, infobar.error:backdrop {
 <   text-shadow: none;
 ---
 >   color: @foreground;
-5206c4562
+5206c4520
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-5210c4566
+5210c4524
 <   background-image: linear-gradient(to top, #262a31 2px, #282C34);
 ---
 >   background-image: linear-gradient(to top, #262a31 2px, @background);
-5213d4568
+5213d4526
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
-5216c4571
+5216c4529
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-5223d4577
+5223d4535
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
-5226c4580
+5226c4538
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-5230,5232d4583
+5230,5232d4541
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
-5238,5240d4588
+5238,5240d4546
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-5245,5248c4593
+5245,5248c4551
 <   background-image: image(#282C34);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 ---
 >   background-image: image(@background);
-5255,5257d4599
+5255,5257d4557
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
-5261c4603
+5261c4561
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-5277,5278d4618
+5277,5278d4576
 <   box-shadow: none;
 <   text-shadow: 0 1px black;
-5356,5358d4695
+5356,5358d4653
 < colorswatch:drop(active) {
 <   box-shadow: none;
 < }
-5361d4697
+5361d4655
 <   box-shadow: inset 0 0 0 2px #121417, inset 0 0 0 1px #4E9A06;
-5365d4700
+5365d4658
 <   box-shadow: inset 0 0 0 2px #121417, inset 0 0 0 1px #4E9A06;
-5370,5372d4704
+5370,5372d4662
 < colorswatch overlay:hover {
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.4), inset 0 -1px rgba(0, 0, 0, 0.2);
 < }
-5375d4706
+5375d4664
 <   box-shadow: none;
-5384c4715
+5384c4673
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-5388c4719
+5388c4677
 <   background-image: linear-gradient(to top, #262a31 2px, #282C34);
 ---
 >   background-image: linear-gradient(to top, #262a31 2px, @background);
-5391d4721
+5391d4679
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
-5394c4724
+5394c4682
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-5401d4730
+5401d4688
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.02), 0 1px 2px rgba(0, 0, 0, 0.07);
-5406,5409c4735
+5406,5409c4693
 <   background-image: image(#282C34);
 <   text-shadow: none;
 <   -gtk-icon-shadow: none;
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 ---
 >   background-image: image(@background);
-5416d4741
+5416d4699
 <   box-shadow: none;
-5467d4791
+5467d4749
 <   box-shadow: none;
-5476,5478d4799
+5476,5478d4757
 < .popup decoration {
 <   box-shadow: none;
 < }
-5487d4807
+5487d4765
 <   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.65);
-5491d4810
+5491d4768
 <   box-shadow: none;
-5495d4813
+5495d4771
 <   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.65);
-5503d4820
+5503d4778
 <   box-shadow: inset 0 0 0 3px #21252b, inset 0 1px rgba(238, 238, 236, 0.07);
-5505,5508d4821
+5505,5508d4779
 < .solid-csd decoration:backdrop {
 <   box-shadow: inset 0 0 0 3px #282C34, inset 0 1px rgba(238, 238, 236, 0.07);
 < }
 < 
-5521d4833
+5521d4791
 <   -gtk-icon-shadow: none;
-5535d4846
+5535d4804
 <   -gtk-icon-shadow: none;
-5609d4919
+5609d4877
 <   box-shadow: none;
-5657c4967
+5657c4925
 <   color: #EEEEEC;
 ---
 >   color: @foreground;
-5662d4971
+5662d4929
 <   box-shadow: inset 0 -3px #181b1f;
-5674d4982
+5674d4940
 <   box-shadow: inset 0 0 0 1px #4E9A06;
-5689,5701d4996
+5689,5701d4954
 < /*************
 <  * App Icons *
 <  *************/
@@ -1426,32 +1519,32 @@
 <   -gtk-icon-shadow: 0 1px 12px rgba(0, 0, 0, 0.05), 0 -1px rgba(0, 0, 0, 0.05), 1px 0 rgba(0, 0, 0, 0.1), 0 1px rgba(0, 0, 0, 0.3), -1px 0 rgba(0, 0, 0, 0.1);
 < }
 < 
-5724,5725d5018
+5724,5725d4976
 <   box-shadow: none;
 <   text-shadow: none;
-5781c5074
+5781c5032
 < @define-color theme_fg_color #EEEEEC;
 ---
 > @define-color theme_fg_color @foreground;
-5787c5080
+5787c5038
 < @define-color theme_bg_color #282C34;
 ---
 > @define-color theme_bg_color @background;
-5814c5107
+5814c5065
 < @define-color theme_unfocused_bg_color #282C34;
 ---
 > @define-color theme_unfocused_bg_color @background;
-5841c5134
+5841c5092
 < @define-color wm_title shade(#EEEEEC, 1.8);
 ---
 > @define-color wm_title shade(@foreground, 1.8);
-5845,5846c5138,5139
+5845,5846c5096,5097
 < @define-color wm_bg_a shade(#282C34, 1.2);
 < @define-color wm_bg_b #282C34;
 ---
 > @define-color wm_bg_a shade(@background, 1.2);
 > @define-color wm_bg_b @background;
-5849,5853c5142,5146
+5849,5853c5100,5104
 < @define-color wm_button_hover_color_a shade(#282C34, 1.3);
 < @define-color wm_button_hover_color_b #282C34;
 < @define-color wm_button_active_color_a shade(#282C34, 0.85);
@@ -1463,49 +1556,49 @@
 > @define-color wm_button_active_color_a shade(@background, 0.85);
 > @define-color wm_button_active_color_b shade(@background, 0.89);
 > @define-color wm_button_active_color_c shade(@background, 0.9);
-5861d5153
+5861d5111
 <   text-shadow: none;
-5877c5169
+5877c5127
 <   background-color: alpha(#282C34, 0.5);
 ---
 >   background-color: alpha(@background, 0.5);
-5890d5181
+5890d5139
 <   text-shadow: none;
-6088d5378
+6088d5336
 <   box-shadow: none;
-6188d5477
+6188d5435
 <   box-shadow: none;
-6204c5493
+6204c5451
 <   background-image: image(lighter(#282C34));
 ---
 >   background-image: image(lighter(@background));
-6213c5502
+6213c5460
 <   background-image: image(#282C34);
 ---
 >   background-image: image(@background);
-6216c5505
+6216c5463
 <   background-image: linear-gradient(to top, shade(alpha(#282C34, 0.7), 0.99) 2px, alpha(#282C34, 0.7));
 ---
 >   background-image: linear-gradient(to top, shade(alpha(@background, 0.7), 0.99) 2px, alpha(@background, 0.7));
-6225c5514
+6225c5472
 <   background-image: image(#282C34);
 ---
 >   background-image: image(@background);
-6276c5565
+6276c5523
 <   background-color: mix(#282C34, #21252B, 0.5);
 ---
 >   background-color: mix(@background, #21252B, 0.5);
-6279c5568
+6279c5526
 <   background-color: mix(#EEEEEC, #21252B, 0.95);
 ---
 >   background-color: mix(@foreground, #21252B, 0.95);
-6285c5574
+6285c5532
 <   background-color: mix(#EEEEEC, #21252B, 0.95);
 ---
 >   background-color: mix(@foreground, #21252B, 0.95);
-6318d5606
+6318d5564
 <   box-shadow: none;
-6321,6329d5608
+6321,6329d5566
 < window.csd.unified:not(.solid-csd):not(.fullscreen) headerbar {
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0);
 < }
@@ -1515,29 +1608,57 @@
 < window.csd.unified:not(.solid-csd):not(.fullscreen) > decoration-overlay {
 <   box-shadow: inset 0 1px rgba(255, 255, 255, 0.065);
 < }
-6366,6369d5644
+6366,6369d5602
 <   box-shadow: inset -1px 0 black;
 < }
 < tabbar scrolledwindow.pinned tabbox:dir(ltr):backdrop {
 <   box-shadow: inset -1px 0 #16191d;
-6373,6376d5647
+6373,6376d5605
 <   box-shadow: inset 1px 0 black;
 < }
 < tabbar scrolledwindow.pinned tabbox:dir(rtl):backdrop {
 <   box-shadow: inset 1px 0 #16191d;
-6401c5672
+6394,6396c5623,5625
+<   border-style: solid;
+<   border-color: black;
+<   border-width: 0 1px 0 1px;
+---
+>   border-style: none;
+>   color: @background;
+>   background-color: @blue;
+6398d5626
+<   background-color: #1b1d23;
+6401c5629
 <   background-color: #282c34;
 ---
->   background-color: @background;
-6414c5685
+>   background-color: @darker(@blue);
+6404c5632
+<   background-color: #2f333d;
+---
+>   /* background-color: lighter(@blue); */
+6407c5635
+<   background-color: #21252b;
+---
+>   background-color: lighter(@blue);
+6410,6411c5638
+<   border-color: #16191d;
+<   background-color: #1b1d23;
+---
+>   background-color: @magenta;
+6414c5641
 <   background-color: #282C34;
 ---
->   background-color: @background;
-6475,6477d5745
+>   background-color: darker(@magenta);
+6475,6477d5701
 <   box-shadow: none;
 <   -gtk-icon-shadow: none;
 <   text-shadow: none;
-6484c5752
+6484c5708
 <   background: alpha(#EEEEEC, 0.15);
 ---
 >   background: alpha(@foreground, 0.15);
+6491c5715
+< }
+\ No newline at end of file
+---
+> }
