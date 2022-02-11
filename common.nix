@@ -596,7 +596,7 @@ in
   };
 
   nix = {
-    package = pkgs.nix_2_4;
+    package = pkgs.unstable.nix;
     trustedUsers = [ "root" "bakhtiyar" ];
     gc = {
       automatic = true;
