@@ -3,7 +3,19 @@
 # to /etc/nixos/configuration.nix instead.
 { config, lib, pkgs, boot, ... }:
 {
-  programs.i3status-rust.networkInterface = "eno1";
+  programs.i3status-rust = {
+    networkInterface = "eno1";
+    batteries = [ {
+      device = "keyboard_hidpp_battery_0";
+      name = "";
+    } {
+      device = "mouse_hidpp_battery_1";
+      name = "";
+    } {
+      device = "ups_hiddev1";
+      name = "";
+     } ];
+  };
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
   boot.kernelPackages = pkgs.linuxPackages;

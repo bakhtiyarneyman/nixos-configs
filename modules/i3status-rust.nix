@@ -13,6 +13,22 @@ in {
       default = "eno1";
       description = "An interface from /sys/class/net";
     };
+    batteries = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          device = mkOption {
+            type = types.str;
+          };
+          name = mkOption {
+            type = types.str;
+          };
+        };
+      });
+      default = [ {
+        device = "DisplayDevice";
+        name = "";
+      }];
+    };
     extraConfig = mkOption {
       type = types.str;
       default = "";
@@ -107,19 +123,27 @@ in {
         show_volume_when_muted = true
         headphones_indicator = true
 
-        [[block]]
-        block = "battery"
-        driver = "upower"
-        format = "{percentage} {time}"
-        device = "DisplayDevice"
-        info = 100
-        warning = 50
-        critical = 20
-        good = 101
-        [block.theme_overrides]
-        good_bg = "${black}"
-        good_fg = "${white}"
+        ${
+          let mkBatterySection = battery: ''
+            [[block]]
+            block = "battery"
+            driver = "upower"
+            format = "${battery.name} {percentage} {time}"
+            full_format = "${battery.name}"
+            missing_format = "${battery.name}  "
+            device = "${battery.device}"
+            info = 100
+            warning = 50
+            critical = 20
+            good = 101
+            [block.theme_overrides]
+            good_bg = "${black}"
+            good_fg = "${white}"
 
+
+          '';
+          in lib.concatMapStrings mkBatterySection cfg.batteries
+        }
         # This dumps "us,ru,az".
         # [[block]]
         # block = "keyboard_layout"
