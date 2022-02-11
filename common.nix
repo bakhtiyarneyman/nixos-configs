@@ -565,6 +565,7 @@ in
       requires = [ "graphical-session.target" ];
       after = [ "graphical-session.target" ];
       serviceConfig.ExecStart = [ cmd ];
+      environment."XDG_CONFIG_DIRS" = "/etc/xdg";
     };
 
     in
@@ -575,6 +576,7 @@ in
       signal = autostart "${pkgs.signal-desktop}/bin/signal-desktop";
       telegram = autostart "${pkgs.tdesktop}/bin/telegram-desktop";
       discord = autostart "${pkgs.discord}/bin/discord";
+      nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
     };
 
   virtualisation.libvirtd.enable = true;
