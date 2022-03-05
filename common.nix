@@ -455,6 +455,10 @@ in
         ];
     };
 
+    logind.extraConfig = ''
+      HandlePowerKey=suspend
+    '';
+
     blueman.enable = true; # Bluetooth applet.
     openssh.enable = true;
     # openvpn.servers.nordvpn = {
