@@ -17,7 +17,14 @@
         inherit system;
         specialArgs = { inherit hostName; };
         modules = [
-          ({ config, pkgs, ... }: { nixpkgs.overlays = [ overlay-unstable ]; })
+          ({ config, pkgs, ... }: {
+            nix.registry = {
+              nixpkgs.flake = nixpkgs;
+              nixpkgs-unstable.flake = nixpkgs-unstable;
+            };
+            nixpkgs.overlays = [ overlay-unstable ];
+            system.configurationRevision = self.rev or "dirty";
+          })
           (./hosts/${hostName} + ".nix") # rnix-lsp complains about this.
           ./common.nix
           ./modules/dunst.nix
@@ -25,7 +32,9 @@
         ];
       };
     in {
-      nixosConfigurations.iron = mkSystem "iron";
-      nixosConfigurations.kevlar = mkSystem "kevlar";
+      nixosConfigurations = {
+        iron = mkSystem "iron";
+        kevlar = mkSystem "kevlar";
+      };
     };
 }
