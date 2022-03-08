@@ -585,14 +585,6 @@ in
 
   virtualisation.libvirtd.enable = true;
 
-  system.autoUpgrade = {
-    allowReboot = false;
-    enable = true;
-    flake = "/etc/nixos";
-    flags = [ "--update-input" "nixpkgs" "--update-input" "nixpkgs-unstable" ];
-    randomizedDelaySec = "45min";
-  };
-
   nixpkgs.config = {
     allowUnfree = true;
     android_sdk.accept_license = true;
