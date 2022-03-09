@@ -199,6 +199,7 @@ in
         # Chromecast ports.
         { from = 32768; to = 60999; }
       ];
+      trustedInterfaces = [ "tailscale0" ];
     };
   };
 
@@ -479,6 +480,7 @@ in
       SystemMaxUse=50M
     '';
 
+    tailscale.enable = true;
     clipmenu.enable = true;
     fwupd.enable = true;
     onedrive.enable = true;
