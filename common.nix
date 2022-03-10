@@ -201,6 +201,10 @@ in
       ];
       trustedInterfaces = [ "tailscale0" ];
     };
+    hosts = {
+      "100.65.135.29" = [ "iron-tailscale" ];
+      "100.126.205.61" = [ "kevlar-tailscale" ];
+    };
   };
 
   sound.enable = true;
@@ -461,7 +465,19 @@ in
     '';
 
     blueman.enable = true; # Bluetooth applet.
-    openssh.enable = true;
+    openssh = {
+      enable = true;
+      knownHosts = {
+        iron = {
+          hostNames = [ "iron-tailscale" "100.65.135.29" ];
+          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP9JkARs/riIN3LTQm3pLhOmc9JiWNczDrUL1coQpLDa";
+        };
+        kevlar = {
+          hostNames = [ "kevlar-tailscale" "100.126.205.61" ];
+          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKSyMQogWih9Tk8cpckwxP6CLzJxZqtg+qdFbXYbF9Sc";
+        };
+      };
+    };
     # openvpn.servers.nordvpn = {
     #   config = "config " + ./ca-us13.nordvpn.com.tcp443.ovpn ;
     # };
