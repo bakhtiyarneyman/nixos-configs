@@ -143,6 +143,11 @@ in
       meld
       python3
       rnix-lsp
+      ghc
+      cabal-install
+      haskell-language-server
+      haskellPackages.fourmolu
+      stack
       # Image.
       gimp
       inkscape
