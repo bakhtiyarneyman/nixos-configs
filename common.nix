@@ -133,6 +133,7 @@ in
       skype
       signal-desktop
       tdesktop # Telegram.
+      tutanota-desktop
       zoom-us
       discord
       # Development.
