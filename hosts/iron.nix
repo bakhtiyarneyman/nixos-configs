@@ -49,14 +49,24 @@
       intelBusId = "PCI:0:2:0";
     };
   };
-  services.xserver = {
-    videoDrivers = [ "nvidia" ];
-    xrandrHeads = [
-      { output = "DP-4"; primary = true; }
-      { output = "DP-2"; }
-    ];
-    dpi = 175;
-    displayManager.lightdm.enable = true;
+  services = {
+     cron = {
+      enable = true;
+      mailto = let at = "@"; in "bakhtiyarneyman${at}gmail.com";
+      systemCronJobs = [
+        "0 20 * * Sun bakhtiyar rsync --archive --verbose OneDrive/mezar/ /mnt/storage/backups/mezar/(date +%Y%m%d%H%M%S)"
+      ];
+    };
+
+    xserver = {
+      videoDrivers = [ "nvidia" ];
+      xrandrHeads = [
+        { output = "DP-4"; primary = true; }
+        { output = "DP-2"; }
+      ];
+      dpi = 175;
+      displayManager.lightdm.enable = true;
+    };
   };
 
   virtualisation.docker = {
