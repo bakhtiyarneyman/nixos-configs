@@ -17,21 +17,22 @@
         inherit system;
         specialArgs = { inherit hostName; };
         modules = [
-          ({ config, pkgs, ... }: {
+          {
             nix.registry = {
               nixpkgs.flake = nixpkgs;
               nixpkgs-unstable.flake = nixpkgs-unstable;
             };
             nixpkgs.overlays = [ overlay-unstable ];
             system.configurationRevision = self.rev or "dirty";
-          })
+          }
           (./hosts/${hostName} + ".nix") # rnix-lsp complains about this.
           ./common.nix
           ./modules/dunst.nix
           ./modules/i3status-rust.nix
         ];
       };
-    in {
+    in
+    {
       nixosConfigurations = {
         iron = mkSystem "iron";
         kevlar = mkSystem "kevlar";

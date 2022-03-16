@@ -117,7 +117,7 @@ in
       krusader
       # Themes.
       breeze-icons
-      (callPackage ./pkgs/adwaita-one-dark.nix {})
+      (callPackage ./pkgs/adwaita-one-dark.nix { })
       # Hardware.
       psmisc
       pciutils
@@ -517,10 +517,11 @@ in
         with pkgs;
         let sourcePluginLoader = p:
           "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
-        in ''
-           set -g color_status_nonzero_bg brred
-           set -g color_status_nonzero_str white
-           set -g color_status_nonzero_indicator 💀
+        in
+        ''
+          set -g color_status_nonzero_bg brred
+          set -g color_status_nonzero_str white
+          set -g color_status_nonzero_indicator 💀
         '' + lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
           "peco"
           "themeAgnoster"
