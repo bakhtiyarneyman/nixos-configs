@@ -143,6 +143,8 @@ in
       meld
       python3
       rnix-lsp
+      nixpkgs-fmt
+      cntr
       ghc
       cabal-install
       haskell-language-server
