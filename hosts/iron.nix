@@ -5,16 +5,18 @@
 {
   programs.i3status-rust = {
     networkInterface = "eno1";
-    batteries = [ {
+    batteries = [{
       device = "keyboard_hidpp_battery_0";
       name = "";
-    } {
-      device = "mouse_hidpp_battery_1";
-      name = "";
-    } {
-      device = "ups_hiddev1";
-      name = "";
-     } ];
+    }
+      {
+        device = "mouse_hidpp_battery_1";
+        name = "";
+      }
+      {
+        device = "ups_hiddev1";
+        name = "";
+      }];
   };
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
@@ -22,7 +24,8 @@
   boot.initrd.luks.devices."crypted".device = "/dev/disk/by-uuid/8dcc8ac6-cb24-4d17-a412-c6ca32c02f9b";
 
   fileSystems = {
-    "/" = { device = "/dev/mapper/crypted";
+    "/" = {
+      device = "/dev/mapper/crypted";
       fsType = "btrfs";
     };
     "/boot" = {
@@ -42,6 +45,7 @@
   system.stateVersion = "19.03";
   hardware.nvidia = {
     modesetting.enable = true;
+    powerManagement.enable = true;
     prime = {
       sync.enable = true;
       # Bus ids can be found using lspci.
@@ -50,7 +54,7 @@
     };
   };
   services = {
-     cron = {
+    cron = {
       enable = true;
       mailto = let at = "@"; in "bakhtiyarneyman${at}gmail.com";
       systemCronJobs = [
