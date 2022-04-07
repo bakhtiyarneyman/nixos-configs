@@ -19,9 +19,14 @@
       }];
   };
 
-  boot.initrd.availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
-  boot.kernelPackages = pkgs.linuxPackages;
-  boot.initrd.luks.devices."crypted".device = "/dev/disk/by-uuid/8dcc8ac6-cb24-4d17-a412-c6ca32c02f9b";
+  boot = {
+    extraModulePackages = [ config.boot.kernelPackages.rtl88x2bu ];
+    initrd = {
+      availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
+      luks.devices."crypted".device = "/dev/disk/by-uuid/8dcc8ac6-cb24-4d17-a412-c6ca32c02f9b";
+    };
+    kernelPackages = pkgs.linuxPackages;
+  };
 
   fileSystems = {
     "/" = {
