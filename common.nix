@@ -578,6 +578,10 @@ in
     adb.enable = true;
     droidcam.enable = true;
     seahorse.enable = true;
+    gnupg.agent = {
+      enable = true;
+      pinentryFlavor = "gtk2";
+    };
   };
 
   # Allow elevating privileges dynamically via `pkexec`.
