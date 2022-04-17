@@ -7,7 +7,7 @@ stdenv.mkDerivation rec {
     owner = "jethrokuan";
     repo = name;
     rev = "${version}";
-    sha256 = "1kjyl4gx26q8175wcizvsm0jwhppd00rixdcr1p7gifw6s308sd5";
+    sha256 = "1kaa0k9d535jnvy8vnyxd869jgs0ky6yg55ac1mxcxm8n0rh2mgq";
   };
 
   installPhase = import ./installPhase.nix;
