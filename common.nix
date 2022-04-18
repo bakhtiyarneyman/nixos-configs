@@ -202,6 +202,8 @@ in
         8443
         # Development web server.
         1234
+        # Misc.
+        38422
       ];
       allowedUDPPortRanges = [
         # Chromecast ports.
@@ -511,6 +513,7 @@ in
   };
 
   programs = {
+    dconf.enable = true; # For gnome-keyring. See: https://github.com/NixOS/nixpkgs/issues/161224
     fish = {
       enable = true;
       interactiveShellInit =
