@@ -106,6 +106,7 @@ in
       du-dust # Better du.
       sd # Better sed.
       cryfs
+      (python3Packages.callPackage ./pkgs/namespaced-openvpn.nix { })
       # UI.
       alacritty
       prettyLock
@@ -488,9 +489,6 @@ in
         };
       };
     };
-    # openvpn.servers.nordvpn = {
-    #   config = "config " + ./ca-us13.nordvpn.com.tcp443.ovpn ;
-    # };
     printing.enable = true;
     avahi = {
       enable = true;
