@@ -1631,7 +1631,7 @@
 6401c5629
 <   background-color: #282c34;
 ---
->   background-color: @darker(@blue);
+>   background-color: darker(@blue);
 6404c5632
 <   background-color: #2f333d;
 ---
