@@ -138,7 +138,6 @@ in
       zoom-us
       discord
       # Development.
-      gitFull
       vscode
       cachix
       meld
@@ -559,6 +558,25 @@ in
 
     i3status-rust.enable = true;
     file-roller.enable = true;
+    git = {
+      enable = true;
+      package = pkgs.gitFull;
+      config = {
+        user = {
+          email = "bakhtiyarneyman@gmail.com";
+          name = "Bakhtiyar Neyman";
+        };
+        alias = {
+          plog = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all";
+        };
+        diff = {
+          tool = "${pkgs.meld}/bin/meld";
+        };
+        credential = {
+          helper = "libsecret";
+        };
+      };
+    };
     sway = {
       enable = true;
       extraOptions = [
