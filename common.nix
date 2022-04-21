@@ -137,7 +137,7 @@ in
       zoom-us
       discord
       # Development.
-      git
+      gitFull
       vscode
       cachix
       meld
