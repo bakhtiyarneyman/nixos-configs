@@ -131,10 +131,10 @@ in
       fish
       peco
       # Communication.
-      skype
+      skypeforlinux
       signal-desktop
       tdesktop # Telegram.
-      tutanota-desktop
+      unstable.tutanota-desktop
       zoom-us
       discord
       # Development.
@@ -168,21 +168,17 @@ in
       })
     ];
     etc = {
-      "xdg/mimeapps.list" = {
-        text = ''
-          [Default Applications]
-          video/mp4=vlc.desktop;
-          video/mkv=vlc.desktop;
-        '';
-      };
-      "xdg/gtk-3.0/settings.ini" = {
-        text = ''
-          [Settings]
-          gtk-theme-name = Adwaita-One-Dark
-          gtk-application-prefer-dark-theme = true
-          gtk-icon-theme-name = kora
-        '';
-      };
+      "xdg/mimeapps.list".text = ''
+        [Default Applications]
+        video/mp4=vlc.desktop;
+        video/mkv=vlc.desktop;
+      '';
+      "xdg/gtk-3.0/settings.ini".text = ''
+        [Settings]
+        gtk-theme-name = Adwaita-One-Dark
+        gtk-application-prefer-dark-theme = true
+        gtk-icon-theme-name = kora
+      '';
     };
   };
 
@@ -210,6 +206,7 @@ in
         { from = 32768; to = 60999; }
       ];
       trustedInterfaces = [ "tailscale0" ];
+      checkReversePath = "loose";
     };
     hosts = {
       "100.65.135.29" = [ "iron-tailscale" ];
@@ -335,33 +332,7 @@ in
       enable = true;
       alsa.enable = true;
       pulse.enable = true;
-      media-session.config.bluez-monitor.rules = [
-        {
-          # Matches all cards
-          matches = [{ "device.name" = "~bluez_card.*"; }];
-          actions = {
-            "update-props" = {
-              "bluez5.auto-connect" = [ "hfp_hf" "hsp_hs" "a2dp_sink" ];
-              "bluez5.enable-sbc-xq" = true;
-              "bluez5.enable-msbc" = true;
-              "bluez5.enable-hw-volume" = true;
-              "bluez5.enable-faststream" = true;
-              "bluez5.enable-a2dp-duplex" = true;
-            };
-          };
-        }
-        {
-          matches = [
-            # Matches all sources
-            { "node.name" = "~bluez_input.*"; }
-            # Matches all outputs
-            { "node.name" = "~bluez_output.*"; }
-          ];
-          actions = {
-            "node.pause-on-idle" = false;
-          };
-        }
-      ];
+      wireplumber.enable = true;
     };
 
     # Notification service.

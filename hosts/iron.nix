@@ -5,10 +5,11 @@
 {
   programs.i3status-rust = {
     networkInterface = "eno1";
-    batteries = [{
-      device = "keyboard_hidpp_battery_0";
-      name = "";
-    }
+    batteries = [
+      {
+        device = "keyboard_hidpp_battery_0";
+        name = "";
+      }
       {
         device = "mouse_hidpp_battery_1";
         name = "";
@@ -16,7 +17,8 @@
       {
         device = "ups_hiddev1";
         name = "";
-      }];
+      }
+    ];
   };
 
   boot = {
