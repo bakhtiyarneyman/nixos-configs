@@ -136,7 +136,7 @@ in
       tdesktop # Telegram.
       unstable.tutanota-desktop
       zoom-us
-      discord
+      unstable.pkgs.discord
       # Development.
       vscode
       cachix
@@ -610,7 +610,7 @@ in
       udiskie = autostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
       signal = autostart "${pkgs.signal-desktop}/bin/signal-desktop";
       telegram = autostart "${pkgs.tdesktop}/bin/telegram-desktop";
-      discord = autostart "${pkgs.discord}/bin/discord";
+      discord = autostart "${pkgs.unstable.discord}/bin/discord";
       nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
     };
 
