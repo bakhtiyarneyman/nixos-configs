@@ -150,6 +150,9 @@ in
       haskell-language-server
       haskellPackages.fourmolu
       stack
+      # Nix
+      direnv
+      nix-direnv
       # Image.
       gimp
       inkscape
@@ -167,6 +170,11 @@ in
         pulseaudioSupport = true;
       })
     ];
+
+    pathsToLink = [
+      "/share/nix-direnv"
+    ];
+
     etc = {
       "xdg/mimeapps.list".text = ''
         [Default Applications]
@@ -524,6 +532,8 @@ in
           function bluetoothctl
               command bluetoothctl paired-devices; and command bluetoothctl
           end
+
+          direnv hook fish | source
         '';
     };
 
@@ -606,10 +616,15 @@ in
 
   virtualisation.libvirtd.enable = true;
 
-  nixpkgs.config = {
-    allowUnfree = true;
-    android_sdk.accept_license = true;
-    config.packageOverrides.vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+  nixpkgs = {
+    config = {
+      allowUnfree = true;
+      android_sdk.accept_license = true;
+      config.packageOverrides.vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+    };
+    overlays = [
+      (self: super: { nix-direnv = super.nix-direnv.override { enableFlakes = true; }; })
+    ];
   };
 
   nix = {
@@ -622,6 +637,8 @@ in
     maxJobs = lib.mkDefault 8;
     extraOptions = ''
       experimental-features = nix-command flakes
+      keep-derivations = true
+      keep-outputs = true
     '';
   };
 
