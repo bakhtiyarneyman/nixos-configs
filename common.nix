@@ -199,15 +199,19 @@ in
       allowedTCPPorts = [
         # SSH.
         22
+        # Development web server.
+        1234
         # Chromecast ports.
         8008
         8009
         8010
         8443
-        # Development web server.
-        1234
         # Misc.
         38422
+      ];
+      allowedUDPPorts = [
+        # GoPro web server.
+        8554
       ];
       allowedUDPPortRanges = [
         # Chromecast ports.
