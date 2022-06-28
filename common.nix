@@ -312,6 +312,7 @@ in
           ];
         };
       };
+      exportConfiguration = true;
     };
 
     picom = {

@@ -15,7 +15,7 @@
         name = "";
       }
       {
-        device = "ups_hiddev1";
+        device = "ups_hiddev0";
         name = "";
       }
     ];
@@ -72,11 +72,17 @@
     xserver = {
       videoDrivers = [ "nvidia" ];
       xrandrHeads = [
-        { output = "DP-4"; primary = true; }
-        { output = "DP-2"; }
+        { output = "DP-2-1"; primary = true; }
+        { output = "DP-0"; }
       ];
       dpi = 175;
-      displayManager.lightdm.enable = true;
+      displayManager = {
+        lightdm.enable = true;
+        setupCommands = ''
+          ${pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource "modesetting" NVIDIA-0
+          ${pkgs.xorg.xrandr}/bin/xrandr --output DP-2-1 --auto --primary --output DP-0 --auto --right-of DP-2-1
+        '';
+      };
     };
   };
 
