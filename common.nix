@@ -73,6 +73,7 @@ in
       extraGroups = [
         "wheel" # Enable ‘sudo’ for the user.
         "adbusers"
+        "docker"
         "video" # Allow changing brightness via `light`.
         "networkmanager"
       ];
@@ -619,7 +620,10 @@ in
       nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
     };
 
-  virtualisation.libvirtd.enable = true;
+  virtualisation = {
+    libvirtd.enable = true;
+    docker.enable = true;
+  };
 
   nixpkgs = {
     config = {

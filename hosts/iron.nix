@@ -86,10 +86,5 @@
     };
   };
 
-  virtualisation.docker = {
-    enable = true;
-    enableNvidia = true;
-  };
-
-  users.users.bakhtiyar.extraGroups = [ "docker" ];
+  virtualisation.docker.enableNvidia = true;
 }
