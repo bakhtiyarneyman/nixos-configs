@@ -234,10 +234,17 @@ in
       enable = true;
       settings = {
         General = {
+          DiscoverableTimeout = 0;
+          AlwaysPairable = true;
+          MultiProfile = "multiple";
+          Privacy = "device";
           FastConnectable = "true"; # Energy-inefficient.
           ControllerMode = "dual";
-          JustWorksRepairing = "confirm";
+          JustWorksRepairing = "always";
           Experimental = "true";
+        };
+        Policy = {
+          AutoEnable = false;
         };
       };
     };
