@@ -138,6 +138,7 @@ in
       unstable.tutanota-desktop
       zoom-us
       unstable.pkgs.discord
+      slack
       # Development.
       vscode
       cachix
