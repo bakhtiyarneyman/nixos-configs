@@ -139,6 +139,7 @@ in
       zoom-us
       unstable.pkgs.discord
       slack
+      teams
       # Development.
       vscode
       cachix
