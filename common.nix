@@ -595,6 +595,11 @@ in
       enable = true;
       pinentryFlavor = "gtk2";
     };
+    steam = {
+      enable = true;
+      remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+      dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    };
   };
 
   # Allow elevating privileges dynamically via `pkexec`.
