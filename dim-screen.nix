@@ -1,14 +1,15 @@
-
-{pkgs, dimSeconds ? 10, dimStepSeconds ? 0.25, minBrightnessPercents ? 1}:
+{ pkgs, dimSeconds ? 10, dimStepSeconds ? 0.25, minBrightnessPercents ? 1 }:
 let
   light = "${pkgs.light}/bin/light";
   fish = "${pkgs.fish}/bin/fish";
   dunstify = "${pkgs.dunst}/bin/dunstify";
+  upower = "${pkgs.dunst}/bin/upower";
   dimSeconds' = builtins.toString dimSeconds;
   dimStepSeconds' = builtins.toString dimStepSeconds;
   minBrightnessPercents' = builtins.toString minBrightnessPercents;
   battery = "/sys/class/power_supply/BAT1/status";
-in pkgs.writeTextFile {
+in
+pkgs.writeTextFile {
   name = "dim-screen";
   executable = true;
   destination = "/bin/dim-screen";
@@ -49,7 +50,7 @@ in pkgs.writeTextFile {
     os.system(f'${light} -S {${minBrightnessPercents'}}')
     os.system(f"${dunstify} --close {ARBITRARY_NOTIFICATION_ID}")
 
-    if os.path.exists("${battery}") and open("${battery}").read() == "Discharging\n":
+    if not os.system('${upower} --dump | grep "on-battery.*no"'):
       print("Battery is discharging, invoke suspend")
       os.system("systemctl suspend")
 
