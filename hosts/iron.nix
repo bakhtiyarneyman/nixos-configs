@@ -7,11 +7,11 @@
     networkInterface = "eno1";
     batteries = [
       {
-        device = "keyboard_hidpp_battery_0";
+        device = "battery_hidpp_battery_0";
         name = "";
       }
       {
-        device = "mouse_hidpp_battery_1";
+        device = "battery_hidpp_battery_1";
         name = "";
       }
       {

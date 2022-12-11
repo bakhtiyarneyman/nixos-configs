@@ -331,8 +331,6 @@ in
       fadeSteps = [ 0.2 0.2 ];
       fadeDelta = 30;
       shadow = false;
-      # Creates artifacts on scrolling, but vSync doesn't work otherwise, which leads to tearing.
-      experimentalBackends = true;
       backend = "glx"; # "xrender" is extraordinarily slow when blurring.
       vSync = true;
       settings = {
@@ -441,7 +439,7 @@ in
     };
 
     gnome = {
-      chrome-gnome-shell.enable = true;
+      gnome-browser-connector.enable = true;
       gnome-keyring.enable = true;
     };
 
@@ -652,12 +650,14 @@ in
 
   nix = {
     package = pkgs.unstable.nix;
-    trustedUsers = [ "root" "bakhtiyar" ];
+    settings = {
+      trusted-users = [ "root" "bakhtiyar" ];
+      max-jobs = lib.mkDefault 8;
+    };
     gc = {
       automatic = true;
       options = "--delete-older-than 14d";
     };
-    maxJobs = lib.mkDefault 8;
     extraOptions = ''
       experimental-features = nix-command flakes
       keep-derivations = true
