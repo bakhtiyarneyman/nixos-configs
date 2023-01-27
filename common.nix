@@ -296,8 +296,8 @@ in
           '';
         # Autologin is only safe because the disk is encrypted.
         # It can lead to an infinite loop if the window manager crashes.
-        autoLogin.user = "bakhtiyar";
-        defaultSession = "none+i3";
+        # autoLogin.user = "bakhtiyar";
+        defaultSession = "sway";
       };
 
       windowManager = {
@@ -310,15 +310,6 @@ in
             upower # Charging state.
             lm_sensors # Temperature.
             xkblayout-state # Keyboard layout (a hack).
-          ];
-        };
-        xmonad = {
-          enable = true;
-          enableContribAndExtras = true;
-          extraPackages = with pkgs; haskellPackages: [
-            haskellPackages.xmonad-contrib
-            haskellPackages.xmonad-extras
-            haskellPackages.xmonad
           ];
         };
       };
