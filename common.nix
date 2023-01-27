@@ -191,6 +191,7 @@ in
         gtk-icon-theme-name = kora
       '';
     };
+    sessionVariables.NIXOS_OZONE_WL = "1";
   };
 
   networking = {
