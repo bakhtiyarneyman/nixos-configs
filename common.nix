@@ -576,6 +576,8 @@ in
       extraOptions = [
         "--config=${./i3.conf}"
       ];
+      wrapperFeatures.base = true;
+      wrapperFeatures.gtk = true;
     };
     gnome-disks.enable = true; # GUI USB disk mounting.
     light.enable = true; # Brightness management.

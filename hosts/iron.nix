@@ -86,6 +86,11 @@
     };
   };
 
-  programs.sway.extraOptions = [ "--unsupported-gpu" ];
+  programs.sway = {
+    extraOptions = [ "--unsupported-gpu" ];
+    extraSessionCommands = ''
+      export WLR_NO_HARDWARE_CURSORS=1
+    '';
+  };
   virtualisation.docker.enableNvidia = true;
 }
