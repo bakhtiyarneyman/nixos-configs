@@ -575,8 +575,6 @@ in
       enable = true;
       extraOptions = [
         "--config=${./i3.conf}"
-        "--unsupported-gpu"
-        "--my-next-gpu-wont-be-nvidia"
       ];
     };
     gnome-disks.enable = true; # GUI USB disk mounting.

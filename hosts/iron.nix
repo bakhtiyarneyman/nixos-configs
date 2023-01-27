@@ -86,5 +86,6 @@
     };
   };
 
+  programs.sway.extraOptions = [ "--unsupported-gpu" ];
   virtualisation.docker.enableNvidia = true;
 }
