@@ -543,7 +543,7 @@ in
           alias nix-shell-fish 'nix-shell --run fish'
 
           function bluetoothctl
-              command bluetoothctl paired-devices; and command bluetoothctl
+              command bluetoothctl devices Paired; and command bluetoothctl
           end
 
           direnv hook fish | source
