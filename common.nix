@@ -636,7 +636,13 @@ in
       config.packageOverrides.vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
     };
     overlays = [
-      (self: super: { nix-direnv = super.nix-direnv.override { enableFlakes = true; }; })
+      (self: super: {
+        nix-direnv = super.nix-direnv.override { enableFlakes = true; };
+        # TODO: remove when https://github.com/NixOS/nixpkgs/issues/206744 closed.
+        signal-desktop = super.signal-desktop.overrideAttrs (old: {
+          runtimeDependencies = old.runtimeDependencies ++ [ super.wayland ];
+        });
+      })
     ];
   };
 
