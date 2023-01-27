@@ -111,7 +111,7 @@ in
       # UI.
       alacritty
       prettyLock
-      rofi
+      rofi-wayland
       pavucontrol # Pulse audio volume control.
       pulseaudio # For pactl to be used from i3.
       libnotify # Notification service API.
@@ -381,7 +381,7 @@ in
         # max_icon_size = "64";
         sticky_history = "yes";
         history_length = "100";
-        dmenu = "${pkgs.rofi}/bin/rofi -dmenu -theme /etc/nixos/onedark.rasi -p dunst";
+        dmenu = "${pkgs.rofi-wayland}/bin/rofi -dmenu -theme /etc/nixos/onedark.rasi -p dunst";
         always_run_script = "true";
         corner_radius = "10";
         force_xinerama = "false";
