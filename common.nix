@@ -566,7 +566,10 @@ in
     sway = {
       enable = true;
       extraOptions = [
-        "--config=${./i3.conf}"
+      ];
+      extraPackages = with pkgs; [
+        sway-contrib.grimshot
+        (callPackage ./pkgs/inactive-windows-transparency.nix { })
       ];
       wrapperFeatures.base = true;
       wrapperFeatures.gtk = true;
@@ -622,6 +625,13 @@ in
       telegram = autostart "${pkgs.tdesktop}/bin/telegram-desktop";
       discord = autostart "${pkgs.unstable.discord}/bin/discord";
       nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
+      inactive-windows-transparency = {
+        wantedBy = [ "graphical-session.target" ];
+        partOf = [ "graphical-session.target" ];
+        serviceConfig.ExecStart = [
+          "${pkgs.callPackage ./pkgs/inactive-windows-transparency.nix { }}/bin/inactive-windows-transparency.py"
+        ];
+      };
     };
 
   virtualisation = {
