@@ -15,7 +15,7 @@
         name = "";
       }
       {
-        device = "ups_hiddev0";
+        device = "ups_hiddev1";
         name = "";
       }
     ];
@@ -28,6 +28,7 @@
       luks.devices."crypted".device = "/dev/disk/by-uuid/8dcc8ac6-cb24-4d17-a412-c6ca32c02f9b";
     };
     kernelPackages = pkgs.linuxPackages;
+    kernelParams = [ "nvidia_drm.modeset=1" ];
   };
 
   fileSystems = {
@@ -53,12 +54,12 @@
   hardware.nvidia = {
     modesetting.enable = true;
     powerManagement.enable = true;
-    prime = {
-      sync.enable = true;
-      # Bus ids can be found using lspci.
-      nvidiaBusId = "PCI:1:0:0";
-      intelBusId = "PCI:0:2:0";
-    };
+    # prime = {
+    #   sync.enable = true;
+    #   # Bus ids can be found using lspci.
+    #   nvidiaBusId = "PCI:1:0:0";
+    #   intelBusId = "PCI:0:2:0";
+    # };
   };
   services = {
     cron = {
@@ -72,15 +73,15 @@
     xserver = {
       videoDrivers = [ "nvidia" ];
       xrandrHeads = [
-        { output = "DP-2-1"; primary = true; }
-        { output = "DP-0"; }
+        { output = "DP-1"; primary = true; }
+        { output = "DP-3"; }
       ];
       dpi = 175;
       displayManager = {
-        lightdm.enable = true;
+        gdm.enable = true;
         setupCommands = ''
           ${pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource "modesetting" NVIDIA-0
-          ${pkgs.xorg.xrandr}/bin/xrandr --output DP-2-1 --auto --primary --output DP-0 --auto --right-of DP-2-1
+          ${pkgs.xorg.xrandr}/bin/xrandr --output DP-1 --auto --primary --output DP-3 --auto --right-of DP-1
         '';
       };
     };
