@@ -8,7 +8,8 @@ let
   prettyLock = import ./prettyLock.nix pkgs;
   idleToDimSecs = 60;
   dimToLockSecs = 15;
-  lockToScreenOffSecs = 10;
+  idleToLockSecs = idleToDimSecs + dimToLockSecs;
+  idleToScreenOffSecs = idleToLockSecs + 10;
   dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; };
 in
 {
@@ -281,25 +282,7 @@ in
         mouse.naturalScrolling = true;
       };
 
-      displayManager = {
-        # 1. Set wallpaper.
-        # 2. Don't lock the screen by itself.
-        # 3. Turn off the screen after time of inactivity. This triggers a screen lock
-        sessionCommands =
-          with builtins;
-          let screenOffTime = toString
-            (idleToDimSecs + dimToLockSecs + lockToScreenOffSecs);
-          in
-          ''
-            ${pkgs.feh}/bin/feh --bg-fill ${./wallpaper.jpg}
-            ${pkgs.xorg.xset}/bin/xset s ${toString idleToDimSecs} ${toString (dimToLockSecs + 5)}
-            ${pkgs.xorg.xset}/bin/xset dpms ${screenOffTime} ${screenOffTime} ${screenOffTime}
-          '';
-        # Autologin is only safe because the disk is encrypted.
-        # It can lead to an infinite loop if the window manager crashes.
-        # autoLogin.user = "bakhtiyar";
-        defaultSession = "sway";
-      };
+      displayManager.defaultSession = "sway";
 
       windowManager = {
         i3 = {
@@ -561,12 +544,6 @@ in
     gnome-disks.enable = true; # GUI USB disk mounting.
     light.enable = true; # Brightness management.
     nm-applet.enable = true; # Wi-fi management.
-    xss-lock = {
-      # Lock on lid action.
-      enable = true;
-      extraOptions = [ "--notifier=${dim-screen}/bin/dim-screen" ];
-      lockerCommand = "${prettyLock}/bin/prettyLock";
-    };
     adb.enable = true;
     droidcam.enable = true;
     seahorse.enable = true;
@@ -616,6 +593,15 @@ in
           "${pkgs.callPackage ./pkgs/inactive-windows-transparency.nix { }}/bin/inactive-windows-transparency.py"
         ];
       };
+      swayidle = autostart "${pkgs.writeShellScriptBin "autolock" ''
+        ${pkgs.swayidle}/bin/swayidle -w \
+          timeout ${builtins.toString idleToDimSecs} 'echo "Dimming..."; ${dim-screen}/bin/dim-screen &' \
+            resume 'echo "Undim."; ${pkgs.psmisc}/bin/killall dim-screen' \
+          timeout ${builtins.toString idleToLockSecs} 'echo "Locking..."; ${prettyLock}/bin/prettyLock &' \
+          timeout ${builtins.toString idleToScreenOffSecs} 'echo "Screen off..."; ${pkgs.sway}/bin/swaymsg "output * dpms off"' \
+            resume 'echo "Screen on"; ${pkgs.sway}/bin/swaymsg "output * dpms on"' \
+          before-sleep ${prettyLock}/bin/prettyLock
+      ''}/bin/autolock";
     };
 
   virtualisation = {
