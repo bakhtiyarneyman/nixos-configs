@@ -1,5 +1,5 @@
 
-{pkgs, dimSeconds ? 10, dimStepSeconds ? 0.1, minBrightnessPercents ? 1}:
+{pkgs, dimSeconds ? 10, dimStepSeconds ? 0.25, minBrightnessPercents ? 1}:
 let
   light = "${pkgs.light}/bin/light";
   fish = "${pkgs.fish}/bin/fish";
@@ -20,7 +20,7 @@ in pkgs.writeTextFile {
     def restore(sig, frame):
       print("Restoring brightness")
       os.system("${light} -I")
-      os.system("${dunstify} --close {}".format(ARBITRARY_NOTIFICATION_ID))
+      os.system(f"${dunstify} --close {ARBITRARY_NOTIFICATION_ID}")
       exit(0)
 
     signal.signal(signal.SIGTERM, restore)
@@ -32,17 +32,22 @@ in pkgs.writeTextFile {
     brightness = float(os.popen('${light}').read()) # Get state.
     step = brightness / steps
     ARBITRARY_NOTIFICATION_ID = 3873
-    timeToLock = ${dimSeconds'}
-    while timeToLock > 0:
-      os.system("${light} -S {}".format(brightness))
-      os.system("${dunstify} --appname dim-screen --replace {} 'Screen will be locked in {:.0f} seconds'".format(ARBITRARY_NOTIFICATION_ID, timeToLock))
+    start_time = time.time()
+    while True:
+      current_time = time.time()
+      elapsed_time = current_time - start_time
+      remaining_time = 15 - elapsed_time
+      if remaining_time <= 0:
+        break
+
+      os.system(f"${light} -S {brightness}")
+      os.system(f"${dunstify} --appname dim-screen --replace {ARBITRARY_NOTIFICATION_ID} 'Screen will be locked in {round(remaining_time)} seconds'")
 
       brightness -= step
-      timeToLock -= ${dimStepSeconds'}
       time.sleep(${dimStepSeconds'})
 
-    os.system('${light} -S {}'.format(${minBrightnessPercents'}))
-    os.system("${dunstify} --close {}".format(ARBITRARY_NOTIFICATION_ID))
+    os.system(f'${light} -S {${minBrightnessPercents'}}')
+    os.system(f"${dunstify} --close {ARBITRARY_NOTIFICATION_ID}")
 
     if os.path.exists("${battery}") and open("${battery}").read() == "Discharging\n":
       print("Battery is discharging, invoke suspend")
