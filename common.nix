@@ -317,30 +317,6 @@ in
       exportConfiguration = true;
     };
 
-    picom = {
-      enable = true;
-      fade = true;
-      fadeSteps = [ 0.2 0.2 ];
-      fadeDelta = 30;
-      shadow = false;
-      backend = "glx"; # "xrender" is extraordinarily slow when blurring.
-      vSync = true;
-      settings = {
-        # This is needed for i3lock. Opacity rule doesn't work because there is no window id.
-        mark-ovredir-focused = true;
-        # Setting this to `true` should improve the performance, but unfortunately is not compatible with i3lock-color blurring the bg.
-        unredir-if-possible = false;
-        xrender-sync-fence = true;
-        inactive-dim = 0.2;
-        # TODO(bakhtiyar): to slow.
-        # blur = {
-        #   method= "gaussian";
-        #   size = 30;
-        #   deviation = 10;
-        # };
-      };
-    };
-
     pipewire = {
       enable = true;
       alsa.enable = true;
