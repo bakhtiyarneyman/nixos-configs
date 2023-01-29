@@ -270,34 +270,7 @@ in
     # Enable the X11 windowing system.
     xserver = {
       enable = true;
-
-      # Keyboard.
-      layout = "us,ru,az";
-      xkbOptions = "grp:win_space_toggle";
-
-      # Enable touchpad support.
-      libinput = {
-        enable = true;
-        touchpad.naturalScrolling = true;
-        mouse.naturalScrolling = true;
-      };
-
-      displayManager.defaultSession = "sway";
-
-      windowManager = {
-        i3 = {
-          enable = true;
-          configFile = ./i3.conf;
-          package = pkgs.i3-gaps;
-          extraPackages = with pkgs; [
-            rofi # dmenu alternative.
-            upower # Charging state.
-            lm_sensors # Temperature.
-            xkblayout-state # Keyboard layout (a hack).
-          ];
-        };
-      };
- 
+      displayManager.defaultSession = "sway"; 
       # TODO: use this when unblocked: https://github.com/NixOS/nixpkgs/issues/54150
       # desktopManager.gnome.extraGSettingsOverrides = ''
       #   [org.gnome.desktop.interface]
@@ -533,10 +506,16 @@ in
     sway = {
       enable = true;
       extraOptions = [
+        "--config=${./sway.conf}"
       ];
       extraPackages = with pkgs; [
         sway-contrib.grimshot
         (callPackage ./pkgs/inactive-windows-transparency.nix { })
+        swayidle
+        gammastep
+        upower # Charging state.
+        lm_sensors # Temperature.
+        xkblayout-state # Keyboard layout (a hack).
       ];
       wrapperFeatures.base = true;
       wrapperFeatures.gtk = true;
