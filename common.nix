@@ -270,7 +270,7 @@ in
     # Enable the X11 windowing system.
     xserver = {
       enable = true;
-      displayManager.defaultSession = "sway"; 
+      displayManager.defaultSession = "sway";
       # TODO: use this when unblocked: https://github.com/NixOS/nixpkgs/issues/54150
       # desktopManager.gnome.extraGSettingsOverrides = ''
       #   [org.gnome.desktop.interface]
@@ -379,8 +379,6 @@ in
 
     # localtime.enable = true; // This doesn't work and only generates errors.
 
-    redshift.enable = true;
-
     actkbd = {
       enable = true;
       bindings =
@@ -439,8 +437,9 @@ in
       enable = true;
       interactiveShellInit =
         with pkgs;
-        let sourcePluginLoader = p:
-          "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
+        let
+          sourcePluginLoader = p:
+            "source ${callPackage (./. + "/pkgs/fish/${p}.nix") {}}/loadPlugin.fish";
         in
         ''
           set -g color_status_nonzero_bg brred
@@ -547,14 +546,15 @@ in
   location.provider = "geoclue2";
 
   systemd.user.services =
-    let autostart = cmd: {
-      enable = true;
-      wantedBy = [ "graphical-session.target" ];
-      requires = [ "graphical-session.target" ];
-      after = [ "graphical-session.target" ];
-      serviceConfig.ExecStart = [ cmd ];
-      environment."XDG_CONFIG_DIRS" = "/etc/xdg";
-    };
+    let
+      autostart = cmd: {
+        enable = true;
+        wantedBy = [ "graphical-session.target" ];
+        requires = [ "graphical-session.target" ];
+        after = [ "graphical-session.target" ];
+        serviceConfig.ExecStart = [ cmd ];
+        environment."XDG_CONFIG_DIRS" = "/etc/xdg";
+      };
 
     in
     {
@@ -572,6 +572,7 @@ in
           "${pkgs.callPackage ./pkgs/inactive-windows-transparency.nix { }}/bin/inactive-windows-transparency.py"
         ];
       };
+      gammastep = autostart "${pkgs.gammastep}/bin/gammastep -t 6500:3300";
       swayidle = autostart "${pkgs.writeShellScriptBin "autolock" ''
         ${pkgs.swayidle}/bin/swayidle -w \
           timeout ${builtins.toString idleToDimSecs} 'echo "Dimming..."; ${dim-screen}/bin/dim-screen &' \
