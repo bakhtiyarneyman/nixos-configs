@@ -314,6 +314,14 @@ in
           ];
         };
       };
+ 
+      # TODO: use this when unblocked: https://github.com/NixOS/nixpkgs/issues/54150
+      # desktopManager.gnome.extraGSettingsOverrides = ''
+      #   [org.gnome.desktop.interface]
+      #   gtk-theme='Adwaita-One-Dark'
+      #   icon-theme='kora'
+      #   font-name='Fira Sans'
+      # '';
       exportConfiguration = true;
     };
 
