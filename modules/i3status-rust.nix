@@ -3,8 +3,9 @@
 with lib;
 
 let
-   cfg = config.programs.i3status-rust;
-in {
+  cfg = config.programs.i3status-rust;
+in
+{
 
   options.programs.i3status-rust = {
     enable = mkEnableOption "A status bar for i3";
@@ -24,7 +25,7 @@ in {
           };
         };
       });
-      default = [ {
+      default = [{
         device = "DisplayDevice";
         name = "";
       }];
@@ -144,22 +145,13 @@ in {
           '';
           in lib.concatMapStrings mkBatterySection cfg.batteries
         }
-        # This dumps "us,ru,az".
-        # [[block]]
-        # block = "keyboard_layout"
-        # driver = "localebus"
-
-        # [[block]]
-        # block = "ibus"
-        # [block.mappings]
-        # "xkb:us::eng" = "EN"
-        # "xkb:ru::rus" = "RU"
-        # "xkb:az::aze" = "AZ"
-
-        # [[block]]
-        # block = "custom"
-        # command = "xkblayout-state print %s"
-        # interval = 0.5
+        [[block]]
+        block = "keyboard_layout"
+        driver = "sway"
+        [block.mappings]
+        "English (US)" = "EN"
+        "Russian (N/A)" = "RU"
+        "Azerbaijani (N/A)" = "AZ"
 
         [[block]]
         block = "time"
@@ -186,7 +178,7 @@ in {
         format = " DS"
 
         ${cfg.extraConfig}
-      '' ;
+      '';
       i3status-rust = pkgs.symlinkJoin {
         name = "i3status-rust";
         paths = [ pkgs.i3status-rust ];
@@ -197,7 +189,8 @@ in {
         '';
       };
 
-    in mkIf cfg.enable {
+    in
+    mkIf cfg.enable {
       services.upower.enable = true;
       environment.systemPackages = [ i3status-rust ];
     };
