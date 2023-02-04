@@ -426,7 +426,6 @@ in
     '';
 
     tailscale.enable = true;
-    clipmenu.enable = true;
     fwupd.enable = true;
     onedrive.enable = true;
   };
@@ -515,6 +514,8 @@ in
         upower # Charging state.
         lm_sensors # Temperature.
         xkblayout-state # Keyboard layout (a hack).
+        wl-clipboard 
+        clipman # Clipboard manager. 
       ];
       wrapperFeatures.base = true;
       wrapperFeatures.gtk = true;
@@ -582,6 +583,7 @@ in
             resume 'echo "Screen on"; ${pkgs.sway}/bin/swaymsg "output * dpms on"' \
           before-sleep ${prettyLock}/bin/prettyLock
       ''}/bin/autolock";
+      wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
     };
 
   virtualisation = {
