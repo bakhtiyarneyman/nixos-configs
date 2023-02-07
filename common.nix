@@ -15,9 +15,8 @@ in
 {
   boot = {
     tmpOnTmpfs = true;
-    kernel.sysctl = {
-      "kernel.sysrq" = 1;
-    };
+    kernel.sysctl."kernel.sysrq" = 1;
+    kernelPackages = pkgs.unstable.linuxPackages_latest;
     # Use the systemd-boot EFI boot loader.
     loader = {
       systemd-boot.enable = true;
@@ -252,6 +251,7 @@ in
         };
       };
     };
+    enableRedistributableFirmware = true;
     opengl = {
       enable = true;
       driSupport32Bit = true;
@@ -514,7 +514,7 @@ in
         upower # Charging state.
         lm_sensors # Temperature.
         xkblayout-state # Keyboard layout (a hack).
-        wl-clipboard 
+        wl-clipboard
         clipman # Clipboard manager. 
       ];
       wrapperFeatures.base = true;

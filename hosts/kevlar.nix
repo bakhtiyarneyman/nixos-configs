@@ -8,29 +8,35 @@
     networkInterface = "wlp170s0";
   };
 
-  boot.kernelModules = [ "kvm-intel" ];
-  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
-  boot.kernelParams = [ "mem_sleep_default=deep" ];
-  boot.extraModulePackages = [ ];
-  boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
-  boot.initrd.luks.devices."crypted".device = "/dev/disk/by-uuid/74cf5bcb-f6a5-4410-8247-4a04ffe30826";
+  boot = {
+    kernelModules = [ "kvm-intel" ];
+    kernelParams = [ "mem_sleep_default=deep" ];
+    extraModulePackages = [ ];
+    initrd = {
+      availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
+      luks.devices."crypted".device = "/dev/disk/by-uuid/74cf5bcb-f6a5-4410-8247-4a04ffe30826";
+    };
+  };
 
   fileSystems = {
-    "/" = { device = "/dev/mapper/crypted";
+    "/" = {
+      device = "/dev/mapper/crypted";
       fsType = "btrfs";
     };
 
-    "/boot" = { device = "/dev/disk/by-label/BOOT";
+    "/boot" = {
+      device = "/dev/disk/by-label/BOOT";
       fsType = "vfat";
     };
   };
+
+  hardware.firmware = [ pkgs.unstable.firmwareLinuxNonfree ];
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
   system.stateVersion = "21.11";
-  hardware.firmware = [ pkgs.unstable.firmwareLinuxNonfree ];
   services.xserver = {
     videoDrivers = [ "modesetting" ];
     # DPI overrides this.

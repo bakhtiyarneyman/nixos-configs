@@ -27,8 +27,6 @@
       availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
       luks.devices."crypted".device = "/dev/disk/by-uuid/8dcc8ac6-cb24-4d17-a412-c6ca32c02f9b";
     };
-    kernelPackages = pkgs.linuxPackages;
-    kernelParams = [ "nvidia_drm.modeset=1" ];
   };
 
   fileSystems = {
@@ -51,16 +49,6 @@
   # servers. You should change this only after NixOS release notes say you
   # should.
   system.stateVersion = "19.03";
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = true;
-    # prime = {
-    #   sync.enable = true;
-    #   # Bus ids can be found using lspci.
-    #   nvidiaBusId = "PCI:1:0:0";
-    #   intelBusId = "PCI:0:2:0";
-    # };
-  };
   services = {
     cron = {
       enable = true;
@@ -71,7 +59,7 @@
     };
 
     xserver = {
-      videoDrivers = [ "nvidia" ];
+      videoDrivers = [ "amdgpu" ];
       xrandrHeads = [
         { output = "DP-1"; primary = true; }
         { output = "DP-3"; }
