@@ -2,6 +2,14 @@
 # and may be overwritten by future invocations.  Please make changes
 # to /etc/nixos/configuration.nix instead.
 { config, lib, pkgs, boot, ... }:
+let
+  diskIds = [
+    "nvme-WD_BLACK_SN770_1TB_23085A802755"
+    "nvme-WD_BLACK_SN770_1TB_23100L801126"
+  ];
+  toPartitionId = diskId: partition: "${diskId}-part${builtins.toString partition}";
+  toDevice = partitionId: "/dev/disk/by-id/${partitionId}";
+in
 {
   programs.i3status-rust = {
     networkInterface = "eno1";
@@ -24,19 +32,69 @@
   boot = {
     extraModulePackages = [ config.boot.kernelPackages.rtl88x2bu ];
     initrd = {
-      availableKernelModules = [ "xhci_pci" "ehci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
-      luks.devices."crypted".device = "/dev/disk/by-uuid/8dcc8ac6-cb24-4d17-a412-c6ca32c02f9b";
+      availableKernelModules = [ "xhci_pci" "ehci_pci" "nvme" "ahci" "usb_storage" "usbhid" "sd_mod" ];
+      luks.devices =
+        let
+          insertDevice = devices: diskId:
+            let partitionId = toPartitionId diskId 3;
+            in
+            devices // {
+              ${"decrypted-${partitionId}"} = { device = toDevice partitionId; };
+            };
+        in
+        builtins.foldl' insertDevice { } diskIds;
     };
+    kernelModules = [ "zfs" ];
+    kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
+    loader.efi.efiSysMountPoint = "/boot/efis/nvme-WD_BLACK_SN770_1TB_23085A802755-part1";
+    supportedFilesystems = [ "zfs" ];
+    zfs.forceImportRoot = false;
   };
 
+  swapDevices =
+    let
+      toSwapDevice = diskId:
+        let
+          partitionId = toPartitionId diskId 4;
+          device = toDevice partitionId;
+        in
+        {
+          device = "/dev/mapper/decrypted-${partitionId}";
+          encrypted = {
+            blkDev = device;
+            enable = true;
+            # Created with `dd count=1 bs=512 if=/dev/urandom of=/etc/swap.key`.
+            keyFile = "/mnt-root/etc/swap.key";
+            label = "decrypted-${partitionId}";
+          };
+        };
+    in
+    builtins.map toSwapDevice diskIds;
+
   fileSystems = {
-    "/" = {
-      device = "/dev/mapper/crypted";
-      fsType = "btrfs";
-    };
     "/boot" = {
-      device = "/dev/disk/by-label/boot";
-      fsType = "vfat";
+      device = "boot/nixos/root";
+      fsType = "zfs";
+    };
+    "/" = {
+      device = "main/nixos/root";
+      fsType = "zfs";
+    };
+    "/home" = {
+      device = "main/nixos/home";
+      fsType = "zfs";
+    };
+    "/var" = {
+      device = "main/nixos/var";
+      fsType = "zfs";
+    };
+    "/var/lib" = {
+      device = "main/nixos/var/lib";
+      fsType = "zfs";
+    };
+    "/var/log" = {
+      device = "main/nixos/var/log";
+      fsType = "zfs";
     };
     "/mnt/storage" = {
       device = "/dev/disk/by-uuid/d838985e-9b04-4d7f-84c7-de7b73186858";
@@ -44,11 +102,12 @@
     };
   };
 
+  networking.hostId = "a7a93500";
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "19.03";
+  system.stateVersion = "22.11";
   services = {
     cron = {
       enable = true;

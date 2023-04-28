@@ -16,7 +16,6 @@ in
   boot = {
     tmpOnTmpfs = true;
     kernel.sysctl."kernel.sysrq" = 1;
-    kernelPackages = pkgs.unstable.linuxPackages_latest;
     # Use the systemd-boot EFI boot loader.
     loader = {
       systemd-boot.enable = true;
@@ -515,7 +514,7 @@ in
         lm_sensors # Temperature.
         xkblayout-state # Keyboard layout (a hack).
         wl-clipboard
-        clipman # Clipboard manager. 
+        clipman # Clipboard manager.
       ];
       wrapperFeatures.base = true;
       wrapperFeatures.gtk = true;
@@ -654,7 +653,6 @@ in
     ];
   };
 
-  swapDevices = [{ label = "swap"; }];
   powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
 
 }
