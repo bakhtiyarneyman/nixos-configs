@@ -7,8 +7,10 @@ let
     "nvme-WD_BLACK_SN770_1TB_23085A802755"
     "nvme-WD_BLACK_SN770_1TB_23100L801126"
   ];
-  toPartitionId = diskId: partition: "${diskId}-part${builtins.toString partition}";
-  toDevice = partitionId: "/dev/disk/by-id/${partitionId}";
+  toPartitionId = diskId: partition: "${diskId}-part${toString partition}";
+  toDevice = id: "/dev/disk/by-id/${id}";
+
+  inherit (builtins) head toString map tail foldl';
 in
 {
   programs.i3status-rust = {
@@ -42,11 +44,29 @@ in
               ${"decrypted-${partitionId}"} = { device = toDevice partitionId; };
             };
         in
-        builtins.foldl' insertDevice { } diskIds;
+        foldl' insertDevice { } diskIds;
     };
     kernelModules = [ "zfs" ];
     kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
-    loader.efi.efiSysMountPoint = "/boot/efis/nvme-WD_BLACK_SN770_1TB_23085A802755-part1";
+    loader = {
+      efi.efiSysMountPoint = "/boot/efis/${toPartitionId (head diskIds) 1}";
+      grub = {
+        enable = true;
+        version = 2;
+        devices = map toDevice diskIds;
+        efiSupport = true;
+        extraInstallCommands = (toString (map
+          (diskId: ''
+            set -x
+            ${pkgs.coreutils-full}/bin/cp -r \
+              ${config.boot.loader.efi.efiSysMountPoint}/EFI \
+              /boot/efis/${toPartitionId diskId 1}
+            set +x
+          '')
+          (tail diskIds)));
+        zfsSupport = true;
+      };
+    };
     supportedFilesystems = [ "zfs" ];
     zfs.forceImportRoot = false;
   };
@@ -69,38 +89,61 @@ in
           };
         };
     in
-    builtins.map toSwapDevice diskIds;
+    map toSwapDevice diskIds;
 
-  fileSystems = {
-    "/boot" = {
-      device = "boot/nixos/root";
-      fsType = "zfs";
-    };
-    "/" = {
-      device = "main/nixos/root";
-      fsType = "zfs";
-    };
-    "/home" = {
-      device = "main/nixos/home";
-      fsType = "zfs";
-    };
-    "/var" = {
-      device = "main/nixos/var";
-      fsType = "zfs";
-    };
-    "/var/lib" = {
-      device = "main/nixos/var/lib";
-      fsType = "zfs";
-    };
-    "/var/log" = {
-      device = "main/nixos/var/log";
-      fsType = "zfs";
-    };
-    "/mnt/storage" = {
-      device = "/dev/disk/by-uuid/d838985e-9b04-4d7f-84c7-de7b73186858";
-      fsType = "btrfs";
-    };
-  };
+  fileSystems =
+    let
+      fss =
+        {
+          "/boot" = {
+            device = "boot/nixos/root";
+            fsType = "zfs";
+          };
+          "/" = {
+            device = "main/nixos/root";
+            fsType = "zfs";
+          };
+          "/home" = {
+            device = "main/nixos/home";
+            fsType = "zfs";
+          };
+          "/var" = {
+            device = "main/nixos/var";
+            fsType = "zfs";
+          };
+          "/var/lib" = {
+            device = "main/nixos/var/lib";
+            fsType = "zfs";
+          };
+          "/var/log" = {
+            device = "main/nixos/var/log";
+            fsType = "zfs";
+          };
+          "/mnt/storage" = {
+            device = "/dev/disk/by-uuid/d838985e-9b04-4d7f-84c7-de7b73186858";
+            fsType = "btrfs";
+          };
+        };
+      insertBootFilesystem = fss: diskId:
+        let
+          partitionId = toPartitionId diskId 1;
+        in
+        fss // {
+          "/boot/efis/${partitionId}" = {
+            device = toDevice partitionId;
+            fsType = "vfat";
+            options = [
+              "x-systemd.idle-timeout=1min"
+              "x-systemd.automount"
+              "noauto"
+              "nofail"
+              "noatime"
+              "X-mount.mkdir"
+            ];
+          };
+        };
+    in
+    foldl' insertBootFilesystem fss diskIds;
 
   networking.hostId = "a7a93500";
   # This value determines the NixOS release with which your system is to be

@@ -9,9 +9,10 @@
   };
 
   boot = {
+    extraModulePackages = [ ];
     kernelModules = [ "kvm-intel" ];
     kernelParams = [ "mem_sleep_default=deep" ];
-    extraModulePackages = [ ];
+    loader.systemd-boot.enable = true;
     initrd = {
       availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
       luks.devices."crypted".device = "/dev/disk/by-uuid/74cf5bcb-f6a5-4410-8247-4a04ffe30826";

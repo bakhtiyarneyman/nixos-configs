@@ -18,7 +18,6 @@ in
     kernel.sysctl."kernel.sysrq" = 1;
     # Use the systemd-boot EFI boot loader.
     loader = {
-      systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
     kernelModules = [ "kvm-intel" ];
