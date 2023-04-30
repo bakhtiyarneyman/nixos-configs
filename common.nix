@@ -226,7 +226,7 @@ in
       checkReversePath = "loose";
     };
     hosts = {
-      "100.65.135.29" = [ "iron-tailscale" ];
+      "100.65.77.115" = [ "iron-tailscale" ];
       "100.126.205.61" = [ "kevlar-tailscale" ];
     };
   };
