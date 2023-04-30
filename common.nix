@@ -83,12 +83,12 @@ in
   # $ nix search wget
   environment = {
     systemPackages = with pkgs; [
-      # System.
+      # System
       ntfs3g
       google-drive-ocamlfuse
       parted
       gparted
-      # Utilities.
+      # Utilities
       wget
       neovim
       mkpasswd
@@ -104,9 +104,10 @@ in
       fd # Better find.
       du-dust # Better du.
       sd # Better sed.
+      xcp # Better cp.
       cryfs
       (python3Packages.callPackage ./pkgs/namespaced-openvpn.nix { })
-      # UI.
+      # UI
       alacritty
       prettyLock
       rofi-wayland
@@ -118,18 +119,18 @@ in
       # Themes.
       breeze-icons
       (callPackage ./pkgs/adwaita-one-dark.nix { })
-      # Hardware.
+      # Hardware
       psmisc
       pciutils
       glxinfo
       inxi
-      # Browsers.
+      # Browsers
       (google-chrome.override { commandLineArgs = "--enable-features=VaapiVideoDecoder"; })
       firefox
-      # Shell packages.
+      # Shell packages
       fish
       peco
-      # Communication.
+      # Communication
       skypeforlinux
       signal-desktop
       tdesktop # Telegram.
@@ -138,7 +139,7 @@ in
       unstable.pkgs.discord
       slack
       teams
-      # Development.
+      # Development
       vscode
       cachix
       meld
@@ -151,15 +152,17 @@ in
       haskell-language-server
       haskellPackages.fourmolu
       stack
+      # Productivity
+      unstable.obsidian
       # Nix
       direnv
       nix-direnv
-      # Image.
+      # Image
       gimp
       inkscape
-      # Audio.
+      # Audio
       audacity
-      # Video.
+      # Video
       vlc
       guvcview
       shotcut
