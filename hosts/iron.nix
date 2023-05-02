@@ -109,10 +109,6 @@ in
             device = "main/nixos/root";
             fsType = "zfs";
           };
-          "/home" = {
-            device = "main/nixos/home";
-            fsType = "zfs";
-          };
           "/var" = {
             device = "main/nixos/var";
             fsType = "zfs";
@@ -125,10 +121,18 @@ in
             device = "main/nixos/var/log";
             fsType = "zfs";
           };
-          # "/mnt/backups/home" = {
-          #   device = "backups/home";
-          #   fsType = "zfs";
-          # };
+          "/home" = {
+            device = "main/nixos/home";
+            fsType = "zfs";
+          };
+          "/home/bakhtiyar/dev" = {
+            device = "main/nixos/home/dev";
+            fsType = "zfs";
+          };
+          "/home/bakhtiyar/.builds" = {
+            device = "main/nixos/home/.builds";
+            fsType = "zfs";
+          };
         };
       insertBootFilesystem = fss: diskId:
         let
@@ -166,6 +170,14 @@ in
       {
         enable = true;
         commands."main/nixos/home" = {
+          extraArgs = [
+            "--no-sync-snap"
+            "--exclude=main/nixos/home/.builds"
+          ];
+          # Dataset "backups/home/dev" should be deduplicated.
+          # 1) It's smallish
+          # 2) Tooling creates a lot of redundant writes.
+          recursive = true;
           target = "backups/home";
         };
         localSourceAllow = [
@@ -191,10 +203,16 @@ in
         "main/nixos/home" = {
           autosnap = true;
           autoprune = true;
-          hourly = 3;
+          recursive = true;
+          hourly = 1;
+          daily = 1;
+          monthly = 1;
+          yearly = 1;
         };
         "backups/home" = {
+          autosnap = false;
           autoprune = true;
+          recursive = true;
           hourly = 24;
           daily = 30;
           monthly = 12;
