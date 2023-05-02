@@ -11,6 +11,7 @@ let
   idleToLockSecs = idleToDimSecs + dimToLockSecs;
   idleToScreenOffSecs = idleToLockSecs + 10;
   dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; };
+  journst = pkgs.callPackage ./journst.nix { };
 in
 {
   boot = {
@@ -585,6 +586,23 @@ in
           before-sleep ${prettyLock}/bin/prettyLock
       ''}/bin/autolock";
       wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
+      journst-boot = {
+        wantedBy = [ "graphical-session.target" ];
+        requires = [ "dunst.service" ];
+        after = [ "graphical-session.target" "dunst.service" ];
+        serviceConfig = {
+          ExecStart = [ "${journst}/bin/journst --boot --no-pager" ];
+        };
+      };
+      journst-follow = {
+        wantedBy = [ "graphical-session.target" ];
+        requires = [ "dunst.service" ];
+        after = [ "graphical-session.target" "dunst.service" ];
+        serviceConfig = {
+          Restart = "on-failure";
+          ExecStart = [ "${journst}/bin/journst --follow --lines=0" ];
+        };
+      };
     };
 
   virtualisation = {
