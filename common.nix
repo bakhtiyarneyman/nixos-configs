@@ -537,6 +537,26 @@ in
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
       dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
     };
+
+    msmtp = {
+      enable = true;
+      setSendmail = true;
+      defaults = {
+        aliases = "/etc/aliases";
+        port = 465;
+        tls_trust_file = "/etc/ssl/certs/ca-certificates.crt";
+        tls = "on";
+        auth = "login";
+        tls_starttls = "off";
+      };
+      accounts = {
+        default = {
+          host = "smtp.gmail.com";
+          user = "bakhtiyarneyman";
+          from = let at = "@"; in "bakhtiyarneyman${at}gmail.com";
+        };
+      };
+    };
   };
 
   # Allow elevating privileges dynamically via `pkexec`.
