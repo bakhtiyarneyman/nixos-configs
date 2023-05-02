@@ -558,7 +558,23 @@ in
         serviceConfig.ExecStart = [ cmd ];
         environment."XDG_CONFIG_DIRS" = "/etc/xdg";
       };
-
+      mkJournst = phase:
+        let
+          cfg = if phase == "boot" then { flags = "--boot --no-pager"; restart = "no"; } else
+          if phase == "run" then { flags = "--follow --lines=0"; restart = "on-failure"; } else
+          throw "Phase ${phase} is not supported";
+        in
+        {
+          "journst-${phase}" = {
+            wantedBy = [ "graphical-session.target" ];
+            requires = [ "dunst.service" ];
+            after = [ "graphical-session.target" "dunst.service" ];
+            serviceConfig = {
+              ExecStart = [ "${journst}/bin/journst ${cfg.flags}" ];
+              Restart = cfg.restart;
+            };
+          };
+        };
     in
     {
       blueman = autostart "${pkgs.blueman}/bin/blueman-applet";
@@ -586,24 +602,7 @@ in
           before-sleep ${prettyLock}/bin/prettyLock
       ''}/bin/autolock";
       wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
-      journst-boot = {
-        wantedBy = [ "graphical-session.target" ];
-        requires = [ "dunst.service" ];
-        after = [ "graphical-session.target" "dunst.service" ];
-        serviceConfig = {
-          ExecStart = [ "${journst}/bin/journst --boot --no-pager" ];
-        };
-      };
-      journst-follow = {
-        wantedBy = [ "graphical-session.target" ];
-        requires = [ "dunst.service" ];
-        after = [ "graphical-session.target" "dunst.service" ];
-        serviceConfig = {
-          Restart = "on-failure";
-          ExecStart = [ "${journst}/bin/journst --follow --lines=0" ];
-        };
-      };
-    };
+    } // mkJournst "boot" // mkJournst "run";
 
   virtualisation = {
     libvirtd.enable = true;
