@@ -179,58 +179,71 @@ in
         ZED_SCRUB_AFTER_RESILVER = true;
       };
     };
-    syncoid =
-      {
-        enable = true;
-        commands."main/nixos/home" = {
-          extraArgs = [
-            "--no-sync-snap"
-            "--exclude=main/nixos/home/.builds"
-          ];
-          # Dataset "backups/home/dev" should be deduplicated.
-          # 1) It's smallish
-          # 2) Tooling creates a lot of redundant writes.
-          recursive = true;
-          target = "backups/home";
-        };
-        localSourceAllow = [
-          "destroy"
-          "hold"
-          "mount"
-          "send"
-          "snapshot"
-        ];
-        localTargetAllow = [
-          "compression"
-          "create"
-          "destroy"
-          "mount"
-          "mountpoint"
-          "receive"
-          "rollback"
-        ];
-      };
-    sanoid = {
+    zrepl = {
       enable = true;
-      datasets = {
-        "main/nixos/home" = {
-          autosnap = true;
-          autoprune = true;
-          recursive = true;
-          hourly = 1;
-          daily = 1;
-          monthly = 1;
-          yearly = 1;
-        };
-        "backups/home" = {
-          autosnap = false;
-          autoprune = true;
-          recursive = true;
-          hourly = 24;
-          daily = 30;
-          monthly = 12;
-          yearly = 5;
-        };
+      settings = {
+        jobs = [
+          {
+            name = "backups";
+            type = "sink";
+            serve = {
+              type = "local";
+              listener_name = "backups";
+            };
+            root_fs = "backups";
+            recv = {
+              placeholder = {
+                encryption = "off";
+              };
+            };
+          }
+          {
+            name = "backup_home";
+            type = "push";
+            connect = {
+              type = "local";
+              listener_name = "backups";
+              client_identity = "iron";
+            };
+            filesystems = {
+              "main/nixos/home<" = true;
+              "main/nixos/home/.builds" = false;
+            };
+            snapshotting = {
+              type = "periodic";
+              interval = "10m";
+              prefix = "zrepl_";
+              timestamp_format = "iso-8601";
+            };
+            pruning = {
+              keep_sender = [
+                { type = "not_replicated"; }
+                {
+                  type = "grid";
+                  grid = "1x1h(keep=all) | 23x1h";
+                  regex = "^zrepl_.*";
+                }
+                {
+                  type = "regex";
+                  negate = true;
+                  regex = "^zrepl_.*";
+                }
+              ];
+              keep_receiver = [
+                {
+                  type = "grid";
+                  grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
+                  regex = "^zrepl_.*";
+                }
+                {
+                  type = "regex";
+                  negate = true;
+                  regex = "^zrepl_.*";
+                }
+              ];
+            };
+          }
+        ];
       };
     };
 
