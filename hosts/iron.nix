@@ -44,7 +44,11 @@ in
       luks.devices =
         let
           insertDevice = devices: id: devices // {
-            ${"decrypted-${id}"} = { device = toDevice id; };
+            ${"decrypted-${id}"} = {
+              allowDiscards = true;
+              bypassWorkqueues = true;
+              device = toDevice id;
+            };
           };
         in
         foldl' insertDevice { } (map (flip toPartitionId 3) coreDiskIds ++ backupDiskIds);
