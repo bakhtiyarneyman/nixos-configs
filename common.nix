@@ -12,6 +12,7 @@ let
   idleToScreenOffSecs = idleToLockSecs + 10;
   dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; };
   journst = pkgs.callPackage ./journst.nix { };
+  email = let at = "@"; in "bakhtiyarneyman${at}gmail.com";
 in
 {
   boot = {
@@ -192,6 +193,12 @@ in
         gtk-application-prefer-dark-theme = true
         gtk-icon-theme-name = kora
       '';
+      "aliases" = {
+        text = ''
+          root: ${email}
+        '';
+        mode = "0644";
+      };
     };
     sessionVariables.NIXOS_OZONE_WL = "1";
   };
@@ -489,7 +496,7 @@ in
       package = pkgs.gitFull;
       config = {
         user = {
-          email = "bakhtiyarneyman@gmail.com";
+          inherit email;
           name = "Bakhtiyar Neyman";
         };
         alias = {
@@ -553,7 +560,8 @@ in
         default = {
           host = "smtp.gmail.com";
           user = "bakhtiyarneyman";
-          from = let at = "@"; in "bakhtiyarneyman${at}gmail.com";
+          passwordeval = "cat /etc/email_password";
+          from = email;
         };
       };
     };
