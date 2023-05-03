@@ -275,4 +275,11 @@ in
     '';
   };
   virtualisation.docker.enableNvidia = true;
+  security.pam = {
+    u2f.control = "required";
+    services = {
+      login.u2fAuth = true;
+      sudo.u2fAuth = true;
+    };
+  };
 }
