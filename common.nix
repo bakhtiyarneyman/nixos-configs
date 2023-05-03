@@ -437,6 +437,7 @@ in
     tailscale.enable = true;
     fwupd.enable = true;
     onedrive.enable = true;
+    fstrim.enable = true;
   };
 
   programs = {
