@@ -266,6 +266,11 @@ in
         '';
       };
     };
+
+    jellyfin = {
+      enable = true;
+      openFirewall = true;
+    };
   };
 
   programs.sway = {
