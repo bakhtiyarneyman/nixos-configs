@@ -271,6 +271,12 @@ in
       enable = true;
       openFirewall = true;
     };
+
+    nix-serve = {
+      enable = true;
+      openFirewall = true;
+      secretKeyFile = "/etc/secrets/cache-priv-key.pem";
+    };
   };
 
   programs.sway = {
