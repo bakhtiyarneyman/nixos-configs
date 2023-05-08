@@ -411,7 +411,7 @@ in
       knownHosts = {
         iron = {
           hostNames = [ "iron-tailscale" "100.65.135.29" ];
-          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP9JkARs/riIN3LTQm3pLhOmc9JiWNczDrUL1coQpLDa";
+          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOeAfprNGrQ2RfrDT81UxfTD/GfnOwz8gPzGppNiTw40";
         };
         kevlar = {
           hostNames = [ "kevlar-tailscale" "100.126.205.61" ];
