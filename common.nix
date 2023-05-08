@@ -666,6 +666,9 @@ in
     settings = {
       trusted-users = [ "root" "bakhtiyar" ];
       max-jobs = lib.mkDefault 8;
+      trusted-public-keys = [
+        "iron-tailscale:Qz1cJrsuEhnOHXU/FDiv0kaEkdq0HI2vIy8qxDLubFw="
+      ];
     };
     gc = {
       automatic = true;
