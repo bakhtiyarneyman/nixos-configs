@@ -228,7 +228,7 @@ in
                 { type = "not_replicated"; }
                 {
                   type = "grid";
-                  grid = "1x1h(keep=all) | 23x1h";
+                  grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
                   regex = "^zrepl_.*";
                 }
                 {
