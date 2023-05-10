@@ -190,6 +190,13 @@ in
     zrepl = {
       enable = true;
       settings = {
+        global = {
+          logging = [{
+            type = "syslog";
+            format = "human";
+            level = "info";
+          }];
+        };
         jobs = [
           {
             name = "backups";
