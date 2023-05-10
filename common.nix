@@ -290,6 +290,12 @@ in
       exportConfiguration = true;
     };
 
+    logcheck = {
+      enable = true;
+      mailTo = let at = "@"; in "bakhtiyarneyman+logcheck${at}gmail.com";
+      timeOfDay = "04:00";
+    };
+
     pipewire = {
       enable = true;
       alsa.enable = true;
