@@ -137,6 +137,10 @@ in
             device = "main/nixos/home/.builds";
             fsType = "zfs";
           };
+          "/home/bakhtiyar/media" = {
+            device = "main/nixos/home/media";
+            fsType = "zfs";
+          };
         };
       insertBootFilesystem = fss: diskId:
         let
