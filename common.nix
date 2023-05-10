@@ -562,7 +562,7 @@ in
           host = "smtp.gmail.com";
           user = "bakhtiyarneyman";
           passwordeval = "cat /etc/email_password";
-          from = email;
+          from = "${hostName} (${email})";
         };
       };
     };
