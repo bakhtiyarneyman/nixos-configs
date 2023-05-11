@@ -29,6 +29,7 @@
           ./common.nix
           ./modules/dunst.nix
           ./modules/i3status-rust.nix
+          ./modules/journal-brief.nix
         ];
       };
     in

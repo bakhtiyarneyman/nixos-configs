@@ -12,7 +12,9 @@ let
   idleToScreenOffSecs = idleToLockSecs + 10;
   dim-screen = pkgs.callPackage ./dim-screen.nix { dimSeconds = dimToLockSecs; };
   journst = pkgs.callPackage ./journst.nix { };
-  email = let at = "@"; in "bakhtiyarneyman${at}gmail.com";
+  atGmail = address: "${address}@gmail.com";
+  myEmail = atGmail "bakhtiyarneyman";
+  hostEmailFrom = "${hostName} (${myEmail})";
 in
 {
   boot = {
@@ -195,7 +197,7 @@ in
       '';
       "aliases" = {
         text = ''
-          root: ${email}
+          root: ${myEmail}
         '';
         mode = "0644";
       };
@@ -290,12 +292,19 @@ in
       exportConfiguration = true;
     };
 
-    logcheck = {
+    journal-brief = {
       enable = true;
-      mailTo = let at = "@"; in "bakhtiyarneyman+logcheck${at}gmail.com";
-      timeOfDay = "04:00";
+      settings = {
+        priority = "err";
+        email = {
+          from = hostEmailFrom;
+          to = atGmail "bakhtiyarneyman+journal-brief";
+          command = ''
+            (cat <(echo "Subject: Journal brief") -) | ${pkgs.msmtp}/bin/msmtp bakhtiyarneyman+test@gmail.com
+          '';
+        };
+      };
     };
-
     pipewire = {
       enable = true;
       alsa.enable = true;
@@ -503,7 +512,7 @@ in
       package = pkgs.gitFull;
       config = {
         user = {
-          inherit email;
+          email = myEmail;
           name = "Bakhtiyar Neyman";
         };
         alias = {
@@ -567,8 +576,8 @@ in
         default = {
           host = "smtp.gmail.com";
           user = "bakhtiyarneyman";
-          passwordeval = "cat /etc/email_password";
-          from = "${hostName} (${email})";
+          passwordeval = "cat /etc/secrets/email_password";
+          from = hostEmailFrom;
         };
       };
     };
@@ -663,6 +672,7 @@ in
         signal-desktop = super.signal-desktop.overrideAttrs (old: {
           runtimeDependencies = old.runtimeDependencies ++ [ super.wayland ];
         });
+        journal-brief = super.callPackage ./pkgs/journal-brief.nix { };
       })
     ];
   };

@@ -262,6 +262,69 @@ in
       };
     };
 
+    journal-brief.settings.exclusions = [
+      {
+        CODE_FILE = [ "src/login/logind-core.c" ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        CODE_FILE = [ "src/core/job.c" ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        MESSAGE = [ "Failed to read /etc/avahi/services." ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        MESSAGE_ID = [ "fc2e22bc-6ee6-47b6-b907-29ab34a250b1" ];
+        SYSLOG_IDENTIFIER = [ "systemd-coredump" ];
+      }
+      {
+        MESSAGE = [ "Failed to connect to coredump service: Connection refused" ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        MESSAGE = [ "src/profile.c:ext_io_disconnected() Unable to get io data for Hands-Free Voice gateway: getpeername: Transport endpoint is not connected (107)" ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        MESSAGE = [ "Gdm: Failed to contact accountsservice: Error calling StartServiceByName for org.freedesktop.Accounts: Refusing activation, D-Bus is shutting down." ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        MESSAGE = [ "DMAR: [Firmware Bug]: No firmware reserved region can cover this RMRR [0x000000003e2e0000-0x000000003e2fffff], contact BIOS vendor for fixes" ];
+        SYSLOG_IDENTIFIER = [ "kernel" ];
+      }
+      {
+        MESSAGE = [ "x86/cpu: SGX disabled by BIOS." ];
+        SYSLOG_IDENTIFIER = [ "kernel" ];
+      }
+      {
+        MESSAGE = [ "plymouth-quit.service: Service has no ExecStart=, ExecStop=, or SuccessAction=. Refusing." ];
+        SYSLOG_IDENTIFIER = [ "systemd" ];
+      }
+      {
+        MESSAGE = [ "event10: Failed to call EVIOCSKEYCODE with scan code 0x7c, and key code 190: Invalid argument" ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        CODE_FILE = [ "../src/modules/module-x11-bell.c" ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        MESSAGE = [ "gkr-pam: unable to locate daemon control file" ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        MESSAGE = [ "GLib: Source ID 2 was not found when attempting to remove it" ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+      {
+        MESSAGE = [ "GLib-GObject: g_object_unref: assertion ''G_IS_OBJECT (object)'' failed" ];
+        _SELINUX_CONTEXT = [ "kernel" ];
+      }
+    ];
+
     xserver = {
       videoDrivers = [ "amdgpu" ];
       xrandrHeads = [
