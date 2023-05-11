@@ -201,6 +201,7 @@ in
         '';
         mode = "0644";
       };
+      "avahi/services/unused".text = "";
     };
     sessionVariables.NIXOS_OZONE_WL = "1";
   };

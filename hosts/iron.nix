@@ -278,10 +278,6 @@ in
         _SELINUX_CONTEXT = [ "kernel" ];
       }
       {
-        MESSAGE = [ "Failed to read /etc/avahi/services." ];
-        _SELINUX_CONTEXT = [ "kernel" ];
-      }
-      {
         MESSAGE_ID = [ "fc2e22bc-6ee6-47b6-b907-29ab34a250b1" ];
         SYSLOG_IDENTIFIER = [ "systemd-coredump" ];
       }
