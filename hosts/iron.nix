@@ -171,8 +171,14 @@ in
   system.stateVersion = "22.11";
   services = {
     zfs = {
-      autoScrub.enable = true;
-      trim.enable = true;
+      autoScrub = {
+        enable = true;
+        interval = "*-*-* 04:00:00";
+      };
+      trim = {
+        enable = true;
+        interval = "*-*-* 05:00:00";
+      };
       zed.settings = {
         ZED_DEBUG_LOG = "/tmp/zed.debug.log";
         ZED_EMAIL_ADDR = let at = "@"; in "bakhtiyarneyman+zed${at}gmail.com";

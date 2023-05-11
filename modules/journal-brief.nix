@@ -63,7 +63,7 @@
       wantedBy = [ "timers.target" ];
       after = [ "network.target" ];
       timerConfig = {
-        OnCalendar = "*-*-* 04:00:00";
+        OnCalendar = "*-*-* 06:00:00";
         Persistent = true;
       };
     };
