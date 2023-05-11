@@ -215,6 +215,8 @@ in
       allowedTCPPorts = [
         # SSH.
         22
+        # CUPS.
+        631
         # Development web server.
         1234
         # Chromecast ports.
@@ -226,6 +228,8 @@ in
         38422
       ];
       allowedUDPPorts = [
+        # CUPS.
+        631
         # GoPro web server.
         8554
       ];
