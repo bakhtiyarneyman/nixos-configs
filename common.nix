@@ -435,12 +435,22 @@ in
         };
       };
     };
-    printing.enable = true;
+    printing = {
+      enable = true;
+      drivers = with pkgs; [
+        gutenprint
+        gutenprintBin
+        brlaser
+        brgenml1lpr
+        brgenml1cupswrapper
+      ];
+    };
     avahi = {
       enable = true;
       # Important to resolve .local domains of printers, otherwise you get an error
       # like  "Impossible to connect to XXX.local: Name or service not known"
       nssmdns = true;
+      openFirewall = true;
     };
     tlp.enable = true; # For battery conservation. Powertop disables wired mice.
 
@@ -588,6 +598,7 @@ in
       enable = true;
       polkitPolicyOwners = [ "bakhtiyar " ];
     };
+    system-config-printer.enable = true;
   };
 
   # Allow elevating privileges dynamically via `pkexec`.
