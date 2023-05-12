@@ -79,8 +79,8 @@ in
           encrypted = {
             blkDev = device;
             enable = true;
-            # Created with `dd count=1 bs=512 if=/dev/urandom of=/etc/secrets/swap.key`.
-            keyFile = "/mnt-root/etc/secrets/swap.key";
+            # Created with `dd count=1 bs=512 if=/dev/urandom of=/etc/nixos/secrets/swap.key`.
+            keyFile = "/mnt-root/etc/nixos/secrets/swap.key";
             label = "decrypted-${partitionId}";
           };
         };
@@ -98,6 +98,11 @@ in
           "/" = {
             device = "fast/nixos/root";
             fsType = "zfs";
+          };
+          "/etc/nixos" = {
+            device = "fast/nixos/etc-nixos";
+            fsType = "zfs";
+            neededForBoot = true;
           };
           "/var" = {
             device = "fast/nixos/var";
@@ -357,7 +362,7 @@ in
     nix-serve = {
       enable = true;
       openFirewall = true;
-      secretKeyFile = "/etc/secrets/cache-priv-key.pem";
+      secretKeyFile = "/etc/nixos/secrets/cache-priv-key.pem";
     };
   };
 
