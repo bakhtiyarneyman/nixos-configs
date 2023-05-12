@@ -103,6 +103,14 @@ in
             device = "fast/nixos/var";
             fsType = "zfs";
           };
+          "/var/cache" = {
+            device = "fast/nixos/var/cache";
+            fsType = "zfs";
+          };
+          "/var/cache/builds" = {
+            device = "fast/nixos/var/cache/builds";
+            fsType = "zfs";
+          };
           "/var/lib" = {
             device = "fast/nixos/var/lib";
             fsType = "zfs";
@@ -123,12 +131,20 @@ in
             device = "fast/nixos/home/dev";
             fsType = "zfs";
           };
-          "/home/bakhtiyar/.builds" = {
-            device = "fast/nixos/home/.builds";
+          "/home/bakhtiyar/dump" = {
+            device = "slow/root/dump";
             fsType = "zfs";
           };
           "/home/bakhtiyar/media" = {
-            device = "fast/nixos/home/media";
+            device = "slow/root/media";
+            fsType = "zfs";
+          };
+          "/home/bakhtiyar/personal" = {
+            device = "slow/root/personal";
+            fsType = "zfs";
+          };
+          "/home/bakhtiyar/warehouse" = {
+            device = "slow/root/warehouse";
             fsType = "zfs";
           };
         };
