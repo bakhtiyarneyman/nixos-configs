@@ -45,7 +45,7 @@
     systemd.services.journal-brief = {
       description = "Sends emails with journalctl logs";
       wantedBy = [ "multi-user.target" ];
-      after = [ "network.target" ];
+      after = [ "network-online.target" ];
       serviceConfig = {
         Type = "oneshot";
         ExecStart =
