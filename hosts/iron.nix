@@ -41,17 +41,6 @@ in
     extraModulePackages = [ config.boot.kernelPackages.rtl88x2bu ];
     initrd = {
       availableKernelModules = [ "xhci_pci" "ehci_pci" "nvme" "ahci" "usb_storage" "usbhid" "sd_mod" ];
-      luks.devices =
-        let
-          insertDevice = devices: id: devices // {
-            ${"decrypted-${id}"} = {
-              allowDiscards = true;
-              bypassWorkqueues = true;
-              device = toDevice id;
-            };
-          };
-        in
-        foldl' insertDevice { } (map (flip toPartitionId 3) coreDiskIds ++ backupDiskIds);
     };
     kernelModules = [ "zfs" ];
     kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
@@ -75,10 +64,7 @@ in
       };
     };
     supportedFilesystems = [ "zfs" ];
-    zfs = {
-      extraPools = [ "backups" ];
-      forceImportRoot = false; # zfs_force=1 in kernel command line.
-    };
+    zfs.forceImportRoot = false; # zfs_force=1 in kernel command line.
   };
 
   swapDevices =
@@ -93,8 +79,8 @@ in
           encrypted = {
             blkDev = device;
             enable = true;
-            # Created with `dd count=1 bs=512 if=/dev/urandom of=/etc/swap.key`.
-            keyFile = "/mnt-root/etc/swap.key";
+            # Created with `dd count=1 bs=512 if=/dev/urandom of=/etc/secrets/swap.key`.
+            keyFile = "/mnt-root/etc/secrets/swap.key";
             label = "decrypted-${partitionId}";
           };
         };
@@ -110,35 +96,39 @@ in
             fsType = "zfs";
           };
           "/" = {
-            device = "main/nixos/root";
+            device = "fast/nixos/root";
             fsType = "zfs";
           };
           "/var" = {
-            device = "main/nixos/var";
+            device = "fast/nixos/var";
             fsType = "zfs";
           };
           "/var/lib" = {
-            device = "main/nixos/var/lib";
+            device = "fast/nixos/var/lib";
             fsType = "zfs";
           };
           "/var/log" = {
-            device = "main/nixos/var/log";
+            device = "fast/nixos/var/log";
+            fsType = "zfs";
+          };
+          "/var/tmp" = {
+            device = "fast/nixos/var/tmp";
             fsType = "zfs";
           };
           "/home" = {
-            device = "main/nixos/home";
+            device = "fast/nixos/home";
             fsType = "zfs";
           };
           "/home/bakhtiyar/dev" = {
-            device = "main/nixos/home/dev";
+            device = "fast/nixos/home/dev";
             fsType = "zfs";
           };
           "/home/bakhtiyar/.builds" = {
-            device = "main/nixos/home/.builds";
+            device = "fast/nixos/home/.builds";
             fsType = "zfs";
           };
           "/home/bakhtiyar/media" = {
-            device = "main/nixos/home/media";
+            device = "fast/nixos/home/media";
             fsType = "zfs";
           };
         };
