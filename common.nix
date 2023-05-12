@@ -308,6 +308,15 @@ in
             (cat <(echo "Subject: Journal brief") -) | ${pkgs.msmtp}/bin/msmtp bakhtiyarneyman+test@gmail.com
           '';
         };
+        exclusions = [
+          {
+            MESSAGE = [ "Bluetooth: hci0: link tx timeout" ];
+            SYSLOG_IDENTIFIER = [ "kernel" ];
+          }
+          {
+            SYSLOG_IDENTIFIER = [ "bluetoothd" ];
+          }
+        ];
       };
     };
     pipewire = {
