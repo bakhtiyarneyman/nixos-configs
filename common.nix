@@ -600,7 +600,7 @@ in
         default = {
           host = "smtp.gmail.com";
           user = "bakhtiyarneyman";
-          passwordeval = "cat /etc/nixos/secrets/email_password";
+          passwordeval = "cat /etc/nixos/secrets/smtp.passphrase";
           from = hostEmailFrom;
         };
       };
