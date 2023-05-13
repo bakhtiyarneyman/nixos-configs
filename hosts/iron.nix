@@ -144,6 +144,10 @@ in
             device = "slow/root/media";
             fsType = "zfs";
           };
+          "/home/bakhtiyar/media/movies" = {
+            device = "slow/root/media/movies";
+            fsType = "zfs";
+          };
           "/home/bakhtiyar/personal" = {
             device = "slow/root/personal";
             fsType = "zfs";
