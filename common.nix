@@ -71,6 +71,7 @@ in
     defaultUserShell = pkgs.fish;
     users.bakhtiyar = {
       description = "Bakhtiyar Neyman";
+      homeMode = "701";
       isNormalUser = true;
       extraGroups = [
         "wheel" # Enable ‘sudo’ for the user.
