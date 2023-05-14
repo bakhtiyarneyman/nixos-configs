@@ -206,6 +206,7 @@ in
     sessionVariables = {
       NIXOS_OZONE_WL = "1";
       CARGO_HOME = "/var/cache/cargo";
+      npm_config_cache = "/var/cache/npm";
     };
   };
 
