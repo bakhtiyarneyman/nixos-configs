@@ -203,7 +203,10 @@ in
       };
       "avahi/services/unused".text = "";
     };
-    sessionVariables.NIXOS_OZONE_WL = "1";
+    sessionVariables = {
+      NIXOS_OZONE_WL = "1";
+      CARGO_HOME = "/var/cache/cargo";
+    };
   };
 
   networking = {
