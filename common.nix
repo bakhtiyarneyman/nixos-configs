@@ -530,6 +530,24 @@ in
               command bluetoothctl devices Paired; and command bluetoothctl
           end
 
+          function delete_old_snapshots
+            # Local time: "05/14/2023 00:00:00+07"
+            set threshold (date -d $argv[1] +%s)
+
+            zfs list -H -o name,creation -t snapshot | while read -s line;set name (echo $line | cut -f1)
+              set date (echo $line | cut -f2- -d' ' | date -f - +%s)
+
+              if test $date -lt $threshold
+                if test "$argv[2]" = "confirm"
+                  echo Deleting $name
+                  sudo zfs destroy $name; or return 1
+                else
+                  echo Would have deleted $name
+                end
+              end
+            end
+          end
+
           direnv hook fish | source
         '';
     };
