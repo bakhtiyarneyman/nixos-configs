@@ -24,12 +24,12 @@ in
     batteries = [
       {
         device = "battery_hidpp_battery_0";
-        name = "";
-      }
-      {
-        device = "battery_hidpp_battery_1";
         name = "";
       }
+      # {
+      #   device = "battery_hidpp_battery_1";
+      #   name = "";
+      # }
       {
         device = "ups_hiddev1";
         name = "";
