@@ -132,6 +132,10 @@ in
             device = "fast/nixos/home";
             fsType = "zfs";
           };
+          "/home/bakhtiyar/.bitmonero" = {
+            device = "slow/root/monero";
+            fsType = "zfs";
+          };
           "/home/bakhtiyar/dev" = {
             device = "fast/nixos/home/dev";
             fsType = "zfs";
