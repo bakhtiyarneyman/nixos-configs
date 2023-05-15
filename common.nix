@@ -284,6 +284,10 @@ in
       ];
     };
     video.hidpi.enable = true;
+    logitech.wireless = {
+      enable = true;
+      enableGraphical = true;
+    };
   };
 
   services = {
