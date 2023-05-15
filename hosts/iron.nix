@@ -232,6 +232,11 @@ in
             };
             root_fs = "backups";
             recv = {
+              properties = {
+                override = {
+                  copies = 2;
+                };
+              };
               placeholder = {
                 encryption = "off";
               };
