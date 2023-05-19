@@ -182,7 +182,16 @@ in
     in
     foldl' insertBootFilesystem fss coreDiskIds;
 
-  networking.hostId = "a7a93500";
+  networking = {
+    hostId = "a7a93500";
+    firewall = {
+      allowedTCPPorts = [
+        # Monero daemon.
+        18081
+      ];
+    };
+  };
+
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
