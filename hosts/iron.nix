@@ -187,6 +187,7 @@ in
     firewall = {
       allowedTCPPorts = [
         # Monero daemon.
+        18080
         18081
       ];
     };
