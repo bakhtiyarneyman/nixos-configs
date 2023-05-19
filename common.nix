@@ -486,6 +486,13 @@ in
     fwupd.enable = true;
     onedrive.enable = true;
     fstrim.enable = true;
+    smartd = {
+      enable = true;
+      extraOptions = [
+        "-A /var/log/smartd/"
+        "--interval=3600"
+      ];
+    };
   };
 
   programs = {
