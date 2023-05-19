@@ -377,7 +377,19 @@ in
       openFirewall = true;
       secretKeyFile = "/etc/nixos/secrets/cache-priv-key.pem";
     };
+
+    monero = {
+      dataDir = "/var/lib/monero";
+      enable = true;
+      extraConfig = ''
+        prune-blockchain=1
+        out-peers=64
+        in-peers=1024
+      '';
+      limits.upload = 100; # KB/s
+    };
   };
+
 
   programs.sway = {
     extraOptions = [ "--unsupported-gpu" ];
