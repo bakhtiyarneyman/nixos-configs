@@ -120,6 +120,10 @@ in
             device = "fast/nixos/var/lib";
             fsType = "zfs";
           };
+          "/var/lib/monero" = {
+            device = "slow/root/monero";
+            fsType = "zfs";
+          };
           "/var/log" = {
             device = "fast/nixos/var/log";
             fsType = "zfs";
@@ -130,10 +134,6 @@ in
           };
           "/home" = {
             device = "fast/nixos/home";
-            fsType = "zfs";
-          };
-          "/home/bakhtiyar/.bitmonero" = {
-            device = "slow/root/monero";
             fsType = "zfs";
           };
           "/home/bakhtiyar/dev" = {
