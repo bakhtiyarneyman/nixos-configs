@@ -375,7 +375,7 @@ in
     nix-serve = {
       enable = true;
       openFirewall = true;
-      secretKeyFile = "/etc/nixos/secrets/cache-priv-key.pem";
+      secretKeyFile = "/etc/nixos/secrets/iron.cache.private-key.pem";
     };
 
     monero = {
