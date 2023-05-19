@@ -627,7 +627,7 @@ in
         default = {
           host = "smtp.gmail.com";
           user = "bakhtiyarneyman";
-          passwordeval = "cat /etc/nixos/secrets/smtp.passphrase";
+          passwordeval = "${pkgs.coreutils-full}/bin/cat /etc/nixos/secrets/smtp.passphrase";
           from = hostEmailFrom;
         };
       };
