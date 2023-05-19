@@ -396,7 +396,7 @@ in
         rpc-restricted-bind-port=18081
         rpc-ssl=enabled
         rpc-ssl-private-key=/etc/nixos/secrets/iron.monero.private-key.pem
-        rpc-ssl-certificate=${../certificates/iron.monero.public-key.pem}
+        rpc-ssl-certificate=${../certificates/iron.monero.cert.pem}
 
         prune-blockchain=1
         out-peers=64
