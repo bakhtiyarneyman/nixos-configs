@@ -382,6 +382,8 @@ in
       dataDir = "/var/lib/monero";
       enable = true;
       extraConfig = ''
+        rpc-restricted-bind-ip=100.65.77.115 # iron-tailscale
+        rpc-restricted-bind-port=18081
         rpc-ssl=enabled
         rpc-ssl-private-key=/etc/nixos/secrets/iron.monero.private-key.pem
         rpc-ssl-certificate=${../certificates/iron.monero.public-key.pem}
