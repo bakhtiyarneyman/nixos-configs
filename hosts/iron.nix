@@ -382,6 +382,10 @@ in
       dataDir = "/var/lib/monero";
       enable = true;
       extraConfig = ''
+        rpc-ssl=enabled
+        rpc-ssl-private-key=/etc/nixos/secrets/iron.monero.private-key.pem
+        rpc-ssl-certificate=${../certificates/iron.monero.public-key.pem}
+
         prune-blockchain=1
         out-peers=64
         in-peers=1024
