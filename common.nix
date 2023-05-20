@@ -110,8 +110,7 @@ in
       du-dust # Better du.
       sd # Better sed.
       xcp # Better cp.
-      cryfs
-      namespaced-openvpn
+      qbittorrent
       # UI
       alacritty
       prettyLock
@@ -178,6 +177,8 @@ in
         mediaSupport = true;
         pulseaudioSupport = true;
       })
+      namespaced-openvpn
+      cryfs
     ];
 
     pathsToLink = [
