@@ -315,7 +315,7 @@ in
           from = hostEmailFrom;
           to = atGmail "bakhtiyarneyman+journal-brief";
           command = ''
-            (cat <(echo "Subject: Journal brief") -) | ${pkgs.msmtp}/bin/msmtp bakhtiyarneyman+test@gmail.com
+            (cat <(echo "Subject: Journal brief") -) | ${pkgs.msmtp}/bin/msmtp -t
           '';
         };
         exclusions = [
