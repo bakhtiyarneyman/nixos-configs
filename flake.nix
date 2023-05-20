@@ -30,6 +30,7 @@
           ./modules/dunst.nix
           ./modules/i3status-rust.nix
           ./modules/journal-brief.nix
+          ./modules/namespaced-openvpn.nix
         ];
       };
     in

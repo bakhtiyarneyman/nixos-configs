@@ -111,7 +111,7 @@ in
       sd # Better sed.
       xcp # Better cp.
       cryfs
-      (python3Packages.callPackage ./pkgs/namespaced-openvpn.nix { })
+      namespaced-openvpn
       # UI
       alacritty
       prettyLock
@@ -483,6 +483,7 @@ in
     '';
 
     tailscale.enable = true;
+    namespaced-openvpn.enable = true;
     fwupd.enable = true;
     onedrive.enable = true;
     fstrim.enable = true;
@@ -732,6 +733,7 @@ in
           runtimeDependencies = old.runtimeDependencies ++ [ super.wayland ];
         });
         journal-brief = super.callPackage ./pkgs/journal-brief.nix { };
+        namespaced-openvpn = super.python3Packages.callPackage ./pkgs/namespaced-openvpn.nix { };
       })
     ];
   };
