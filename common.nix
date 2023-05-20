@@ -645,7 +645,7 @@ in
     _1password.enable = true;
     _1password-gui = {
       enable = true;
-      polkitPolicyOwners = [ "bakhtiyar " ];
+      polkitPolicyOwners = [ "bakhtiyar" ];
     };
     system-config-printer.enable = true;
   };
@@ -712,6 +712,19 @@ in
             resume 'echo "Screen on"; ${pkgs.sway}/bin/swaymsg "output * dpms on"' \
           before-sleep ${prettyLock}/bin/prettyLock
       ''}/bin/autolock";
+      polkit-gnome-authentication-agent-1 = {
+        description = "polkit-gnome-authentication-agent-1";
+        wantedBy = [ "graphical-session.target" ];
+        wants = [ "graphical-session.target" ];
+        after = [ "graphical-session.target" ];
+        serviceConfig = {
+          Type = "simple";
+          ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
+          Restart = "on-failure";
+          RestartSec = 1;
+          TimeoutStopSec = 10;
+        };
+      };
       wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
     } // mkJournst "boot" // mkJournst "run";
 
