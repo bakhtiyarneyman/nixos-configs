@@ -141,7 +141,7 @@ in
             fsType = "zfs";
           };
           "/home/bakhtiyar/dump" = {
-            device = "slow/root/dump";
+            device = "fast/nixos/home/dump";
             fsType = "zfs";
           };
           "/home/bakhtiyar/media" = {
