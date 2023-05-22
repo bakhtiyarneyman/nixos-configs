@@ -167,6 +167,7 @@ in
       # Audio
       audacity
       # Video
+      libva-utils
       vlc
       guvcview
       shotcut
