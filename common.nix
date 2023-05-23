@@ -545,14 +545,29 @@ in
           end
 
           function delete_old_snapshots
-            # Local time: "05/14/2023 00:00:00+07"
-            set threshold (date -d $argv[1] +%s)
+            argparse --max-args=1 "older-than=?" "confirm" "help" -- $argv
 
-            zfs list -H -o name,creation -t snapshot | while read -s line;set name (echo $line | cut -f1)
+            if test $_flag_help
+              echo "Usage: delete_old_snapshots --older-than=DATE [--confirm] [FILESYSTEM]"
+              echo "  --older-than=DATE  Delete snapshots older than this date, e.g. '05/14/2023 00:00:00+07'"
+              echo "  --confirm            Actually delete snapshots"
+              echo "  FILESYSTEM         The pool or dataset to delete snapshots from"
+              return 0
+            end
+
+
+            if test $_flag_older_than
+              set threshold (date -d $_flag_older_than +%s)
+            else
+              echo "You must specify --older-than"
+              return 1
+            end
+
+            zfs list -H -o name,creation -t snapshot $argv | while read -s line;set name (echo $line | cut -f1)
               set date (echo $line | cut -f2- -d' ' | date -f - +%s)
 
               if test $date -lt $threshold
-                if test "$argv[2]" = "confirm"
+                if test $_flag_confirm
                   echo Deleting $name
                   sudo zfs destroy $name; or return 1
                 else
