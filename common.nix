@@ -69,6 +69,7 @@ in
   users = {
     mutableUsers = false;
     defaultUserShell = pkgs.fish;
+    users.root.hashedPassword = "$6$.9aOljbRDW00nl$vRfj6ZVwgWXLTw2Ti/I55ov9nNl6iQAqAuauCiVhoRWIv5txKFIb49FKY0X3dgVqE61rPOqBh8qQSk61P2lZI1";
     users.bakhtiyar = {
       description = "Bakhtiyar Neyman";
       homeMode = "701";
