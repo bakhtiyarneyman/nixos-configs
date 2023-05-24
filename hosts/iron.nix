@@ -234,8 +234,8 @@ in
         };
         jobs = [
           {
-            name = "backups";
             type = "sink";
+            name = "backups";
             serve = {
               type = "local";
               listener_name = "backups";
@@ -253,17 +253,24 @@ in
             };
           }
           {
+            type = "snap";
             name = "backup_home";
-            type = "push";
-            connect = {
-              type = "local";
-              listener_name = "backups";
-              client_identity = "iron";
-            };
+            # connect = {
+            #   type = "local";
+            #   listener_name = "backups";
+            #   client_identity = "iron";
+            # };
             filesystems = {
-              "main/nixos/home<" = true;
-              "main/nixos/home/.builds" = false;
+              "fast/nixos/etc-nixos" = true;
+              "fast/nixos/home<" = true;
+              "fast/nixos/home/dump" = false;
+              "slow/root<" = true;
+              "slow/root/media/movies" = false;
+              "slow/root/monero" = false;
             };
+            # send = {
+            #   encrypted = true;
+            # };
             snapshotting = {
               type = "periodic";
               interval = "10m";
@@ -271,8 +278,8 @@ in
               timestamp_format = "iso-8601";
             };
             pruning = {
-              keep_sender = [
-                { type = "not_replicated"; }
+              keep = [
+                # { type = "not_replicated"; }
                 {
                   type = "grid";
                   grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
@@ -284,18 +291,18 @@ in
                   regex = "^zrepl_.*";
                 }
               ];
-              keep_receiver = [
-                {
-                  type = "grid";
-                  grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
-                  regex = "^zrepl_.*";
-                }
-                {
-                  type = "regex";
-                  negate = true;
-                  regex = "^zrepl_.*";
-                }
-              ];
+              # keep_receiver = [
+              #   {
+              #     type = "grid";
+              #     grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
+              #     regex = "^zrepl_.*";
+              #   }
+              #   {
+              #     type = "regex";
+              #     negate = true;
+              #     regex = "^zrepl_.*";
+              #   }
+              # ];
             };
           }
         ];
