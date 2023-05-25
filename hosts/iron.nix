@@ -425,4 +425,13 @@ in
     '';
   };
   virtualisation.docker.enableNvidia = true;
+
+  environment = {
+    systemPackages = with pkgs; [
+      radeontop
+    ];
+    variables = {
+      LIBVA_DRIVER_NAME = "radeonsi";
+    };
+  };
 }
