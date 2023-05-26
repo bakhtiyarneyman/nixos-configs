@@ -13,7 +13,7 @@
           config.allowUnfree = true;
         };
       };
-      mkSystem = hostName: nixpkgs.lib.nixosSystem {
+      mkSystem = hostName: extraModules: nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = { inherit hostName; };
         modules = [
@@ -26,18 +26,20 @@
             system.configurationRevision = self.rev or "dirty";
           }
           (./hosts/${hostName} + ".nix") # rnix-lsp complains about this.
-          ./common.nix
-          ./modules/dunst.nix
-          ./modules/i3status-rust.nix
-          ./modules/journal-brief.nix
-          ./modules/namespaced-openvpn.nix
-        ];
+          ./modules/core.nix
+        ] ++ extraModules;
       };
     in
     {
-      nixosConfigurations = {
-        iron = mkSystem "iron";
-        kevlar = mkSystem "kevlar";
-      };
+      nixosConfigurations =
+        let owned = [
+          ./modules/gui.nix
+          ./modules/trusted.nix
+        ];
+        in
+        {
+          iron = mkSystem "iron" owned;
+          kevlar = mkSystem "kevlar" owned;
+        };
     };
 }

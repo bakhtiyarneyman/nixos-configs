@@ -4,7 +4,7 @@ writeShellScriptBin "prettyLock" ''
   ${swaylock}/bin/swaylock \
     --indicator-radius=40 \
     --show-failed-attempts \
-    --image=${./wallpaper.jpg} \
+    --image=${../wallpaper.jpg} \
     --color="000000ff" \
     --key-hl-color="6060f0ff" \
     --bs-hl-color="c678ddff" \

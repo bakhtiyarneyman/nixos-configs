@@ -38,7 +38,9 @@ in
   };
 
   boot = {
-    extraModulePackages = [ config.boot.kernelPackages.rtl88x2bu ];
+    extraModulePackages = [
+      # config.boot.zfs.package.latestCompatibfleLinuxPackages.rtl88x2bu
+    ];
     initrd = {
       availableKernelModules = [ "xhci_pci" "ehci_pci" "nvme" "ahci" "usb_storage" "usbhid" "sd_mod" ];
     };
@@ -64,7 +66,13 @@ in
       };
     };
     supportedFilesystems = [ "zfs" ];
-    zfs.forceImportRoot = false; # zfs_force=1 in kernel command line.
+    zfs = {
+      forceImportRoot = false; # zfs_force=1 in kernel command line.
+      # extraPools = [ "backups" ];
+      # requestEncryptionCredentials = [
+      #   "fast/nixos"
+      # ];
+    };
   };
 
   swapDevices =
@@ -164,6 +172,22 @@ in
             device = "slow/root/warehouse";
             fsType = "zfs";
           };
+          # "/export/media" = {
+          #   device = "/home/bakhtiyar/media";
+          #   options = [ "bind" ];
+          # };
+          # "/export/dump" = {
+          #   device = "/home/bakhtiyar/dump";
+          #   options = [ "bind" ];
+          # };
+          # "/export/personal" = {
+          #   device = "/home/bakhtiyar/personal";
+          #   options = [ "bind" ];
+          # };
+          # "/export/warehouse" = {
+          #   device = "/home/bakhtiyar/warehouse";
+          #   options = [ "bind" ];
+          # };
         };
       insertBootFilesystem = fss: diskId:
         let
@@ -195,6 +219,8 @@ in
         18081
       ];
     };
+    # allowedTCPPorts = [ 111 2049 4000 4001 4002 20048 ];
+    # allowedUDPPorts = [ 111 2049 4000 4001 4002 20048 ];
   };
 
   # This value determines the NixOS release with which your system is to be
@@ -414,12 +440,24 @@ in
         in-peers=1024
       '';
       limits.upload = 100; # KB/s
+      # rpc.address = "100.0.0.0";
     };
   };
 
+  # nfs.server = {
+  #   enable = true;
+  #   exports = ''
+  #     /export       192.168.1.10(ro,fsid=0,no_subtree_check)
+  #     /export/media 192.168.1.10(ro,nohide,insecure,no_subtree_check)
+  #     /export/dump  192.168.1.10(rw,nohide,insecure,no_subtree_check)
+  #   '';
+  #   statdPort = 4000;
+  #   lockdPort = 4001;
+  #   mountdPort = 4002;
+  # };
 
   programs.sway = {
-    extraOptions = [ "--unsupported-gpu" ];
+    extraOptions = [ "--unsupported-gpu" ]; # TODO: remove this.
     extraSessionCommands = ''
       export WLR_NO_HARDWARE_CURSORS=1
     '';
