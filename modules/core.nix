@@ -154,6 +154,7 @@ in
     };
 
     services = {
+      openssh.enable = true;
 
       journal-brief = {
         enable = true;
