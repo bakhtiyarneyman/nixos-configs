@@ -150,7 +150,12 @@ in
     };
 
     services = {
-      openssh.enable = true;
+      openssh = {
+        enable = true;
+        settings = {
+          AllowAgentForwarding = true;
+        };
+      };
 
       journal-brief = {
         enable = true;
