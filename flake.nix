@@ -40,6 +40,7 @@
         {
           iron = mkSystem "iron" owned;
           kevlar = mkSystem "kevlar" owned;
+          tungsten = mkSystem "tungsten" [ ./modules/untrusted.nix ];
         };
     };
 }
