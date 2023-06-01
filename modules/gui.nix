@@ -354,7 +354,6 @@ in
         dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
       };
 
-      _1password.enable = true;
       _1password-gui = {
         enable = true;
         polkitPolicyOwners = [ "bakhtiyar" ];
