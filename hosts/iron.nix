@@ -23,18 +23,26 @@ in
     networkInterface = "eno1";
     batteries = [
       {
-        device = "battery_hidpp_battery_0";
-        name = "";
+        model = "Wireless Mouse MX Master 3";
+        icon = "";
       }
-      # {
-      #   device = "battery_hidpp_battery_1";
-      #   name = "";
-      # }
       {
-        device = "ups_hiddev1";
-        name = "";
+        model = "MX Keys Wireless Keyboard";
+        icon = "";
+      }
+      {
+        device = "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0/usbmisc/hiddev1";
+        icon = "";
       }
     ];
+    extraConfig = ''
+      [[block]]
+      block = "amd_gpu"
+      device = "card0"
+      format = " $icon ^icon_cpu $utilization.eng(width:3) "
+      format_alt = " $icon ^icon_memory_mem $vram_used_percents.eng(width:3) "
+      interval = 1
+    '';
   };
 
   boot = {

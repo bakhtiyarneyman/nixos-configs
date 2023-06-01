@@ -18,9 +18,14 @@ in
       type = types.listOf (types.submodule {
         options = {
           device = mkOption {
-            type = types.str;
+            type = types.nullOr types.str;
+            default = null;
           };
-          name = mkOption {
+          model = mkOption {
+            type = types.nullOr types.str;
+            default = null;
+          };
+          icon = mkOption {
             type = types.str;
           };
         };
@@ -70,69 +75,74 @@ in
         alternating_tint_fg = "#111111"
       '';
       configFile = pkgs.writeText "i3status-rust.toml" ''
-        icons = "awesome5"
+
         scrolling = "natural"
+        [icons]
+        icons = "awesome6"
         [theme]
-        file = "${themeFile}"
+        theme = "${themeFile}"
 
         [[block]]
         block = "net"
         device = ${q cfg.networkInterface}
-        format = "{ssid} {signal_strength}"
-        interval = 5
+        format = " $icon ^icon_net_down $speed_down.eng(prefix:M,width:3)/s   ^icon_net_up $speed_up.eng(prefix:M,width:3)/s "
+        format_alt = " $icon {$ssid $signal_strength|N/A} "
+        interval = 1
 
         [[block]]
         block = "hueshift"
+        hue_shifter = "gammastep"
+        format = " {$temperature}K "
+        click_temp = 3300
 
         [[block]]
         block = "disk_space"
         path = "/"
-        alias = ""
         info_type = "used"
-        alert = 90
-        warning = 80
-        format = "{icon} {percentage}"
+        alert = 80
+        warning = 60
+        format = " $icon $percentage "
+        format_alt = " $icon $used / $total "
 
         [[block]]
         block = "memory"
-        display_type = "memory"
-        format_mem = "{mem_used_percents}"
-        format_swap = "{swap_used_percents}"
+        format = " ^icon_memory_mem $mem_used_percents.eng(width:3)  ^icon_memory_swap $swap_used_percents.eng(width:3) "
+        format_alt = " ^icon_memory_mem $mem_used.eng / $mem_total  ^icon_memory_swap $swap_used / $swap_total "
+        interval = 1
 
         [[block]]
         block = "cpu"
         interval = 1
-        format = "{utilization} {frequency}"
+        format = " $icon $utilization.eng(width:4) "
+        format_alt = " $icon $frequency.eng(prefix:G,width:3) "
 
         [[block]]
         block = "temperature"
-        collapsed = false
         interval = 1
         good = -100
-        format = "{max}"
+        format = " $icon $max"
         chip = "*-isa-*"
-
-        [[block]]
-        block = "load"
-        interval = 1
-        format = "{1m}"
 
         [[block]]
         block = "sound"
         driver = "pulseaudio"
-        on_click = "${pkgs.pavucontrol}/bin/pavucontrol"
+        format = " $icon $volume.eng(width:2) "
         show_volume_when_muted = true
         headphones_indicator = true
+        [[block.click]]
+        button = "left"
+        cmd = "${pkgs.pavucontrol}/bin/pavucontrol"
 
         ${
           let mkBatterySection = battery: ''
             [[block]]
             block = "battery"
             driver = "upower"
-            format = "${battery.name} {percentage} {time}"
-            full_format = "${battery.name}"
-            missing_format = "${battery.name}  "
-            device = "${battery.device}"
+            format = " ${battery.icon} $percentage "
+            full_format = " ${battery.icon} "
+            missing_format = " ${battery.icon}  "
+            ${lib.optionalString (battery.device != null) ''device = "${battery.device}"''}
+            ${lib.optionalString (battery.model != null) ''model = "${battery.model}"''}
             info = 100
             warning = 50
             critical = 20
@@ -140,8 +150,6 @@ in
             [block.theme_overrides]
             good_bg = "${black}"
             good_fg = "${white}"
-
-
           '';
           in lib.concatMapStrings mkBatterySection cfg.batteries
         }
@@ -155,27 +163,33 @@ in
 
         [[block]]
         block = "time"
-        on_click = "${pkgs.gnome3.gnome-calendar}/bin/gnome-calendar"
         interval = 1
-        format = "%a %Y-%m-%d %T"
+        format = " $icon $timestamp.datetime(f:'%a %Y-%m-%d %T')"
+        [[block.click]]
+        button = "left"
+        cmd = "${pkgs.gnome3.gnome-calendar}/bin/gnome-calendar"
 
         [[block]]
         block = "bluetooth"
         mac = "98:09:CF:BE:8B:61"
-        format_unavailable = " OP"
-        format = " OP {percentage}"
+        disconnected_format = " OP "
+        format = " $icon  OP $percentage "
 
         [[block]]
         block = "bluetooth"
         mac = "9B:5F:02:59:DB:63"
-        format_unavailable = " ARI"
-        format = " ARI {percentage}"
+        disconnected_format = " ARI "
+        format = " $icon  ARI $percentage "
 
         [[block]]
         block = "bluetooth"
         mac = "20:DF:B9:C8:29:13"
-        format_unavailable = " DS"
-        format = " DS"
+        disconnected_format = " DS "
+        format = " $icon  DS "
+
+        [[block]]
+        block = "notify"
+        format = " $icon {$notification_count|0} "
 
         ${cfg.extraConfig}
       '';

@@ -474,6 +474,7 @@ in
         fira-code
         font-awesome_4
         font-awesome_5
+        font-awesome_6
         freefont_ttf
         google-fonts
         inconsolata
