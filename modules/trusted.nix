@@ -17,6 +17,10 @@
       };
     };
 
+    programs = {
+      _1password.enable = true;
+    };
+
     services = {
       openssh.knownHosts = {
         iron = {
@@ -32,7 +36,6 @@
       tailscale.enable = true;
       i2p.enable = true;
       namespaced-openvpn.enable = true;
-      _1password.enable = true;
     };
 
     nix.settings.trusted-public-keys = [
