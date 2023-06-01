@@ -8,5 +8,11 @@
         bakhtiyar = { inherit hashedPassword; };
       };
     programs.ssh.startAgent = true;
+    security.pam = { 
+      enableSSHAgentAuth = true;
+      services = {
+        sudo.sshAgentAuth = true;
+      };
+    };
   };
 }
