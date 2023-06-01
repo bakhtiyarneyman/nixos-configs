@@ -7,5 +7,6 @@
         root = { inherit hashedPassword; };
         bakhtiyar = { inherit hashedPassword; };
       };
+    programs.ssh.startAgent = true;
   };
 }
