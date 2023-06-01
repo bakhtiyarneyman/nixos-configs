@@ -9,8 +9,6 @@
   };
 
   boot = {
-    extraModulePackages = [ ];
-    kernelModules = [ "kvm-intel" ];
     kernelParams = [ "mem_sleep_default=deep" ];
     loader.systemd-boot.enable = true;
     initrd = {
@@ -22,6 +20,8 @@
       };
     };
   };
+
+  swapDevices = [{ label = "swap"; }];
 
   fileSystems = {
     "/" = {
@@ -53,7 +53,6 @@
   };
 
   hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  swapDevices = [{ label = "swap"; }];
 
   nix.settings = {
     substituters = [
