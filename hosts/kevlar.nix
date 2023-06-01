@@ -56,7 +56,7 @@
   swapDevices = [{ label = "swap"; }];
 
   nix.settings = {
-    trusted-substituters = [
+    substituters = [
       "http://iron-tailscale:5000"
     ];
   };
