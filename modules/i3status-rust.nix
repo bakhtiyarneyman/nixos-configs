@@ -32,7 +32,7 @@ in
       });
       default = [{
         device = "DisplayDevice";
-        name = "";
+        icon = "$icon";
       }];
     };
     extraConfig = mkOption {
@@ -81,19 +81,6 @@ in
         icons = "awesome6"
         [theme]
         theme = "${themeFile}"
-
-        [[block]]
-        block = "net"
-        device = ${q cfg.networkInterface}
-        format = " $icon ^icon_net_down $speed_down.eng(prefix:M,width:3)/s   ^icon_net_up $speed_up.eng(prefix:M,width:3)/s "
-        format_alt = " $icon {$ssid $signal_strength|N/A} "
-        interval = 1
-
-        [[block]]
-        block = "hueshift"
-        hue_shifter = "gammastep"
-        format = " {$temperature}K "
-        click_temp = 3300
 
         [[block]]
         block = "disk_space"
@@ -153,6 +140,14 @@ in
           '';
           in lib.concatMapStrings mkBatterySection cfg.batteries
         }
+
+        [[block]]
+        block = "net"
+        device = ${q cfg.networkInterface}
+        format = " $icon ^icon_net_down $speed_down.eng(prefix:M,width:3)/s   ^icon_net_up $speed_up.eng(prefix:M,width:3)/s "
+        format_alt = " $icon {$ssid $signal_strength|N/A} "
+        interval = 1
+
         [[block]]
         block = "keyboard_layout"
         driver = "sway"
@@ -164,7 +159,9 @@ in
         [[block]]
         block = "time"
         interval = 1
-        format = " $icon $timestamp.datetime(f:'%a %Y-%m-%d %T')"
+        [block.format]
+        full = " $icon $timestamp.datetime(f:'%a %Y-%m-%d %T')"
+        short = " $icon $timestamp.datetime(f:%T) "
         [[block.click]]
         button = "left"
         cmd = "${pkgs.gnome3.gnome-calendar}/bin/gnome-calendar"
