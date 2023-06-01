@@ -18,7 +18,7 @@ in
   config = {
 
     boot = {
-      tmpOnTmpfs = true;
+      tmp.useTmpfs = true;
       kernel.sysctl."kernel.sysrq" = 1;
       # Use the systemd-boot EFI boot loader.
       loader = {

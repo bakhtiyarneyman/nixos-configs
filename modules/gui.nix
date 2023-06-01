@@ -163,7 +163,6 @@ in
           libvdpau-va-gl
         ];
       };
-      video.hidpi.enable = true;
       logitech.wireless.enableGraphical = true;
     };
 

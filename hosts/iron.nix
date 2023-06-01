@@ -50,7 +50,6 @@ in
       efi.efiSysMountPoint = "/boot/efis/${toPartitionId (head coreDiskIds) 1}";
       grub = {
         enable = true;
-        version = 2;
         devices = map toDevice coreDiskIds;
         efiSupport = true;
         extraInstallCommands = (toString (map

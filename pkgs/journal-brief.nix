@@ -19,7 +19,7 @@
     pyyaml
   ];
 
-  checkInputs = with python3Packages; [
+  nativeCheckInputs = with python3Packages; [
     pytest
     flexmock
     pytest-mock
