@@ -4,9 +4,9 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports =
-    [ (modulesPath + "/profiles/qemu-guest.nix")
-    ];
+  imports = [
+    (modulesPath + "/profiles/qemu-guest.nix")
+  ];
 
   boot = {
     initrd = {
@@ -27,14 +27,14 @@
     };
   };
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/3102206d-3e6a-4c88-9fb0-7ae5387c4e3e";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/3102206d-3e6a-4c88-9fb0-7ae5387c4e3e";
+    fsType = "ext4";
+  };
 
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/d444f37c-7217-4fe9-a0de-a9135cc5d61a"; }
-    ];
+  swapDevices = [
+    { device = "/dev/disk/by-uuid/d444f37c-7217-4fe9-a0de-a9135cc5d61a"; }
+  ];
 
   networking = {
     # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
@@ -42,10 +42,19 @@
     # still possible to use this option, but it's recommended to use it in conjunction
     # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
     useDHCP = lib.mkDefault true;
+    # interfaces.enp1s0.useDHCP = lib.mkDefault true;
+
     hostId = "a4d09f93";
   };
-   
-  # networking.interfaces.enp1s0.useDHCP = lib.mkDefault true;
+
+  services = {
+    openssh = {
+      enable = true;
+      authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOeAfprNGrQ2RfrDT81UxfTD/GfnOwz8gPzGppNiTw40 bakhtiyar"
+      ];
+    };
+  };
 
   # nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   # hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
