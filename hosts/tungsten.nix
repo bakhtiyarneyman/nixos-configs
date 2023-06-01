@@ -47,14 +47,9 @@
     hostId = "a4d09f93";
   };
 
-  services = {
-    openssh = {
-      enable = true;
-      authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOeAfprNGrQ2RfrDT81UxfTD/GfnOwz8gPzGppNiTw40 bakhtiyar"
-      ];
-    };
-  };
+  users.users.bakhtiyar.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsGRMyBB18Gnhf5Igw/w5rbm6ks49TPZ2wY7iXKKh2L bakhtiyar@iron"
+  ];
 
   # nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   # hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
