@@ -140,10 +140,6 @@ in
       firewall = {
         enable = true;
         logRefusedConnections = true;
-        allowedTCPPorts = [
-          # SSH.
-          22
-        ];
         checkReversePath = "loose";
       };
     };
