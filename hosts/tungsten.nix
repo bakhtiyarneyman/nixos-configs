@@ -47,8 +47,8 @@
         type = "sink";
         name = "backups";
         serve = {
-          type = "local";
-          listener_name = "backups";
+          type = "stdinserver";
+          client_identities = [ "iron" ];
         };
         root_fs = "backups";
         recv = {
@@ -66,6 +66,9 @@
   };
   system.stateVersion = "22.11";
 
+  users.users.root.openssh.authorizedKeys.keys = [
+    ''command="zrepl stdinserver iron",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJEhmdQV/OLmYQFKIMCs17JssVqPlkaQCSTmwyhkhqVo''
+  ];
   users.users.bakhtiyar.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGxoBwt5zviLpPomH5vHq0OQzN/G9dMKmyq+2y91xkRe github@1password"
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsGRMyBB18Gnhf5Igw/w5rbm6ks49TPZ2wY7iXKKh2L bakhtiyar@iron"
