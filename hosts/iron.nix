@@ -229,25 +229,6 @@ in
       settings = {
         jobs = [
           {
-            type = "sink";
-            name = "backups";
-            serve = {
-              type = "local";
-              listener_name = "backups";
-            };
-            root_fs = "backups";
-            recv = {
-              properties = {
-                override = {
-                  copies = 2;
-                };
-              };
-              placeholder = {
-                encryption = "off";
-              };
-            };
-          }
-          {
             type = "snap";
             name = "backup_home";
             # connect = {
