@@ -16,7 +16,7 @@
       device = "/dev/vda";
     };
     zfs = {
-      extraPools = "backups";
+      extraPools = [ "backups" ];
       requestEncryptionCredentials = false;
     };
   };
@@ -41,7 +41,7 @@
     hostId = "a4d09f93";
   };
 
-  services.zrepl = {
+  services.zrepl.settings = {
     jobs = [
       {
         type = "sink";

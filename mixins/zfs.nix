@@ -1,3 +1,4 @@
+{ config, pkgs, ...}:
 {
   imports = [
   ];
@@ -6,7 +7,7 @@
     boot = {
       kernelModules = [ "zfs" ];
       kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
-      loader.zfsSupport = true;
+      loader.grub.zfsSupport = true;
       supportedFilesystems = [ "zfs" ];
       zfs = {
         forceImportRoot = false; # zfs_force=1 in kernel command line.
