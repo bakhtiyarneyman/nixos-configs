@@ -39,9 +39,16 @@
         ];
         in
         {
-          iron = mkSystem "iron" (owned ++ [ ./mixins/zfs.nix ]);
+          iron = mkSystem "iron" (owned ++ [
+            ./mixins/always-on.nix
+            ./mixins/zfs.nix
+          ]);
           kevlar = mkSystem "kevlar" owned;
-          tungsten = mkSystem "tungsten" [ ./mixins/untrusted.nix ./mixins/zfs.nix ];
+          tungsten = mkSystem "tungsten" [
+            ./mixins/always-on.nix
+            ./mixins/untrusted.nix
+            ./mixins/zfs.nix
+          ];
         };
     };
 }
