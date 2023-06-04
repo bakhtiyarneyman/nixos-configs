@@ -144,11 +144,6 @@ in
       };
     };
 
-    hardware = {
-      enableRedistributableFirmware = true;
-      logitech.wireless.enable = true;
-    };
-
     services = {
       openssh = {
         enable = true;
@@ -197,16 +192,6 @@ in
       journald.extraConfig = ''
         SystemMaxUse=50M
       '';
-
-      fwupd.enable = true;
-
-      smartd = {
-        enable = true;
-        extraOptions = [
-          "-A /var/log/smartd/"
-          "--interval=3600"
-        ];
-      };
 
     };
 

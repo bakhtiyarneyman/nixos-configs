@@ -33,6 +33,7 @@
     {
       nixosConfigurations =
         let owned = [
+          ./mixins/bare-metal.nix
           ./mixins/gui.nix
           ./mixins/trusted.nix
         ];
