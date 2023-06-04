@@ -4,8 +4,8 @@ let
 in
 {
   imports = [
-    ./dunst.nix
-    ./i3status-rust.nix
+    ../modules/dunst.nix
+    ../modules/i3status-rust.nix
   ];
 
   config = {

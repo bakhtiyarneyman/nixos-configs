@@ -1,6 +1,6 @@
 {
   imports = [
-    ./namespaced-openvpn.nix
+    ../modules/namespaced-openvpn.nix
   ];
 
   config = {

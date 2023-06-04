@@ -26,21 +26,21 @@
             system.configurationRevision = self.rev or "dirty";
           }
           (./hosts/${hostName} + ".nix") # rnix-lsp complains about this.
-          ./modules/core.nix
+          ./mixins/core.nix
         ] ++ extraModules;
       };
     in
     {
       nixosConfigurations =
         let owned = [
-          ./modules/gui.nix
-          ./modules/trusted.nix
+          ./mixins/gui.nix
+          ./mixins/trusted.nix
         ];
         in
         {
           iron = mkSystem "iron" owned;
           kevlar = mkSystem "kevlar" owned;
-          tungsten = mkSystem "tungsten" [ ./modules/untrusted.nix ];
+          tungsten = mkSystem "tungsten" [ ./mixins/untrusted.nix ];
         };
     };
 }

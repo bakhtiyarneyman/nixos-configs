@@ -12,7 +12,7 @@ in
 {
 
   imports = [
-    ./journal-brief.nix
+    ../modules/journal-brief.nix
   ];
 
   config = {
