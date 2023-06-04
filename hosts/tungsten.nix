@@ -13,14 +13,11 @@
       availableKernelModules = [ "ahci" "xhci_pci" "virtio_pci" "sr_mod" "virtio_blk" ];
       kernelModules = [ ];
     };
-    kernelModules = [ "zfs" ];
-    kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
     extraModulePackages = [ ];
     loader.grub = {
       enable = true;
       device = "/dev/vda";
     };
-    supportedFilesystems = [ "zfs" ];
     zfs = {
       forceImportRoot = false;
     };
