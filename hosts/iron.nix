@@ -47,7 +47,7 @@ in
 
   boot = {
     extraModulePackages = [
-      # config.boot.zfs.package.latestCompatibfleLinuxPackages.rtl88x2bu
+      config.boot.zfs.package.latestCompatibleLinuxPackages.rtl88x2bu
     ];
     initrd = {
       availableKernelModules = [ "xhci_pci" "ehci_pci" "nvme" "ahci" "usb_storage" "usbhid" "sd_mod" ];
