@@ -229,16 +229,8 @@ in
       settings = {
         jobs = [
           {
-            type = "push";
+            type = "snap";
             name = "backup_home";
-            connect = {
-              type = "ssh+stdinserver";
-              host = "bakhtiyar.zfs.rent";
-              user = "root";
-              port = 22;
-              identity_file = "/etc/nixos/secrets/zrepl";
-              options = [ "IdentitiesOnly=yes" ];
-            };
             filesystems = {
               "fast/nixos/etc-nixos" = true;
               "fast/nixos/home<" = true;
@@ -247,7 +239,6 @@ in
               "slow/root/media/movies" = false;
               "slow/root/monero" = false;
             };
-            send.encrypted = true;
             snapshotting = {
               type = "periodic";
               interval = "10m";
@@ -255,20 +246,7 @@ in
               timestamp_format = "iso-8601";
             };
             pruning = {
-              keep_sender = [
-                { type = "not_replicated"; }
-                {
-                  type = "grid";
-                  grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
-                  regex = "^zrepl_.*";
-                }
-                {
-                  type = "regex";
-                  negate = true;
-                  regex = "^zrepl_.*";
-                }
-              ];
-              keep_receiver = [
+              keep = [
                 {
                   type = "grid";
                   grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
