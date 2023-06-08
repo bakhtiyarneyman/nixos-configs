@@ -168,15 +168,9 @@ in
 
         [[block]]
         block = "bluetooth"
-        mac = "98:09:CF:BE:8B:61"
+        mac = "8C:64:A2:AB:D5:15"
         disconnected_format = " OP "
         format = " $icon  OP{ $percentage|} "
-
-        [[block]]
-        block = "bluetooth"
-        mac = "9B:5F:02:59:DB:63"
-        disconnected_format = " ARI "
-        format = " $icon  ARI{ $percentage|} "
 
         [[block]]
         block = "bluetooth"
