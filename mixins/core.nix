@@ -24,7 +24,6 @@ in
       loader = {
         efi.canTouchEfiVariables = true;
       };
-      kernelModules = [ "kvm-intel" ];
       extraModprobeConfig = ''
         options v4l2loopback exclusive_caps=1 video_nr=9 card_label="DroidCam"
       '';
@@ -186,8 +185,6 @@ in
         nssmdns = true;
         openFirewall = true;
       };
-
-      tlp.enable = true; # For battery conservation. Powertop disables wired mice.
 
       journald.extraConfig = ''
         SystemMaxUse=50M

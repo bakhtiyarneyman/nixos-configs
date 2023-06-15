@@ -41,7 +41,6 @@ in
         adwaita-one-dark
         # Browsers
         (google-chrome.override { commandLineArgs = "--enable-features=VaapiVideoDecoder"; })
-        firefox
         # Communication
         skypeforlinux
         signal-desktop
@@ -157,8 +156,6 @@ in
         enable = true;
         driSupport32Bit = true;
         extraPackages = with pkgs; [
-          intel-media-driver # LIBVA_DRIVER_NAME=iHD
-          vaapiIntel # LIBVA_DRIVER_NAME=i965 (older but works better for Firefox/Chromium)
           vaapiVdpau
           libvdpau-va-gl
         ];
@@ -338,6 +335,14 @@ in
         wrapperFeatures.base = true;
         wrapperFeatures.gtk = true;
       };
+      firefox = {
+        enable = true;
+        preferences = {
+          "media.ffmpeg.vaapi.enabled" = true;
+          "media.navigator.mediadatadecoder_vpx_enabled" = true;
+          "media.rdd-ffmpeg.enabled" = true;
+        };
+      };
       gnome-disks.enable = true; # GUI USB disk mounting.
       light.enable = true; # Brightness management.
       nm-applet.enable = true; # Wi-fi management.
@@ -439,7 +444,6 @@ in
     nixpkgs = {
       config = {
         android_sdk.accept_license = true;
-        config.packageOverrides.vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
       };
       overlays = [
         (self: super: {
