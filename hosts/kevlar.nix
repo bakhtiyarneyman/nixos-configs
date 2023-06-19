@@ -10,7 +10,7 @@
 
   config = {
     boot = {
-      kernelParams = [ "nvme.noacpi=1" ];
+      kernelParams = [ ''acpi_osi="!Windows 2020"'' "nvme.noacpi=1" ];
       loader.systemd-boot.enable = true;
       initrd = {
         availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc" ];
