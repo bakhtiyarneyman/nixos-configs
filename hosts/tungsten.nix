@@ -41,28 +41,31 @@
     hostId = "a4d09f93";
   };
 
-  services.zrepl.settings = {
-    jobs = [
-      {
-        type = "sink";
-        name = "backups";
-        serve = {
-          type = "stdinserver";
-          client_identities = [ "iron" ];
-        };
-        root_fs = "backups";
-        recv = {
-          properties = {
-            override = {
-              copies = 2;
+  services = {
+    fail2ban.enable = true;
+    zrepl.settings = {
+      jobs = [
+        {
+          type = "sink";
+          name = "backups";
+          serve = {
+            type = "stdinserver";
+            client_identities = [ "iron" ];
+          };
+          root_fs = "backups";
+          recv = {
+            properties = {
+              override = {
+                copies = 2;
+              };
+            };
+            placeholder = {
+              encryption = "off";
             };
           };
-          placeholder = {
-            encryption = "off";
-          };
-        };
-      }
-    ];
+        }
+      ];
+    };
   };
   system.stateVersion = "22.11";
 
