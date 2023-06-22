@@ -42,7 +42,14 @@
   };
 
   services = {
-    fail2ban.enable = true;
+    fail2ban = {
+      enable = true;
+      bantime-increment = {
+        enable = true;
+	factor = "4";
+	rndtime = "8m";	
+      };
+    };
     zrepl.settings = {
       jobs = [
         {
