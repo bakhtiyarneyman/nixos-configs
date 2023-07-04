@@ -32,10 +32,6 @@ in
           icon = "";
         }
         {
-          model = "MX Keys Wireless Keyboard";
-          icon = "";
-        }
-        {
           device = "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0/usbmisc/hiddev1";
           icon = "";
         }
