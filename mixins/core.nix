@@ -271,6 +271,81 @@ in
             end
           end
 
+          function rename_gopro_files
+
+            argparse --max-args=0 "confirm" "help" -- $argv
+
+            echo $_flag_confirm
+            echo $_flag_help
+
+            if test $_flag_help
+              echo "Usage: rename_gopro_files [--confirm]"
+              echo "  --confirm          Actually rename files"
+              return 0
+            end
+
+            # Loop through each MP4 file
+            for old in (find -maxdepth 1 -type f -iname '*.mp4' | sort --numeric-sort)
+              # Extract the filename without extension
+              echo "old=$old"
+              set filename (basename --suffix=.mp4 $old)
+              echo "filename=$filename"
+
+              # Extract relevant parts from the filename
+              set gopro_marker (string sub --start=1 --length=1 $filename)
+              set encoding (string sub --start=2 --length=1 $filename)
+              set chapter_number (string sub --start=3 --length=2 $filename)
+              set file_number (string sub --start=5 --length=4 $filename)
+              set suffix (string sub --start=9 $filename)
+
+              echo "gopro_marker=$gopro_marker"
+              echo "encoding=$encoding"
+              echo "chapter_number=$chapter_number"
+              echo "file_number=$file_number"
+
+              # Verify that the filename is in the format G%encoding%%chapter_number%%file_number%.MP4
+              #   1. G is a literal character
+              #   2. encoding is either 'H' or 'X'
+              #   3. chapter_number is a two-digit number
+              #   4. file_number is a four-digit number
+
+              if test $gopro_marker != "G"
+                echo "$filename doesn't start with G: $gopro_marker"
+                return 1
+              end
+
+              if test $encoding != "H" -a $encoding != "X"
+                echo "encoding of $filename doesn't have encoding H or X: $encoding"
+                return 1
+              end
+
+              if test $chapter_number -lt 1 -o $chapter_number -gt 99
+                echo "chapter_number of $filename isn't between 1 and 99: $chapter_number"
+                return 1
+              end
+
+              if test $file_number -lt 1 -o $file_number -gt 9999
+                echo "file_number of $filename isn't between 1 and 9999: $file_number"
+                return 1
+              end
+
+              if test -n $suffix
+                echo "$filename doesn't end with .MP4: $suffix"
+                return 1
+              end
+
+              # Create the new filename
+              set new "$file_number.$chapter_number.mp4"
+
+              if test $_flag_confirm
+                echo "Renaming $old to $new"
+                # mv $old $new; or return 1
+              else
+                echo Would have renamed $old to $new
+              end
+            end
+          end
+
           direnv hook fish | source
         '';
       };
