@@ -51,7 +51,7 @@ in
         slack
         teams
         # Development
-        vscode
+        (unstable.vscode.override { isInsiders = false; })
         cachix
         meld
         python3
