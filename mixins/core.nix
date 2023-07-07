@@ -98,6 +98,7 @@ in
         du-dust # Better du.
         sd # Better sed.
         xcp # Better cp.
+        shell-genie
         # Shell packages
         fish
         peco
