@@ -73,8 +73,9 @@ in
         # Video
         libva-utils
         vlc
+        ffmpeg_6-full
         guvcview
-        shotcut
+        blender
         obs-studio
         # Privacy
         monero-gui
@@ -452,6 +453,10 @@ in
           prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix { };
           adwaita-one-dark = pkgs.callPackage ../pkgs/adwaita-one-dark.nix { };
           inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix { };
+          blender = super.blender.override {
+            ffmpeg = pkgs.ffmpeg_6-full;
+            hip = true;
+          };
         })
       ];
     };
