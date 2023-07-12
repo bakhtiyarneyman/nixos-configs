@@ -232,41 +232,84 @@ in
     services = {
       zrepl = {
         settings = {
-          jobs = [
-            {
-              type = "snap";
-              name = "backup_home";
-              filesystems = {
-                "fast/nixos/etc-nixos" = true;
-                "fast/nixos/home<" = true;
-                "fast/nixos/home/.cache" = false;
-                "fast/nixos/home/dump" = false;
-                "slow/root<" = true;
-                "slow/root/media/movies" = false;
-                "slow/root/monero" = false;
-              };
+          jobs =
+            let
+              kept = [
+                {
+                  type = "grid";
+                  grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
+                  regex = "^zrepl_.*";
+                }
+                {
+                  type = "regex";
+                  negate = true;
+                  regex = "^zrepl_.*";
+                }
+              ];
               snapshotting = {
                 type = "periodic";
                 interval = "10m";
                 prefix = "zrepl_";
                 timestamp_format = "iso-8601";
               };
-              pruning = {
-                keep = [
-                  {
-                    type = "grid";
-                    grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
-                    regex = "^zrepl_.*";
-                  }
-                  {
-                    type = "regex";
-                    negate = true;
-                    regex = "^zrepl_.*";
-                  }
-                ];
-              };
-            }
-          ];
+            in
+            [
+              {
+                name = "backups";
+                type = "sink";
+                serve = {
+                  type = "local";
+                  listener_name = "backups";
+                };
+                root_fs = "backups";
+                recv = {
+                  properties = {
+                    override = {
+                      copies = 2;
+                    };
+                  };
+                  placeholder = {
+                    encryption = "off";
+                  };
+                };
+              }
+              {
+                type = "push";
+                name = "push";
+                connect = {
+                  type = "local";
+                  listener_name = "backups";
+                  client_identity = "iron";
+                };
+                filesystems = {
+                  "fast/nixos/etc-nixos" = true;
+                  "fast/nixos/home<" = true;
+                  "fast/nixos/home/.cache" = false;
+                  "fast/nixos/home/dump" = false;
+                  "slow/root<" = true;
+                  "slow/root/media/movies" = false;
+                  "slow/root/monero" = false;
+                };
+                send.encrypted = true;
+                inherit snapshotting;
+                pruning = {
+                  keep_sender = [{ type = "not_replicated"; }] ++ kept;
+                  keep_receiver = kept;
+                };
+              }
+              {
+                type = "snap";
+                name = "snap";
+                filesystems = {
+                  "fast/nixos/home/dump" = true;
+                  "fast/nixos/media/movies" = true;
+                };
+                inherit snapshotting;
+                pruning = {
+                  keep = kept;
+                };
+              }
+            ];
         };
       };
 
