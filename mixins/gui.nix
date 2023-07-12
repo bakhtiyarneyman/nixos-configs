@@ -494,8 +494,6 @@ in
         ubuntu_font_family
       ];
     };
-
-    powerManagement.cpuFreqGovernor = lib.mkDefault "powersave";
   };
 
 }
