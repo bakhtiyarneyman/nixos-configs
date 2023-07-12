@@ -43,14 +43,14 @@
       firmware = [ pkgs.unstable.firmwareLinuxNonfree ];
     };
 
-    programs.i3status-rust = {
-      networkInterface = "wlp170s0";
-    };
-
     nix.settings = {
       substituters = [
         "http://iron-tailscale:5000"
       ];
+    };
+
+    programs.i3status-rust = {
+      networkInterface = "wlp170s0";
     };
 
     services = {
