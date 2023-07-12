@@ -141,6 +141,10 @@ in
               device = "fast/nixos/home";
               fsType = "zfs";
             };
+            "/home/bakhtiyar/.cache" = {
+              device = "fast/nixos/home/.cache";
+              fsType = "zfs";
+            };
             "/home/bakhtiyar/dev" = {
               device = "fast/nixos/home/dev";
               fsType = "zfs";
@@ -235,6 +239,7 @@ in
               filesystems = {
                 "fast/nixos/etc-nixos" = true;
                 "fast/nixos/home<" = true;
+                "fast/nixos/home/.cache" = false;
                 "fast/nixos/home/dump" = false;
                 "slow/root<" = true;
                 "slow/root/media/movies" = false;
