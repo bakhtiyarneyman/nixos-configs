@@ -72,6 +72,13 @@ in
       };
     };
 
+    hardware = {
+      opengl.extraPackages = [
+        pkgs.rocm-opencl-icd
+        pkgs.rocm-opencl-runtime
+      ];
+    };
+
     swapDevices =
       let
         toSwapDevice = diskId:
