@@ -453,9 +453,9 @@ in
           prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix { };
           adwaita-one-dark = pkgs.callPackage ../pkgs/adwaita-one-dark.nix { };
           inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix { };
-          blender = super.blender.override {
+          blender = super.pkgs.unstable.blender.override {
             ffmpeg = pkgs.ffmpeg_6-full;
-            hip = true;
+            hipSupport = true;
           };
         })
       ];
