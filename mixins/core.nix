@@ -131,6 +131,7 @@ in
       sessionVariables = {
         CARGO_HOME = "/var/cache/cargo";
         npm_config_cache = "/var/cache/npm";
+        STACK_ROOT = "/var/cache/stack";
       };
     };
 
