@@ -24,27 +24,6 @@ in
   ];
 
   config = {
-    programs.i3status-rust = {
-      networkInterface = "eno1";
-      batteries = [
-        {
-          model = "Wireless Mouse MX Master 3";
-          icon = "";
-        }
-        {
-          device = "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0/usbmisc/hiddev1";
-          icon = "";
-        }
-      ];
-      extraConfig = ''
-        [[block]]
-        block = "amd_gpu"
-        device = "card0"
-        format = " $icon ^icon_cpu $utilization.eng(width:3) "
-        format_alt = " $icon ^icon_memory_mem $vram_used_percents.eng(width:3) "
-        interval = 1
-      '';
-    };
 
     boot = {
       extraModulePackages = [
@@ -72,32 +51,14 @@ in
       };
     };
 
-    hardware = {
-      opengl.extraPackages = [
-        pkgs.rocm-opencl-icd
-        pkgs.rocm-opencl-runtime
+    environment = {
+      systemPackages = with pkgs; [
+        radeontop
       ];
+      variables = {
+        LIBVA_DRIVER_NAME = "radeonsi";
+      };
     };
-
-    swapDevices =
-      let
-        toSwapDevice = diskId:
-          let
-            partitionId = toPartitionId diskId 4;
-            device = toDevice partitionId;
-          in
-          {
-            device = "/dev/mapper/decrypted-${partitionId}";
-            encrypted = {
-              blkDev = device;
-              enable = true;
-              # Created with `dd count=1 bs=512 if=/dev/urandom of=/etc/nixos/secrets/swap.key`.
-              keyFile = "/mnt-root/etc/nixos/secrets/swap.key";
-              label = "decrypted-${partitionId}";
-            };
-          };
-      in
-      map toSwapDevice coreDiskIds;
 
     fileSystems =
       let
@@ -218,6 +179,13 @@ in
       in
       foldl' insertBootFilesystem fss coreDiskIds;
 
+    hardware = {
+      opengl.extraPackages = [
+        pkgs.rocm-opencl-icd
+        pkgs.rocm-opencl-runtime
+      ];
+    };
+
     networking = {
       hostId = "a7a93500";
       firewall = {
@@ -231,12 +199,155 @@ in
       # allowedUDPPorts = [ 111 2049 4000 4001 4002 20048 ];
     };
 
-    # This value determines the NixOS release with which your system is to be
-    # compatible, in order to avoid breaking some software such as database
-    # servers. You should change this only after NixOS release notes say you
-    # should.
-    system.stateVersion = "22.11";
+    # nfs.server = {
+    #   enable = true;
+    #   exports = ''
+    #     /export       192.168.1.10(ro,fsid=0,no_subtree_check)
+    #     /export/media 192.168.1.10(ro,nohide,insecure,no_subtree_check)
+    #     /export/dump  192.168.1.10(rw,nohide,insecure,no_subtree_check)
+    #   '';
+    #   statdPort = 4000;
+    #   lockdPort = 4001;
+    #   mountdPort = 4002;
+    # };
+
+    programs = {
+      i3status-rust = {
+        networkInterface = "eno1";
+        batteries = [
+          {
+            model = "Wireless Mouse MX Master 3";
+            icon = "";
+          }
+          {
+            device = "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0/usbmisc/hiddev1";
+            icon = "";
+          }
+        ];
+        extraConfig = ''
+          [[block]]
+          block = "amd_gpu"
+          device = "card0"
+          format = " $icon ^icon_cpu $utilization.eng(width:3) "
+          format_alt = " $icon ^icon_memory_mem $vram_used_percents.eng(width:3) "
+          interval = 1
+        '';
+      };
+      sway = {
+        extraOptions = [ "--unsupported-gpu" ]; # TODO: remove this.
+        extraSessionCommands = ''
+          export WLR_NO_HARDWARE_CURSORS=1
+        '';
+      };
+    };
+
     services = {
+
+      monero = {
+        dataDir = "/var/lib/monero";
+        enable = true;
+        extraConfig = ''
+          rpc-restricted-bind-ip=100.65.77.115 # iron-tailscale
+          rpc-restricted-bind-port=18081
+          rpc-ssl=enabled
+          rpc-ssl-private-key=/etc/nixos/secrets/iron.monero.private-key.pem
+          rpc-ssl-certificate=${../certificates/iron.monero.cert.pem}
+
+          prune-blockchain=1
+          out-peers=64
+          in-peers=1024
+        '';
+        limits.upload = 100; # KB/s
+        # rpc.address = "100.0.0.0";
+      };
+
+      nix-serve = {
+        enable = true;
+        openFirewall = true;
+        secretKeyFile = "/etc/nixos/secrets/iron.cache.private-key.pem";
+      };
+
+      jellyfin = {
+        enable = true;
+        openFirewall = true;
+      };
+
+
+      journal-brief.settings.exclusions = [
+        {
+          CODE_FILE = [ "src/login/logind-core.c" ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+        {
+          CODE_FILE = [ "src/core/job.c" ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+        {
+          MESSAGE_ID = [ "fc2e22bc-6ee6-47b6-b907-29ab34a250b1" ];
+          SYSLOG_IDENTIFIER = [ "systemd-coredump" ];
+        }
+        {
+          MESSAGE = [ "Failed to connect to coredump service: Connection refused" ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+        {
+          MESSAGE = [ "src/profile.c:ext_io_disconnected() Unable to get io data for Hands-Free Voice gateway: getpeername: Transport endpoint is not connected (107)" ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+        {
+          MESSAGE = [ "Gdm: Failed to contact accountsservice: Error calling StartServiceByName for org.freedesktop.Accounts: Refusing activation, D-Bus is shutting down." ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+        {
+          MESSAGE = [ "DMAR: [Firmware Bug]: No firmware reserved region can cover this RMRR [0x000000003e2e0000-0x000000003e2fffff], contact BIOS vendor for fixes" ];
+          SYSLOG_IDENTIFIER = [ "kernel" ];
+        }
+        {
+          MESSAGE = [ "x86/cpu: SGX disabled by BIOS." ];
+          SYSLOG_IDENTIFIER = [ "kernel" ];
+        }
+        {
+          MESSAGE = [ "plymouth-quit.service: Service has no ExecStart=, ExecStop=, or SuccessAction=. Refusing." ];
+          SYSLOG_IDENTIFIER = [ "systemd" ];
+        }
+        {
+          MESSAGE = [ "event10: Failed to call EVIOCSKEYCODE with scan code 0x7c, and key code 190: Invalid argument" ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+        {
+          CODE_FILE = [ "../src/modules/module-x11-bell.c" ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+        {
+          MESSAGE = [ "gkr-pam: unable to locate daemon control file" ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+        {
+          MESSAGE = [ "GLib: Source ID 2 was not found when attempting to remove it" ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+        {
+          MESSAGE = [ "GLib-GObject: g_object_unref: assertion ''G_IS_OBJECT (object)'' failed" ];
+          _SELINUX_CONTEXT = [ "kernel" ];
+        }
+      ];
+
+      xserver = {
+        videoDrivers = [ "amdgpu" ];
+        xrandrHeads = [
+          { output = "DP-1"; primary = true; }
+          { output = "DP-3"; }
+        ];
+        dpi = 175;
+        displayManager = {
+          gdm.enable = true;
+          setupCommands = ''
+            ${pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource "modesetting" NVIDIA-0
+            ${pkgs.xorg.xrandr}/bin/xrandr --output DP-1 --auto --primary --output DP-3 --auto --right-of DP-1
+          '';
+        };
+      };
+
       zrepl = {
         settings = {
           jobs =
@@ -319,139 +430,35 @@ in
             ];
         };
       };
-
-      journal-brief.settings.exclusions = [
-        {
-          CODE_FILE = [ "src/login/logind-core.c" ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-        {
-          CODE_FILE = [ "src/core/job.c" ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-        {
-          MESSAGE_ID = [ "fc2e22bc-6ee6-47b6-b907-29ab34a250b1" ];
-          SYSLOG_IDENTIFIER = [ "systemd-coredump" ];
-        }
-        {
-          MESSAGE = [ "Failed to connect to coredump service: Connection refused" ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-        {
-          MESSAGE = [ "src/profile.c:ext_io_disconnected() Unable to get io data for Hands-Free Voice gateway: getpeername: Transport endpoint is not connected (107)" ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-        {
-          MESSAGE = [ "Gdm: Failed to contact accountsservice: Error calling StartServiceByName for org.freedesktop.Accounts: Refusing activation, D-Bus is shutting down." ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-        {
-          MESSAGE = [ "DMAR: [Firmware Bug]: No firmware reserved region can cover this RMRR [0x000000003e2e0000-0x000000003e2fffff], contact BIOS vendor for fixes" ];
-          SYSLOG_IDENTIFIER = [ "kernel" ];
-        }
-        {
-          MESSAGE = [ "x86/cpu: SGX disabled by BIOS." ];
-          SYSLOG_IDENTIFIER = [ "kernel" ];
-        }
-        {
-          MESSAGE = [ "plymouth-quit.service: Service has no ExecStart=, ExecStop=, or SuccessAction=. Refusing." ];
-          SYSLOG_IDENTIFIER = [ "systemd" ];
-        }
-        {
-          MESSAGE = [ "event10: Failed to call EVIOCSKEYCODE with scan code 0x7c, and key code 190: Invalid argument" ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-        {
-          CODE_FILE = [ "../src/modules/module-x11-bell.c" ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-        {
-          MESSAGE = [ "gkr-pam: unable to locate daemon control file" ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-        {
-          MESSAGE = [ "GLib: Source ID 2 was not found when attempting to remove it" ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-        {
-          MESSAGE = [ "GLib-GObject: g_object_unref: assertion ''G_IS_OBJECT (object)'' failed" ];
-          _SELINUX_CONTEXT = [ "kernel" ];
-        }
-      ];
-
-      xserver = {
-        videoDrivers = [ "amdgpu" ];
-        xrandrHeads = [
-          { output = "DP-1"; primary = true; }
-          { output = "DP-3"; }
-        ];
-        dpi = 175;
-        displayManager = {
-          gdm.enable = true;
-          setupCommands = ''
-            ${pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource "modesetting" NVIDIA-0
-            ${pkgs.xorg.xrandr}/bin/xrandr --output DP-1 --auto --primary --output DP-3 --auto --right-of DP-1
-          '';
-        };
-      };
-
-      jellyfin = {
-        enable = true;
-        openFirewall = true;
-      };
-
-      nix-serve = {
-        enable = true;
-        openFirewall = true;
-        secretKeyFile = "/etc/nixos/secrets/iron.cache.private-key.pem";
-      };
-
-      monero = {
-        dataDir = "/var/lib/monero";
-        enable = true;
-        extraConfig = ''
-          rpc-restricted-bind-ip=100.65.77.115 # iron-tailscale
-          rpc-restricted-bind-port=18081
-          rpc-ssl=enabled
-          rpc-ssl-private-key=/etc/nixos/secrets/iron.monero.private-key.pem
-          rpc-ssl-certificate=${../certificates/iron.monero.cert.pem}
-
-          prune-blockchain=1
-          out-peers=64
-          in-peers=1024
-        '';
-        limits.upload = 100; # KB/s
-        # rpc.address = "100.0.0.0";
-      };
     };
 
-    # nfs.server = {
-    #   enable = true;
-    #   exports = ''
-    #     /export       192.168.1.10(ro,fsid=0,no_subtree_check)
-    #     /export/media 192.168.1.10(ro,nohide,insecure,no_subtree_check)
-    #     /export/dump  192.168.1.10(rw,nohide,insecure,no_subtree_check)
-    #   '';
-    #   statdPort = 4000;
-    #   lockdPort = 4001;
-    #   mountdPort = 4002;
-    # };
+    swapDevices =
+      let
+        toSwapDevice = diskId:
+          let
+            partitionId = toPartitionId diskId 4;
+            device = toDevice partitionId;
+          in
+          {
+            device = "/dev/mapper/decrypted-${partitionId}";
+            encrypted = {
+              blkDev = device;
+              enable = true;
+              # Created with `dd count=1 bs=512 if=/dev/urandom of=/etc/nixos/secrets/swap.key`.
+              keyFile = "/mnt-root/etc/nixos/secrets/swap.key";
+              label = "decrypted-${partitionId}";
+            };
+          };
+      in
+      map toSwapDevice coreDiskIds;
 
-    programs.sway = {
-      extraOptions = [ "--unsupported-gpu" ]; # TODO: remove this.
-      extraSessionCommands = ''
-        export WLR_NO_HARDWARE_CURSORS=1
-      '';
-    };
+    # This value determines the NixOS release with which your system is to be
+    # compatible, in order to avoid breaking some software such as database
+    # servers. You should change this only after NixOS release notes say you
+    # should.
+    system.stateVersion = "22.11";
+
     virtualisation.docker.enableNvidia = true;
 
-    environment = {
-      systemPackages = with pkgs; [
-        radeontop
-      ];
-      variables = {
-        LIBVA_DRIVER_NAME = "radeonsi";
-      };
-    };
   };
 }
