@@ -332,6 +332,11 @@ in
         }
       ];
 
+      udev.extraHwdb = ''
+        evdev:input:b0003v046DpC548*
+          KEYBOARD_KEY_70049=sysrq
+      '';
+
       xserver = {
         videoDrivers = [ "amdgpu" ];
         xrandrHeads = [
