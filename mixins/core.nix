@@ -277,9 +277,6 @@ in
 
             argparse --max-args=0 "confirm" "help" -- $argv
 
-            echo $_flag_confirm
-            echo $_flag_help
-
             if test $_flag_help
               echo "Usage: rename_gopro_files [--confirm]"
               echo "  --confirm          Actually rename files"
@@ -289,9 +286,7 @@ in
             # Loop through each MP4 file
             for old in (find -maxdepth 1 -type f -iname '*.mp4' | sort --numeric-sort)
               # Extract the filename without extension
-              echo "old=$old"
               set filename (basename --suffix=.mp4 $old)
-              echo "filename=$filename"
 
               # Extract relevant parts from the filename
               set gopro_marker (string sub --start=1 --length=1 $filename)
@@ -348,7 +343,81 @@ in
             end
           end
 
-          # Should not be necessary once fish 3.6.2 is released.
+          function recode
+              set --local options (fish_opt --long-only --short h --long help)
+              set options $options (fish_opt --optional-val --long-only --short n --long noise)
+              set options $options (fish_opt --optional-val --long-only --short g --long max-keyframe-gap)
+              set options $options (fish_opt --optional-val --long-only --short s --long speed )
+              set options $options (fish_opt --required-val --long-only --short i --long input-file)
+              set options $options (fish_opt --required-val --long-only --short o --long output-dir)
+
+              set --local crf 32
+              set --local preset 4
+              set --local g 300
+
+              argparse --name="recode" --ignore-unknown $options -- $argv
+              or return
+
+              if test -n "$_flag_help"
+                  echo "Recode video files using ffmpeg/libsvtav1"
+                  echo "Usage:"
+                  echo "  recode --help"
+                  echo "  recode [--noise <noise>] [--max-keyframe-gap <max-keyframe-gap>] [--speed <speed>] --input-file <input-file> --output-dir <output-dir>"
+                  echo "Options:"
+                  echo " -h, --help: show this help"
+                  echo " -n, --noise: noise level (-crf in libsvtav1). Default: $crf"
+                  echo " -g, --max-keyframe-gap: max keyframe gap (-g in libsvtav1). Default: $g"
+                  echo " -s, --speed: speed (-preset in libsvtav1). Default: $preset"
+                  echo " -i, --input-file: input file"
+                  echo " -o, --output-dir: output directory"
+                  return 0
+              end
+
+              if test -n "$_flag_noise"
+                  set crf $_flag_noise
+              end
+
+              if test -n "$_flag_max_keyframe_gap"
+                  set g $_flag_max_keyframe_gap
+              end
+
+              if test -n "$_flag_speed"
+                  set preset $_flag_speed
+              end
+
+
+              set --local file $_flag_input_file
+              set --local output_dir $_flag_output_dir
+              set --local base (path basename $file)
+
+              set --local temp_target $output_dir/(path change-extension crf=$crf.preset=$preset.g=$g.unfinished.mkv $base)
+              set --local target (path change-extension mkv (path change-extension "" $temp_target))
+
+              if test -e "$target"
+                  set_color green
+                  echo "'$target' already exists."
+                  return 0
+              end
+
+              set_color yellow
+              echo "Recoding '$file' as '$target'..."
+              set_color normal
+
+              ffmpeg \
+                  -i $file \
+                  -c:v libsvtav1 \
+                  -preset $preset \
+                  -crf $crf \
+                  -g $g \
+                  -svtav1-params tune=0 \
+                  -c:a copy \
+                  -y \
+                  $argv \
+                  $temp_target
+              and mv $temp_target $target
+          end
+
+            # Should not be necessary once fish 3.6.2 is released.
           function __fish_is_zfs_feature_enabled -a feature target -d "Returns 0 if the given ZFS feature is available or enabled for the given full-path target (zpool or dataset), or any target if none given"
               type -q zpool
               or return
