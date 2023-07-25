@@ -414,7 +414,9 @@ in
                   -y \
                   $argv \
                   $temp_target
-              and mv $temp_target $target
+              or return 1
+
+              mv $temp_target $target
           end
 
             # Should not be necessary once fish 3.6.2 is released.
