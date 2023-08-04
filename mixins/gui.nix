@@ -110,7 +110,8 @@ in
         # CUPS.
         631
         # Development web server.
-        1234
+        2080
+        2443
         # Chromecast ports.
         8008
         8009
