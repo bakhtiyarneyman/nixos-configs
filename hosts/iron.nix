@@ -400,9 +400,12 @@ in
                 type = "push";
                 name = "push";
                 connect = {
-                  type = "local";
-                  listener_name = "backups";
-                  client_identity = "iron";
+                  type = "ssh+stdinserver";
+                  host = "bakhtiyar.zfs.rent";
+                  user = "root";
+                  port = 22;
+                  identity_file = "/etc/nixos/secrets/zrepl";
+                  options = [ "IdentitiesOnly=yes" ];
                 };
                 filesystems = {
                   "fast/nixos/etc-nixos" = true;
