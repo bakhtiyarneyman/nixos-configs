@@ -3,7 +3,7 @@ let
   light = "${pkgs.light}/bin/light";
   fish = "${pkgs.fish}/bin/fish";
   dunstify = "${pkgs.dunst}/bin/dunstify";
-  upower = "${pkgs.dunst}/bin/upower";
+  upower = "${pkgs.upower}/bin/upower";
   dimSeconds' = builtins.toString dimSeconds;
   dimStepSeconds' = builtins.toString dimStepSeconds;
   minBrightnessPercents' = builtins.toString minBrightnessPercents;
