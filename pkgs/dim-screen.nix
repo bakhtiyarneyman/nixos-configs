@@ -50,7 +50,7 @@ pkgs.writeTextFile {
     os.system(f'${light} -S {${minBrightnessPercents'}}')
     os.system(f"${dunstify} --close {ARBITRARY_NOTIFICATION_ID}")
 
-    if not os.system('${upower} --dump | grep "on-battery.*no"'):
+    if os.system('${upower} --dump | grep "online.*no"') == 0:
       print("Battery is discharging, invoke suspend")
       os.system("systemctl suspend")
 
