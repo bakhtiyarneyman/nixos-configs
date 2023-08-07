@@ -488,7 +488,6 @@ in
     location.provider = "geoclue2";
 
     virtualisation = {
-      libvirtd.enable = true;
       docker.enable = true;
     };
 
