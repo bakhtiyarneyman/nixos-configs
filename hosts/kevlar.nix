@@ -37,6 +37,11 @@
         device = "/dev/disk/by-label/BOOT";
         fsType = "vfat";
       };
+
+      "/tailnet/iron/home" = {
+        device = "iron:/tailnet/export/home";
+        fsType = "nfs";
+      };
     };
 
     hardware = {
@@ -54,6 +59,7 @@
     };
 
     services = {
+      rpcbind.enable = true;
       xserver = {
         videoDrivers = [ "modesetting" ];
         # DPI overrides this.
@@ -71,6 +77,27 @@
     };
 
     swapDevices = [{ label = "swap"; }];
+
+    systemd = {
+
+      automounts = [{
+        wantedBy = [ "multi-user.target" ];
+        automountConfig = {
+          TimeoutIdleSec = "600";
+        };
+        where = "/tailnet/iron/home";
+      }];
+
+      mounts = [{
+        type = "nfs";
+        mountConfig = {
+          Options = "noatime";
+        };
+        what = "iron:/tailnet/export/home";
+        where = "/tailnet/iron/home";
+      }];
+
+    };
 
     # This value determines the NixOS release with which your system is to be
     # compatible, in order to avoid breaking some software such as database
