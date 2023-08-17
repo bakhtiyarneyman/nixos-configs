@@ -58,7 +58,7 @@ in
         rnix-lsp
         nixpkgs-fmt
         cntr
-        ghc
+        (haskellPackages.ghcWithPackages (ps: with ps;  [protolude text turtle text]))
         cabal-install
         haskell-language-server
         haskellPackages.fourmolu
