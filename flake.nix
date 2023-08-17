@@ -2,9 +2,10 @@
   inputs = {
     nixpkgs.url = github:NixOS/nixpkgs/nixos-23.05;
     nixpkgs-unstable.url = github:NixOS/nixpkgs/nixos-unstable;
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, vscode-server }:
     let
       system = "x86_64-linux";
       overlay-unstable = final: prev: {
@@ -42,6 +43,10 @@
           iron = mkSystem "iron" (owned ++ [
             ./mixins/always-on.nix
             ./mixins/zfs.nix
+            (vscode-server.nixosModules.default)
+            {
+              services.vscode-server.enable = true;
+            }
           ]);
           kevlar = mkSystem "kevlar" owned;
           tungsten = mkSystem "tungsten" [
