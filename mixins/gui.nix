@@ -58,7 +58,7 @@ in
         rnix-lsp
         nixpkgs-fmt
         cntr
-        (haskellPackages.ghcWithPackages (ps: with ps;  [protolude text turtle text]))
+        (haskellPackages.ghcWithPackages (ps: with ps;  [ protolude text turtle text ]))
         cabal-install
         haskell-language-server
         haskellPackages.fourmolu
@@ -494,6 +494,11 @@ in
         ttf_bitstream_vera
         ubuntu_font_family
       ];
+    };
+
+    xdg.portal = {
+      enable = true;
+      wlr.enable = true;
     };
   };
 
