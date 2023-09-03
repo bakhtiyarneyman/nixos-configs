@@ -174,20 +174,7 @@ in
       ];
     };
 
-    networking = {
-      hostId = "a7a93500";
-      firewall = {
-        allowedTCPPorts = [
-          # NFS
-          2049
-          # Monero daemon.
-          18080
-          18081
-        ];
-      };
-      # allowedTCPPorts = [ 111 2049 4000 4001 4002 20048 ];
-      # allowedUDPPorts = [ 111 2049 4000 4001 4002 20048 ];
-    };
+    networking.hostId = "a7a93500";
 
     programs = {
       i3status-rust = {
@@ -242,7 +229,7 @@ in
       nfs.server = {
         enable = true;
         exports = ''
-          /tailnet/export/home kevlar(rw,fsid=0,no_subtree_check)
+          /tailnet/export/home kevlar-tailscale(rw,fsid=0,no_subtree_check)
         '';
         statdPort = 4000;
         lockdPort = 4001;

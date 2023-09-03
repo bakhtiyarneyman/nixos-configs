@@ -109,9 +109,6 @@ in
       allowedTCPPorts = [
         # CUPS.
         631
-        # Development web server.
-        2080
-        2443
         # Chromecast ports.
         8008
         8009
