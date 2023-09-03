@@ -498,8 +498,18 @@ in
 
     xdg.portal = {
       enable = true;
-      wlr.enable = true;
+      wlr = {
+        enable = true;
+        settings = {
+          screencast = {
+            max_fps = 30;
+            exec_before = "${pkgs.dunst}/bin/dunstctl set-paused true";
+            exec_after = "${pkgs.dunst}/bin/dunstctl set-paused false";
+            chooser_type = "simple";
+            chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
+          };
+        };
+      };
     };
   };
-
-}
+}    
