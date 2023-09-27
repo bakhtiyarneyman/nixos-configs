@@ -34,8 +34,8 @@ in
         pavucontrol # Pulse audio volume control.
         pulseaudio # For pactl to be used from i3.
         libnotify # Notification service API.
-        xmobar
         krusader
+        wlr-randr
         # Themes.
         breeze-icons
         adwaita-one-dark
