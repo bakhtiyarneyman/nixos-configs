@@ -41,6 +41,7 @@ in
         adwaita-one-dark
         # Browsers
         (google-chrome.override { commandLineArgs = "--enable-features=VaapiVideoDecoder"; })
+        brave
         # Communication
         skypeforlinux
         signal-desktop
