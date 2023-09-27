@@ -341,6 +341,7 @@ in
           "media.ffmpeg.vaapi.enabled" = true;
           "media.navigator.mediadatadecoder_vpx_enabled" = true;
           "media.rdd-ffmpeg.enabled" = true;
+          "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
         };
       };
       gnome-disks.enable = true; # GUI USB disk mounting.
@@ -510,4 +511,4 @@ in
       };
     };
   };
-}    
+}
