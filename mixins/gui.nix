@@ -168,7 +168,13 @@ in
       # Enable the X11 windowing system.
       xserver = {
         enable = true;
-        displayManager.defaultSession = "sway";
+        displayManager = {
+          gdm = {
+            enable = true;
+            autoSuspend = false;
+          };
+          defaultSession = "sway";
+        };
         # TODO: use this when unblocked: https://github.com/NixOS/nixpkgs/issues/54150
         # desktopManager.gnome.extraGSettingsOverrides = ''
         #   [org.gnome.desktop.interface]

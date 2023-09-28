@@ -67,7 +67,6 @@
           DisplaySize 285 190 # mm.
         '';
         dpi = 150;
-        displayManager.gdm.enable = true;
       };
       tlp.settings = {
 

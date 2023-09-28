@@ -32,7 +32,7 @@
   # servers. You should change this only after NixOS release notes say you
   # should.
   system.stateVersion = "20.09";
-  hardware.firmware = [pkgs.unstable.firmwareLinuxNonfree];
+  hardware.firmware = [ pkgs.unstable.firmwareLinuxNonfree ];
   services.xserver = {
     videoDrivers = [ "modesetting" ];
     # DPI overrides this.
@@ -40,15 +40,14 @@
       DisplaySize 310 174 # mm.
     '';
     dpi = 220;
-    displayManager.gdm.enable = true;
   };
   environment.etc."libinput/local-overrides.quirks" = {
     text = ''
-     [Lenovo Yoga Slim 9 Pressurepad]
-     MatchBus=i2c
-     MatchVendor=0x27C6
-     MatchProduct=0x01E8
-     AttrEventCodeDisable=ABS_MT_PRESSURE;ABS_PRESSURE;
-   '';
+      [Lenovo Yoga Slim 9 Pressurepad]
+      MatchBus=i2c
+      MatchVendor=0x27C6
+      MatchProduct=0x01E8
+      AttrEventCodeDisable=ABS_MT_PRESSURE;ABS_PRESSURE;
+    '';
   };
 }
