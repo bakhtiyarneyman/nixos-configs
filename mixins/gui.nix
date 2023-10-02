@@ -50,7 +50,6 @@ in
         zoom-us
         unstable.pkgs.discord
         slack
-        teams
         # Development
         (unstable.vscode.override { isInsiders = false; })
         cachix
