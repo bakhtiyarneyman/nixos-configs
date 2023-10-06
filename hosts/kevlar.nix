@@ -50,7 +50,7 @@
 
     nix.settings = {
       substituters = [
-        "http://iron-tailscale:5000"
+        # "http://iron-tailscale:5000"
       ];
     };
 
