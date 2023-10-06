@@ -27,6 +27,7 @@ in
         xorg.xdpyinfo
         udiskie # USB disk automounting.
         qbittorrent
+        libreoffice
         # UI
         alacritty
         prettyLock
