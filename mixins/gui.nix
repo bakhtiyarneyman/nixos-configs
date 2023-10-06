@@ -305,7 +305,6 @@ in
         ];
       };
 
-      onedrive.enable = true;
     };
 
     programs = {
