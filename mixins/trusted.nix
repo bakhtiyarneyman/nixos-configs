@@ -1,3 +1,4 @@
+{ pkgs, ... }:
 {
   imports = [
     ../modules/namespaced-openvpn.nix
@@ -36,6 +37,20 @@
       tailscale.enable = true;
       i2p.enable = true;
       namespaced-openvpn.enable = true;
+      onedrive.enable = true;
+    };
+
+    systemd.services.mount-sensitive = {
+      enable = true;
+      environment = {
+        CRYFS_FRONTEND = "noninteractive";
+        CRYFS_NO_UPDATE_CHECK = "true";
+      };
+      requires = [ "local-fs.target" ];
+      wantedBy = [ "local-fs.target" ];
+      partOf = [ "local-fs.target" ];
+      after = [ "local-fs.target" ];
+      script = "cat /etc/nixos/secrets/sensitive.passphrase | ${pkgs.cryfs}/bin/cryfs --foreground /home/bakhtiyar/OneDrive/encrypted /home/bakhtiyar/sensitive -o uid=$(id -u bakhtiyar),gid=$(id -g bakhtiyar),allow_other";
     };
 
     nix.settings.trusted-public-keys = [
