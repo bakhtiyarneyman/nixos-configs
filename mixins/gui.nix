@@ -303,8 +303,10 @@ in
           brgenml1lpr
           brgenml1cupswrapper
         ];
+        allowFrom = [
+          "all"
+        ];
       };
-
     };
 
     programs = {
