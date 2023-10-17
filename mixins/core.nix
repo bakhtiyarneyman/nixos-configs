@@ -184,7 +184,7 @@ in
         enable = true;
         # Important to resolve .local domains of printers, otherwise you get an error
         # like  "Impossible to connect to XXX.local: Name or service not known"
-        nssmdns = true;
+        nssmdns = false;
         openFirewall = true;
       };
 
@@ -192,6 +192,15 @@ in
         SystemMaxUse=50M
       '';
 
+    };
+
+    system = {
+      # settings from avahi-daemon.nix where mdns is replaced with mdns4
+      nssModules = pkgs.lib.optional (!config.services.avahi.nssmdns) pkgs.nssmdns;
+      nssDatabases.hosts = with pkgs.lib; optionals (!config.services.avahi.nssmdns) (mkMerge [
+        (mkBefore [ "mdns4_minimal [NOTFOUND=return]" ]) # before resolve
+        (mkAfter [ "mdns4" ]) # after dns
+      ]);
     };
 
     programs = {
