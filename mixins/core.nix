@@ -166,11 +166,17 @@ in
           };
           exclusions = [
             {
-              MESSAGE = [ "Bluetooth: hci0: link tx timeout" ];
+              MESSAGE = [ "/Bluetooth: hci0: .*/" ];
               SYSLOG_IDENTIFIER = [ "kernel" ];
             }
             {
               SYSLOG_IDENTIFIER = [ "bluetoothd" ];
+            }
+            {
+              SYSLOG_IDENTIFIER = [ "pipewire" ];
+              MESSAGE = [
+                "/pw.node: (bluez_output.*) .* -> error (Received error event)/"
+              ];
             }
           ];
         };
