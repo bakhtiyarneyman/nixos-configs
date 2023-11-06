@@ -179,6 +179,18 @@ in
               ];
             }
           ];
+          inclusions = [
+            {
+              SYSLOG_IDENTIFIER = [ "sshd" ];
+              MESSAGE = [ "/Starting session: shell.*/" ];
+            }
+            {
+              SYSLOG_IDENTIFIER = [ "mount-sensitive-start" ];
+              MESSAGE = [
+                "/[Ee]rror/"
+              ];
+            }
+          ];
         };
       };
 

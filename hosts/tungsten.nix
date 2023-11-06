@@ -46,9 +46,20 @@
       enable = true;
       bantime-increment = {
         enable = true;
-	factor = "4";
-	rndtime = "8m";	
+        factor = "4";
+        rndtime = "8m";
       };
+    };
+    journal-brief = {
+      exclusions = [
+        {
+          SYSLOG_IDENTIFIER = [ "sshd" ];
+          MESSAGE = [
+            "/fatal: Timeout before authentication/"
+            "/error: PAM: Authentication failure for illegal user/"
+          ];
+        }
+      ];
     };
     zrepl.settings = {
       jobs = [

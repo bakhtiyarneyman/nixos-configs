@@ -37,6 +37,11 @@
         default = [ ];
         description = "List of exclusion rules.";
       };
+      inclusions = mkOption {
+        type = listOf (attrsOf (listOf str));
+        default = [ ];
+        description = "List of inclusion rules.";
+      };
     };
   };
 
