@@ -49,6 +49,13 @@
         factor = "4";
         rndtime = "8m";
       };
+      jails = {
+        sshd = ''
+          enabled = true
+          port = 22
+          mode = aggressive
+        '';
+      };
     };
     journal-brief = {
       exclusions = [
