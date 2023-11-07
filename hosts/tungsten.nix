@@ -64,6 +64,10 @@
           MESSAGE = [
             "/fatal: Timeout before authentication/"
             "/error: PAM: Authentication failure for illegal user/"
+	    "/error: PAM: Authentication failure for root"
+	    "/error: kex_exchange_identification: Connection closed by remote host/"
+	    "/error: kex_exchange_identification: banner line contains invalid characters/"
+	    "/error: kex_exchange_identification: read: Connection reset by peer/"
           ];
         }
       ];
