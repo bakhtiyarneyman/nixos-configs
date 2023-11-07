@@ -55,7 +55,10 @@
         Type = "oneshot";
         ExecStart =
           let
-            yamlConfig = lib.generators.toYAML { } config.services.journal-brief.settings;
+            yamlConfig = lib.generators.toYAML { }
+              (config.services.journal-brief.settings // {
+                inclusions = [{ }];
+              });
             configFile = pkgs.writeText "journal-brief-config.yaml" yamlConfig;
           in
           [
