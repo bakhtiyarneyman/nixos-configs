@@ -57,7 +57,7 @@
         '';
       };
     };
-    journal-brief = {
+    journal-brief.settings = {
       exclusions = [
         {
           SYSLOG_IDENTIFIER = [ "sshd" ];
