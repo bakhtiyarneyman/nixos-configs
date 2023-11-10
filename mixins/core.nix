@@ -181,10 +181,12 @@ in
           ];
           inclusions = [
             {
+              PRIORITY = [ "0" "1" "2" "3" ];
               SYSLOG_IDENTIFIER = [ "sshd" ];
               MESSAGE = [ "/Starting session: shell.*/" ];
             }
             {
+              PRIORITY = [ "0" "1" "2" "3" ];
               SYSLOG_IDENTIFIER = [ "mount-sensitive-start" ];
               MESSAGE = [
                 "/[Ee]rror/"
