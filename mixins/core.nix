@@ -75,6 +75,7 @@ in
           "wheel" # Enable ‘sudo’ for the user.
           "docker"
           "networkmanager"
+          "wireshark"
         ];
       };
     };
