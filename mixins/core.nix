@@ -507,6 +507,7 @@ in
         };
       };
 
+      wireshark.enable = true;
     };
 
     security.polkit = {
