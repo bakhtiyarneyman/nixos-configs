@@ -372,6 +372,7 @@ in
         polkitPolicyOwners = [ "bakhtiyar" ];
       };
       system-config-printer.enable = true;
+      wireshark.package = pkgs.wireshark;
     };
 
     systemd.user.services =
