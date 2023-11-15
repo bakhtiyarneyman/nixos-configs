@@ -99,6 +99,8 @@ in
         du-dust # Better du.
         sd # Better sed.
         xcp # Better cp.
+        nethogs
+        nmap
         shell-genie
         # Shell packages
         fish
