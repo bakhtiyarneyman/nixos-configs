@@ -226,7 +226,10 @@ in
           out-peers=64
           in-peers=1024
         '';
-        limits.upload = 100; # KB/s
+        limits = {
+          upload = 10; # KB/s
+          download = 10;
+        };
         # rpc.address = "100.0.0.0";
       };
 
