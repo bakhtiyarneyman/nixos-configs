@@ -137,10 +137,6 @@ in
               device = "slow/root/personal/video";
               fsType = "zfs";
             };
-            "/home/bakhtiyar/sensitive" = {
-              device = "fast/nixos/home/sensitive";
-              fsType = "zfs";
-            };
             "/home/bakhtiyar/warehouse" = {
               device = "slow/root/warehouse";
               fsType = "zfs";
