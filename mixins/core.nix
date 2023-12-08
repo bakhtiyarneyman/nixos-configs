@@ -91,7 +91,7 @@ in
         mkpasswd
         file
         unzip
-        exa # Better ls.
+        eza # Better ls.
         procs # Better ps.
         bat # Better cat.
         bottom # Better top.
@@ -110,9 +110,6 @@ in
         pciutils
         glxinfo
         inxi
-        # Nix
-        direnv
-        nix-direnv
         # Privacy
         namespaced-openvpn
         cryfs
@@ -255,7 +252,7 @@ in
           end
 
           function list
-            ${pkgs.exa}/bin/exa -l --icons --color=always | ${pkgs.bat}/bin/bat -
+            ${pkgs.eza}/bin/eza -l --icons --color=always | ${pkgs.bat}/bin/bat -
           end
 
           function goin -w cd
@@ -469,11 +466,10 @@ in
               string match -qr '(active|enabled)' -- $state
               return $status
           end
-
-          direnv hook fish | source
         '';
       };
 
+      direnv.enable = true;
 
       git = {
         enable = true;
@@ -545,14 +541,13 @@ in
       };
       overlays = [
         (self: super: {
-          nix-direnv = super.nix-direnv.override { enableFlakes = true; };
           journal-brief = super.callPackage ../pkgs/journal-brief.nix { };
           namespaced-openvpn = super.python3Packages.callPackage ../pkgs/namespaced-openvpn.nix { };
         })
       ];
     };
 
-    fonts.fonts = with pkgs; [
+    fonts.packages = with pkgs; [
       powerline-fonts
     ];
 

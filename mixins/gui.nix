@@ -482,7 +482,7 @@ in
         sansSerif = [ "Fira Sans" ];
         serif = [ "Lora" ];
       };
-      fonts = with pkgs; [
+      packages = with pkgs; [
         anonymousPro
         corefonts
         dejavu_fonts
