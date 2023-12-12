@@ -464,10 +464,11 @@ in
           prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix { };
           adwaita-one-dark = pkgs.callPackage ../pkgs/adwaita-one-dark.nix { };
           inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix { };
-          blender = super.pkgs.unstable.blender.override {
+          blender = super.blender.override {
             ffmpeg = pkgs.ffmpeg_6-full;
             hipSupport = true;
           };
+          android-udev-rules = super.pkgs.unstable.android-udev-rules.override { };
         })
       ];
     };
