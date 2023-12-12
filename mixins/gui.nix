@@ -65,7 +65,7 @@ in
         haskellPackages.fourmolu
         stack
         # Productivity
-        unstable.obsidian
+        obsidian
         # Image
         gimp
         inkscape
@@ -453,6 +453,9 @@ in
     nixpkgs = {
       config = {
         android_sdk.accept_license = true;
+        permittedInsecurePackages = [
+          "electron-25.9.0" # For Obsidian.
+        ];
       };
       overlays = [
         (self: super: {
