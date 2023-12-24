@@ -46,9 +46,8 @@
         CRYFS_FRONTEND = "noninteractive";
         CRYFS_NO_UPDATE_CHECK = "true";
       };
-      requires = [ "local-fs.target" ];
+      bindsTo = [ "local-fs.target" ];
       wantedBy = [ "local-fs.target" ];
-      partOf = [ "local-fs.target" ];
       after = [ "local-fs.target" ];
       script = "cat /etc/nixos/secrets/sensitive.passphrase | ${pkgs.sudo}/bin/sudo --user=bakhtiyar ${pkgs.cryfs}/bin/cryfs --foreground /home/bakhtiyar/OneDrive/encrypted /home/bakhtiyar/sensitive";
     };
