@@ -49,7 +49,16 @@
       bindsTo = [ "local-fs.target" ];
       wantedBy = [ "local-fs.target" ];
       after = [ "local-fs.target" ];
-      script = "cat /etc/nixos/secrets/sensitive.passphrase | ${pkgs.sudo}/bin/sudo --user=bakhtiyar ${pkgs.cryfs}/bin/cryfs --foreground /home/bakhtiyar/OneDrive/encrypted /home/bakhtiyar/sensitive";
+      script = ''
+        cat /etc/nixos/secrets/sensitive.passphrase |\
+          ${pkgs.sudo}/bin/sudo \
+          --user=bakhtiyar \
+          ${pkgs.cryfs}/bin/cryfs \
+            --foreground \
+            /home/bakhtiyar/OneDrive/encrypted \
+            /home/bakhtiyar/sensitive
+      '';
+      postStop = "${pkgs.sudo}/bin/sudo ${pkgs.util-linux}/bin/umount -l /home/bakhtiyar/sensitive";
     };
 
     nix.settings.trusted-public-keys = [
