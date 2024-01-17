@@ -58,6 +58,7 @@
             /home/bakhtiyar/OneDrive/encrypted \
             /home/bakhtiyar/sensitive
       '';
+      preStop = "kill -SIGTERM $MAINPID";
       postStop = "${pkgs.sudo}/bin/sudo ${pkgs.util-linux}/bin/umount -l /home/bakhtiyar/sensitive";
     };
 
