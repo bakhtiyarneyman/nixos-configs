@@ -375,13 +375,23 @@ in
       wireshark.package = pkgs.wireshark;
     };
 
+    systemd.user.targets = {
+      sway-session = {
+        enable = true;
+        bindsTo = [ "graphical-session.target" ];
+        wants = [ "graphical-session-pre.target" ];
+        after = [ "graphical-session-pre.target" ];
+      };
+    };
     systemd.user.services =
       let
         autostart = cmd: {
           enable = true;
-          wantedBy = [ "graphical-session.target" ];
-          requires = [ "graphical-session.target" ];
-          after = [ "graphical-session.target" ];
+          # Won't start unless sway-session.target has been started.
+          requisite = [ "sway-session.target" ];
+          after = [ "sway-session.target" ];
+          # Will be started if sway-session is started.
+          wantedBy = [ "sway-session.target" ];
           serviceConfig.ExecStart = [ cmd ];
           environment."XDG_CONFIG_DIRS" = "/etc/xdg";
         };
@@ -393,9 +403,9 @@ in
           in
           {
             "journst-${phase}" = {
-              wantedBy = [ "graphical-session.target" ];
+              wantedBy = [ "sway-session.target" ];
               requires = [ "dunst.service" ];
-              after = [ "graphical-session.target" "dunst.service" ];
+              after = [ "dunst.service" ];
               serviceConfig = {
                 ExecStart = [ "${pkgs.journst}/bin/journst ${cfg.flags}" ];
                 Restart = cfg.restart;
@@ -404,21 +414,25 @@ in
           };
       in
       {
+
         blueman = autostart "${pkgs.blueman}/bin/blueman-applet";
+
         # USB disk automounting.
         udiskie = autostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
+
         signal = autostart "${pkgs.signal-desktop}/bin/signal-desktop";
+
         telegram = autostart "${pkgs.tdesktop}/bin/telegram-desktop";
+
         discord = autostart "${pkgs.unstable.discord}/bin/discord";
+
         nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
-        inactive-windows-transparency = {
-          wantedBy = [ "graphical-session.target" ];
-          partOf = [ "graphical-session.target" ];
-          serviceConfig.ExecStart = [
-            "${pkgs.inactive-windows-transparency}/bin/inactive-windows-transparency.py"
-          ];
-        };
+
+        inactive-windows-transparency = autostart
+          "${pkgs.inactive-windows-transparency}/bin/inactive-windows-transparency.py";
+
         gammastep = autostart "${pkgs.gammastep}/bin/gammastep -t 6500:3300";
+
         swayidle =
           let
             idleToDimSecs = 60;
@@ -434,6 +448,7 @@ in
             resume 'echo "Screen on"; ${pkgs.sway}/bin/swaymsg "output * dpms on"' \
           before-sleep ${pkgs.prettyLock}/bin/prettyLock
       ''}/bin/autolock";
+
         polkit-gnome-authentication-agent-1 = {
           description = "polkit-gnome-authentication-agent-1";
           wantedBy = [ "graphical-session.target" ];
@@ -447,6 +462,7 @@ in
             TimeoutStopSec = 10;
           };
         };
+
         wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
       } // mkJournst "boot" // mkJournst "run";
 
