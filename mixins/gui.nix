@@ -47,7 +47,7 @@ in
         skypeforlinux
         signal-desktop
         tdesktop # Telegram.
-        unstable.tutanota-desktop
+        tutanota-desktop
         zoom-us
         unstable.pkgs.discord
         slack
@@ -463,6 +463,8 @@ in
           };
         };
 
+        tutanota = autostart "${pkgs.tutanota-desktop}/bin/tutanota-desktop";
+
         wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
       } // mkJournst "boot" // mkJournst "run";
 
@@ -475,16 +477,17 @@ in
       };
       overlays = [
         (self: super: {
-          journst = pkgs.callPackage ../pkgs/journst.nix { };
-          dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix { dimSeconds = dimToLockSecs; };
-          prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix { };
           adwaita-one-dark = pkgs.callPackage ../pkgs/adwaita-one-dark.nix { };
-          inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix { };
+          android-udev-rules = super.pkgs.unstable.android-udev-rules.override { };
+          dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix { dimSeconds = dimToLockSecs; };
           blender = super.blender.override {
             ffmpeg = pkgs.ffmpeg_6-full;
             hipSupport = true;
           };
-          android-udev-rules = super.pkgs.unstable.android-udev-rules.override { };
+          inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix { };
+          journst = pkgs.callPackage ../pkgs/journst.nix { };
+          prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix { };
+          tutanota-desktop = super.pkgs.unstable.tutanota-desktop;
         })
       ];
     };
