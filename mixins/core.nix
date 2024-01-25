@@ -236,7 +236,7 @@ in
           ''
             set -g color_status_nonzero_bg brred
             set -g color_status_nonzero_str white
-            set -g color_status_nonzero_indicator 💀
+            set -g glyph_status_nonzero 💀
           '' + lib.strings.concatMapStringsSep "\n" sourcePluginLoader [
             "peco"
             "themeAgnoster"
