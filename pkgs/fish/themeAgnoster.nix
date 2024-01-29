@@ -3,10 +3,10 @@ stdenv.mkDerivation rec {
   name = "theme-agnoster";
 
   src = fetchFromGitHub {
-    owner = "bakhtiyarneyman";
+    owner = "oh-my-fish";
     repo = name;
-    rev = "5fa01f12329cc45a15364af33a7f11ac0aab843a";
-    sha256 = "1n282fahrixaz2zl7nvv9ag41asm8gldnzxhg0pbx2lf9a2grqn5";
+    rev = "4c5518c89ebcef393ef154c9f576a52651400d27";
+    sha256 = "1i8l44277sq4cfyds2k0ijkn7p4izpp8z8j66dbshzi7xfwi4l9q";
   };
 
   installPhase = import ./installPhase.nix;
