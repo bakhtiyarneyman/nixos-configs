@@ -19,10 +19,6 @@ let
   inherit (lib.trivial) flip;
 in
 {
-  imports = [
-    ../mixins/intel.nix
-  ];
-
   config = {
 
     boot = {

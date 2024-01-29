@@ -45,6 +45,8 @@
         {
           iron = mkSystem "iron" (owned ++ [
             ./mixins/always-on.nix
+            ./mixins/buildkite.nix
+            ./mixins/intel.nix
             ./mixins/zfs.nix
             (vscode-server.nixosModules.default)
             {
