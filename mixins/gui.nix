@@ -317,7 +317,7 @@ in
           tool = "${pkgs.meld}/bin/meld";
         };
         credential = {
-          helper = "libsecret";
+          helper = "${pkgs.gitFull}/bin/git-credential-libsecret";
         };
       };
 
