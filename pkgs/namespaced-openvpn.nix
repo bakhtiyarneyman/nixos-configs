@@ -1,4 +1,12 @@
-{ stdenv, lib, flake8, python3, openvpn, iproute2, util-linux, buildPythonPackage, fetchFromGitHub }:
+{
+  stdenv,
+  flake8,
+  python3,
+  openvpn,
+  iproute2,
+  util-linux,
+  fetchFromGitHub,
+}:
 stdenv.mkDerivation rec {
   name = "namespaced-openvpn";
 
@@ -18,7 +26,7 @@ stdenv.mkDerivation rec {
       --replace "/bin/umount" "${util-linux}/bin/umount"
   '';
 
-  buildInputs = [ python3 openvpn ];
+  buildInputs = [python3 openvpn];
   buildPhase = "echo 'Do nothing'";
 
   installPhase = ''
@@ -27,6 +35,6 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  checkInputs = [ flake8 ];
+  checkInputs = [flake8];
   checkPhase = "make test";
 }

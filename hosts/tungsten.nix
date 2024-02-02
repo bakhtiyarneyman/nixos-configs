@@ -1,22 +1,24 @@
-{ config, lib, pkgs, modulesPath, ... }:
-
 {
+  lib,
+  modulesPath,
+  ...
+}: {
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
   ];
 
   boot = {
     initrd = {
-      availableKernelModules = [ "ahci" "xhci_pci" "virtio_pci" "sr_mod" "virtio_blk" ];
-      kernelModules = [ ];
+      availableKernelModules = ["ahci" "xhci_pci" "virtio_pci" "sr_mod" "virtio_blk"];
+      kernelModules = [];
     };
-    extraModulePackages = [ ];
+    extraModulePackages = [];
     loader.grub = {
       enable = true;
       device = "/dev/vda";
     };
     zfs = {
-      extraPools = [ "backups" ];
+      extraPools = ["backups"];
       requestEncryptionCredentials = false;
     };
   };
@@ -27,7 +29,7 @@
   };
 
   swapDevices = [
-    { device = "/dev/disk/by-uuid/d444f37c-7217-4fe9-a0de-a9135cc5d61a"; }
+    {device = "/dev/disk/by-uuid/d444f37c-7217-4fe9-a0de-a9135cc5d61a";}
   ];
 
   networking = {
@@ -60,7 +62,7 @@
     journal-brief.settings = {
       exclusions = [
         {
-          SYSLOG_IDENTIFIER = [ "sshd" ];
+          SYSLOG_IDENTIFIER = ["sshd"];
           MESSAGE = [
             "/fatal: Timeout before authentication/"
             "/error: PAM: Authentication failure for illegal user/"
@@ -79,7 +81,7 @@
           name = "backups";
           serve = {
             type = "stdinserver";
-            client_identities = [ "iron" ];
+            client_identities = ["iron"];
           };
           root_fs = "backups";
           recv = {

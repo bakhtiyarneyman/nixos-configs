@@ -1,4 +1,8 @@
-{ stdenv, lib, fetchFromGitHub }:
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+}:
 stdenv.mkDerivation rec {
   name = "adwaita-one-dark";
 
@@ -21,7 +25,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "Adwaita (the default theme of GNOME) with the One Dark color scheme";
-    homepage = https://github.com/lonr/adwaita-one-dark;
+    homepage = "https://github.com/lonr/adwaita-one-dark";
     license = licenses.gpl3Only;
     platforms = platforms.all;
   };

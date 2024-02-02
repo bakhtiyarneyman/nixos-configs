@@ -1,7 +1,5 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   config = {
-
     environment.systemPackages = with pkgs; [
       powertop
     ];
@@ -12,7 +10,6 @@
     };
 
     services = {
-
       smartd = {
         enable = true;
         extraOptions = [
@@ -27,8 +24,6 @@
       tlp = {
         enable = true;
       };
-
     };
-
   };
 }

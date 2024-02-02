@@ -1,4 +1,4 @@
-{ pkgs }:
+{pkgs}:
 pkgs.writeTextFile {
   name = "journst";
   executable = true;

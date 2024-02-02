@@ -1,4 +1,8 @@
-{ stdenv, lib, fetchFromGitHub }:
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+}:
 stdenv.mkDerivation rec {
   name = "plugin-peco";
   version = "master";
@@ -14,7 +18,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "Browse your fish history with peco";
-    homepage = https://github.com/oh-my-fish/plugin-peco;
+    homepage = "https://github.com/oh-my-fish/plugin-peco";
     license = licenses.mit;
     platforms = platforms.linux;
   };

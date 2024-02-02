@@ -1,7 +1,11 @@
-{ pkgs, lib, config, ... }:
 {
+  pkgs,
+  lib,
+  config,
+  ...
+}: {
   config = {
-    boot.kernelModules = [ "kvm-intel" ];
+    boot.kernelModules = ["kvm-intel"];
 
     hardware = {
       cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
@@ -14,6 +18,5 @@
     environment.systemPackages = with pkgs; [
       intel-gpu-tools
     ];
-
   };
 }

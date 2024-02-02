@@ -1,4 +1,8 @@
-{ stdenv, lib, fetchFromGitHub }:
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+}:
 stdenv.mkDerivation rec {
   name = "theme-agnoster";
 
@@ -13,7 +17,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "A fish theme";
-    homepage = https://github.com/oh-my-fish/theme-agnoster;
+    homepage = "https://github.com/oh-my-fish/theme-agnoster";
     license = licenses.mit;
     platforms = platforms.linux;
   };

@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   imports = [
     ../modules/namespaced-openvpn.nix
   ];
@@ -11,10 +10,10 @@
     };
 
     networking = {
-      firewall.trustedInterfaces = [ "tailscale0" ];
+      firewall.trustedInterfaces = ["tailscale0"];
       hosts = {
-        "100.65.77.115" = [ "iron-tailscale" ];
-        "100.126.205.61" = [ "kevlar-tailscale" ];
+        "100.65.77.115" = ["iron-tailscale"];
+        "100.126.205.61" = ["kevlar-tailscale"];
       };
     };
 
@@ -25,11 +24,11 @@
     services = {
       openssh.knownHosts = {
         iron = {
-          hostNames = [ "iron-tailscale" "100.65.135.29" ];
+          hostNames = ["iron-tailscale" "100.65.135.29"];
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOeAfprNGrQ2RfrDT81UxfTD/GfnOwz8gPzGppNiTw40";
         };
         kevlar = {
-          hostNames = [ "kevlar-tailscale" "100.126.205.61" ];
+          hostNames = ["kevlar-tailscale" "100.126.205.61"];
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKSyMQogWih9Tk8cpckwxP6CLzJxZqtg+qdFbXYbF9Sc";
         };
       };
@@ -46,9 +45,9 @@
         CRYFS_FRONTEND = "noninteractive";
         CRYFS_NO_UPDATE_CHECK = "true";
       };
-      bindsTo = [ "local-fs.target" ];
-      wantedBy = [ "local-fs.target" ];
-      after = [ "local-fs.target" ];
+      bindsTo = ["local-fs.target"];
+      wantedBy = ["local-fs.target"];
+      after = ["local-fs.target"];
       script = ''
         cat /etc/nixos/secrets/sensitive.passphrase |\
           ${pkgs.sudo}/bin/sudo \

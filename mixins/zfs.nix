@@ -1,14 +1,17 @@
-{ config, pkgs, ...}:
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
   ];
 
   config = {
     boot = {
-      kernelModules = [ "zfs" ];
+      kernelModules = ["zfs"];
       kernelPackages = config.boot.zfs.package.latestCompatibleLinuxPackages;
       loader.grub.zfsSupport = true;
-      supportedFilesystems = [ "zfs" ];
+      supportedFilesystems = ["zfs"];
       zfs = {
         forceImportRoot = false; # zfs_force=1 in kernel command line.
       };
@@ -41,11 +44,13 @@
         enable = true;
         settings = {
           global = {
-            logging = [{
-              type = "syslog";
-              format = "human";
-              level = "info";
-            }];
+            logging = [
+              {
+                type = "syslog";
+                format = "human";
+                level = "info";
+              }
+            ];
           };
         };
       };

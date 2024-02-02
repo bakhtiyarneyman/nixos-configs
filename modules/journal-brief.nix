@@ -1,6 +1,11 @@
-{ config, lib, pkgs, ... }:
 {
-  options.services.journal-brief = with lib; with types; {
+  config,
+  lib,
+  pkgs,
+  ...
+}: {
+  options.services.journal-brief = with lib;
+  with types; {
     enable = mkEnableOption "Sends emails with journalctl logs";
     settings = {
       priority = mkOption {
@@ -34,12 +39,12 @@
       };
       exclusions = mkOption {
         type = listOf (attrsOf (listOf str));
-        default = [ ];
+        default = [];
         description = "List of exclusion rules.";
       };
       inclusions = mkOption {
         type = listOf (attrsOf (listOf str));
-        default = [ ];
+        default = [];
         description = "List of inclusion rules.";
       };
     };
@@ -49,27 +54,27 @@
   config = lib.mkIf config.services.journal-brief.enable {
     systemd.services.journal-brief = {
       description = "Sends emails with journalctl logs";
-      wantedBy = [ "multi-user.target" ];
-      after = [ "network-online.target" ];
+      wantedBy = ["multi-user.target"];
+      after = ["network-online.target"];
       serviceConfig = {
         Type = "oneshot";
-        ExecStart =
-          let
-            yamlConfig = lib.generators.toYAML { }
-              (config.services.journal-brief.settings // {
-                inclusions = [{ }];
+        ExecStart = let
+          yamlConfig =
+            lib.generators.toYAML {}
+            (config.services.journal-brief.settings
+              // {
+                inclusions = [{}];
               });
-            configFile = pkgs.writeText "journal-brief-config.yaml" yamlConfig;
-          in
-          [
-            "${pkgs.journal-brief}/bin/journal-brief --conf=${configFile}"
-          ];
+          configFile = pkgs.writeText "journal-brief-config.yaml" yamlConfig;
+        in [
+          "${pkgs.journal-brief}/bin/journal-brief --conf=${configFile}"
+        ];
       };
     };
     systemd.timers.journal-brief = {
       description = "Sends emails with journalctl logs";
-      wantedBy = [ "timers.target" ];
-      after = [ "network.target" ];
+      wantedBy = ["timers.target"];
+      after = ["network.target"];
       timerConfig = {
         OnCalendar = "*-*-* 06:00:00";
         Persistent = true;

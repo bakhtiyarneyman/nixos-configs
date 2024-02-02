@@ -1,20 +1,20 @@
-{ config, pkgs, lib, hostName, ... }:
-let
-  dimToLockSecs = 15;
-in
 {
+  pkgs,
+  lib,
+  ...
+}: let
+  dimToLockSecs = 15;
+in {
   imports = [
     ../modules/dunst.nix
     ../modules/i3status-rust.nix
   ];
 
   config = {
-
     users.users.bakhtiyar.extraGroups = [
       "adbusers"
       "video" # Allow changing brightness via `light`.
     ];
-
 
     # List packages installed in system profile. To search, run:
     # $ nix search wget
@@ -41,7 +41,7 @@ in
         breeze-icons
         adwaita-one-dark
         # Browsers
-        (google-chrome.override { commandLineArgs = "--enable-features=VaapiVideoDecoder"; })
+        (google-chrome.override {commandLineArgs = "--enable-features=VaapiVideoDecoder";})
         brave
         # Communication
         skypeforlinux
@@ -52,7 +52,7 @@ in
         unstable.pkgs.discord
         slack
         # Development
-        (unstable.vscode.override { isInsiders = false; })
+        (unstable.vscode.override {isInsiders = false;})
         cachix
         meld
         python3
@@ -61,7 +61,7 @@ in
         alejandra
         nixpkgs-fmt
         cntr
-        (haskellPackages.ghcWithPackages (ps: with ps;  [ protolude text turtle text ]))
+        (haskellPackages.ghcWithPackages (ps: with ps; [protolude text turtle text]))
         cabal-install
         haskell-language-server
         haskellPackages.fourmolu
@@ -128,7 +128,10 @@ in
       ];
       allowedUDPPortRanges = [
         # Chromecast ports.
-        { from = 32768; to = 60999; }
+        {
+          from = 32768;
+          to = 60999;
+        }
       ];
     };
 
@@ -166,7 +169,6 @@ in
     };
 
     services = {
-
       # Enable the X11 windowing system.
       xserver = {
         enable = true;
@@ -235,45 +237,42 @@ in
           mouse_left_click = "context";
           mouse_middle_click = "close_all";
           mouse_right_click = "close_current";
-          icon_path =
-            let
-              categories = [
-                "actions"
-                "places"
-                "animations"
-                "devices"
-                "status"
-                "apps"
-                "emblems"
-                "mimetypes"
-                "categories"
-                "emotes"
-                "panel"
-              ];
-              prefix = x: "${pkgs.kora-icon-theme}/share/icons/kora/${x}";
-            in
+          icon_path = let
+            categories = [
+              "actions"
+              "places"
+              "animations"
+              "devices"
+              "status"
+              "apps"
+              "emblems"
+              "mimetypes"
+              "categories"
+              "emotes"
+              "panel"
+            ];
+            prefix = x: "${pkgs.kora-icon-theme}/share/icons/kora/${x}";
+          in
             lib.concatStringsSep ":"
-              (map prefix
-                (map (category: "${category}/scalable") categories ++ [ "panel/24" ]));
+            (map prefix
+              (map (category: "${category}/scalable") categories ++ ["panel/24"]));
         };
         experimentalConfig = {
           per_monitor_dpi = "true";
         };
-        urgencyConfig =
-          let
-            q = s: ''"${s}"'';
-            urgency = bg: fg: timeout: {
-              background = q bg;
-              foreground = q fg;
-              frame_color = q fg;
-              timeout = toString timeout;
-            };
-          in
-          {
-            low = urgency "#282c34" "#abb2bf" 10;
-            normal = urgency "#61afef" "#282c34" 30;
-            critical = urgency "#ff0000" "#ffffff" 0;
+        urgencyConfig = let
+          q = s: ''"${s}"'';
+          urgency = bg: fg: timeout: {
+            background = q bg;
+            foreground = q fg;
+            frame_color = q fg;
+            timeout = toString timeout;
           };
+        in {
+          low = urgency "#282c34" "#abb2bf" 10;
+          normal = urgency "#61afef" "#282c34" 30;
+          critical = urgency "#ff0000" "#ffffff" 0;
+        };
       };
 
       gnome = {
@@ -284,15 +283,13 @@ in
       # localtime.enable = true; // This doesn't work and only generates errors.
       actkbd = {
         enable = true;
-        bindings =
-          let
-            light = "${pkgs.light}/bin/light";
-            mkBinding = keys: events: command: { inherit keys events command; };
-          in
-          [
-            (mkBinding [ 224 ] [ "key" "rep" ] "${light} -T 0.707")
-            (mkBinding [ 225 ] [ "key" "rep" ] "${light} -T 1.414")
-          ];
+        bindings = let
+          light = "${pkgs.light}/bin/light";
+          mkBinding = keys: events: command: {inherit keys events command;};
+        in [
+          (mkBinding [224] ["key" "rep"] "${light} -T 0.707")
+          (mkBinding [225] ["key" "rep"] "${light} -T 1.414")
+        ];
       };
 
       blueman.enable = true; # Bluetooth applet.
@@ -371,7 +368,7 @@ in
 
       _1password-gui = {
         enable = true;
-        polkitPolicyOwners = [ "bakhtiyar" ];
+        polkitPolicyOwners = ["bakhtiyar"];
       };
       system-config-printer.enable = true;
       wireshark.package = pkgs.wireshark;
@@ -380,43 +377,48 @@ in
     systemd.user.targets = {
       sway-session = {
         enable = true;
-        bindsTo = [ "graphical-session.target" ];
-        wants = [ "graphical-session-pre.target" ];
-        after = [ "graphical-session-pre.target" ];
+        bindsTo = ["graphical-session.target"];
+        wants = ["graphical-session-pre.target"];
+        after = ["graphical-session-pre.target"];
       };
     };
-    systemd.user.services =
-      let
-        autostart = cmd: {
-          enable = true;
-          # Won't start unless sway-session.target has been started.
-          requisite = [ "sway-session.target" ];
-          after = [ "sway-session.target" ];
-          # Will be started if sway-session is started.
-          wantedBy = [ "sway-session.target" ];
-          serviceConfig.ExecStart = [ cmd ];
-          environment."XDG_CONFIG_DIRS" = "/etc/xdg";
-        };
-        mkJournst = phase:
-          let
-            cfg = if phase == "boot" then { flags = "--boot --no-pager"; restart = "no"; } else
-            if phase == "run" then { flags = "--follow --lines=0"; restart = "on-failure"; } else
-            throw "Phase ${phase} is not supported";
-          in
-          {
-            "journst-${phase}" = {
-              wantedBy = [ "sway-session.target" ];
-              requires = [ "dunst.service" ];
-              after = [ "dunst.service" ];
-              serviceConfig = {
-                ExecStart = [ "${pkgs.journst}/bin/journst ${cfg.flags}" ];
-                Restart = cfg.restart;
-              };
-            };
+    systemd.user.services = let
+      autostart = cmd: {
+        enable = true;
+        # Won't start unless sway-session.target has been started.
+        requisite = ["sway-session.target"];
+        after = ["sway-session.target"];
+        # Will be started if sway-session is started.
+        wantedBy = ["sway-session.target"];
+        serviceConfig.ExecStart = [cmd];
+        environment."XDG_CONFIG_DIRS" = "/etc/xdg";
+      };
+      mkJournst = phase: let
+        cfg =
+          if phase == "boot"
+          then {
+            flags = "--boot --no-pager";
+            restart = "no";
+          }
+          else if phase == "run"
+          then {
+            flags = "--follow --lines=0";
+            restart = "on-failure";
+          }
+          else throw "Phase ${phase} is not supported";
+      in {
+        "journst-${phase}" = {
+          wantedBy = ["sway-session.target"];
+          requires = ["dunst.service"];
+          after = ["dunst.service"];
+          serviceConfig = {
+            ExecStart = ["${pkgs.journst}/bin/journst ${cfg.flags}"];
+            Restart = cfg.restart;
           };
-      in
+        };
+      };
+    in
       {
-
         blueman = autostart "${pkgs.blueman}/bin/blueman-applet";
 
         # USB disk automounting.
@@ -430,32 +432,32 @@ in
 
         nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
 
-        inactive-windows-transparency = autostart
+        inactive-windows-transparency =
+          autostart
           "${pkgs.inactive-windows-transparency}/bin/inactive-windows-transparency.py";
 
         gammastep = autostart "${pkgs.gammastep}/bin/gammastep -t 6500:3300";
 
-        swayidle =
-          let
-            idleToDimSecs = 60;
-            idleToLockSecs = idleToDimSecs + dimToLockSecs;
-            idleToScreenOffSecs = idleToLockSecs + 10;
-          in
+        swayidle = let
+          idleToDimSecs = 60;
+          idleToLockSecs = idleToDimSecs + dimToLockSecs;
+          idleToScreenOffSecs = idleToLockSecs + 10;
+        in
           autostart "${pkgs.writeShellScriptBin "autolock" ''
-        ${pkgs.swayidle}/bin/swayidle -w \
-          timeout ${builtins.toString idleToDimSecs} 'echo "Dimming..."; ${pkgs.dim-screen}/bin/dim-screen &' \
-            resume 'echo "Undim."; ${pkgs.psmisc}/bin/killall dim-screen' \
-          timeout ${builtins.toString idleToLockSecs} 'echo "Locking..."; ${pkgs.prettyLock}/bin/prettyLock &' \
-          timeout ${builtins.toString idleToScreenOffSecs} 'echo "Screen off..."; ${pkgs.sway}/bin/swaymsg "output * dpms off"' \
-            resume 'echo "Screen on"; ${pkgs.sway}/bin/swaymsg "output * dpms on"' \
-          before-sleep ${pkgs.prettyLock}/bin/prettyLock
-      ''}/bin/autolock";
+            ${pkgs.swayidle}/bin/swayidle -w \
+              timeout ${builtins.toString idleToDimSecs} 'echo "Dimming..."; ${pkgs.dim-screen}/bin/dim-screen &' \
+                resume 'echo "Undim."; ${pkgs.psmisc}/bin/killall dim-screen' \
+              timeout ${builtins.toString idleToLockSecs} 'echo "Locking..."; ${pkgs.prettyLock}/bin/prettyLock &' \
+              timeout ${builtins.toString idleToScreenOffSecs} 'echo "Screen off..."; ${pkgs.sway}/bin/swaymsg "output * dpms off"' \
+                resume 'echo "Screen on"; ${pkgs.sway}/bin/swaymsg "output * dpms on"' \
+              before-sleep ${pkgs.prettyLock}/bin/prettyLock
+          ''}/bin/autolock";
 
         polkit-gnome-authentication-agent-1 = {
           description = "polkit-gnome-authentication-agent-1";
-          wantedBy = [ "graphical-session.target" ];
-          wants = [ "graphical-session.target" ];
-          after = [ "graphical-session.target" ];
+          wantedBy = ["graphical-session.target"];
+          wants = ["graphical-session.target"];
+          after = ["graphical-session.target"];
           serviceConfig = {
             Type = "simple";
             ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
@@ -468,7 +470,9 @@ in
         tutanota = autostart "${pkgs.tutanota-desktop}/bin/tutanota-desktop";
 
         wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
-      } // mkJournst "boot" // mkJournst "run";
+      }
+      // mkJournst "boot"
+      // mkJournst "run";
 
     nixpkgs = {
       config = {
@@ -479,16 +483,16 @@ in
       };
       overlays = [
         (self: super: {
-          adwaita-one-dark = pkgs.callPackage ../pkgs/adwaita-one-dark.nix { };
-          android-udev-rules = super.pkgs.unstable.android-udev-rules.override { };
-          dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix { dimSeconds = dimToLockSecs; };
+          adwaita-one-dark = pkgs.callPackage ../pkgs/adwaita-one-dark.nix {};
+          android-udev-rules = super.pkgs.unstable.android-udev-rules.override {};
+          dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix {dimSeconds = dimToLockSecs;};
           blender = super.blender.override {
             ffmpeg = pkgs.ffmpeg_6-full;
             hipSupport = true;
           };
-          inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix { };
-          journst = pkgs.callPackage ../pkgs/journst.nix { };
-          prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix { };
+          inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix {};
+          journst = pkgs.callPackage ../pkgs/journst.nix {};
+          prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix {};
           tutanota-desktop = super.pkgs.unstable.tutanota-desktop;
         })
       ];
@@ -503,9 +507,9 @@ in
       fontDir.enable = true;
       enableGhostscriptFonts = true;
       fontconfig.defaultFonts = {
-        monospace = [ "Fira Mono" ];
-        sansSerif = [ "Fira Sans" ];
-        serif = [ "Lora" ];
+        monospace = ["Fira Mono"];
+        sansSerif = ["Fira Sans"];
+        serif = ["Lora"];
       };
       packages = with pkgs; [
         anonymousPro

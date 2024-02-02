@@ -1,4 +1,8 @@
-{ stdenv, lib, fetchFromGitHub }:
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+}:
 stdenv.mkDerivation rec {
   name = "z";
   version = "master";
@@ -14,7 +18,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "z tracks the directories you visit.";
-    homepage = https://github.com/jethrokuan/z;
+    homepage = "https://github.com/jethrokuan/z";
     license = licenses.mit;
     platforms = platforms.linux;
   };

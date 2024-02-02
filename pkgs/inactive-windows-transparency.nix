@@ -1,19 +1,9 @@
-{ lib
-, stdenv
-
-, coreutils
-, makeWrapper
-, sway-unwrapped
-, installShellFiles
-, wl-clipboard
-, libnotify
-, slurp
-, grim
-, jq
-, bash
-, fetchFromGitHub
-, python3Packages
-}: python3Packages.buildPythonApplication rec {
+{
+  sway-unwrapped,
+  fetchFromGitHub,
+  python3Packages,
+}:
+python3Packages.buildPythonApplication rec {
   # long name is long
   lname = "inactive-windows-transparency";
   pname = "sway-${lname}";
@@ -30,14 +20,16 @@
   dontBuild = true;
   dontConfigure = true;
 
-  propagatedBuildInputs = [ python3Packages.i3ipc ];
+  propagatedBuildInputs = [python3Packages.i3ipc];
 
   installPhase = ''
     install -Dm 0755 $src/contrib/${lname}.py $out/bin/${lname}.py
   '';
 
-  meta = sway-unwrapped.meta // {
-    description = "It makes inactive sway windows transparent";
-    homepage = "https://github.com/swaywm/sway/tree/${sway-unwrapped.version}/contrib";
-  };
+  meta =
+    sway-unwrapped.meta
+    // {
+      description = "It makes inactive sway windows transparent";
+      homepage = "https://github.com/swaywm/sway/tree/${sway-unwrapped.version}/contrib";
+    };
 }

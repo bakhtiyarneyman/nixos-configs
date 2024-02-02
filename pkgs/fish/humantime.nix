@@ -1,4 +1,8 @@
-{ stdenv, lib, fetchFromGitHub }:
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+}:
 stdenv.mkDerivation rec {
   name = "humantime.fish";
   version = "main";
@@ -14,7 +18,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "A fish shell package to make a time interval human readable.";
-    homepage = https://github.com/jorgebucaran/humantime.fish;
+    homepage = "https://github.com/jorgebucaran/humantime.fish";
     license = licenses.unlicense;
     platforms = platforms.linux;
   };

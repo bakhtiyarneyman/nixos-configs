@@ -1,10 +1,9 @@
 # Nix package for twaugh/journal-brief.
-{ lib
-, stdenv
-, fetchFromGitHub
-, python3Packages
-}: python3Packages.buildPythonPackage rec {
-
+{
+  fetchFromGitHub,
+  python3Packages,
+}:
+python3Packages.buildPythonPackage rec {
   pname = "journal-brief";
   version = "1.1.8";
   src = fetchFromGitHub {

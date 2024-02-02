@@ -1,4 +1,8 @@
-{ stdenv, lib, fetchFromGitHub }:
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+}:
 stdenv.mkDerivation rec {
   name = "fish-getopts";
   version = "1.0.0";
@@ -14,7 +18,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "Parse CLI options in fish";
-    homepage = https://github.com/jorgebucaran/fish-getopts;
+    homepage = "https://github.com/jorgebucaran/fish-getopts";
     license = licenses.mit;
     platforms = platforms.linux;
   };

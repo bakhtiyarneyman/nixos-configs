@@ -1,4 +1,8 @@
-{ stdenv, lib, fetchFromGitHub }:
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+}:
 stdenv.mkDerivation rec {
   name = "done";
   version = "1.16.5";
@@ -14,7 +18,7 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "A fish-shell package to automatically receive notifications when long processes finish.";
-    homepage = https://github.com/franciscolourenco/done;
+    homepage = "https://github.com/franciscolourenco/done";
     license = licenses.mit;
     platforms = platforms.linux;
   };
