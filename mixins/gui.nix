@@ -56,7 +56,9 @@ in
         cachix
         meld
         python3
-        rnix-lsp
+        nixd
+        nil
+        alejandra
         nixpkgs-fmt
         cntr
         (haskellPackages.ghcWithPackages (ps: with ps;  [ protolude text turtle text ]))
