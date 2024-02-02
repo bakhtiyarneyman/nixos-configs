@@ -4,7 +4,7 @@ let
   gid = 982;
 in
 {
-  containers.buildkite = {
+  containers.neurasium = {
 
     autoStart = true;
 
@@ -16,9 +16,16 @@ in
     ephemeral = false;
 
     config =
-      let cfg = config.containers.buildkite.config;
+      let cfg = config.containers.neurasium.config;
       in
       {
+        networking = {
+          firewall = {
+            enable = true;
+            logRefusedConnections = true;
+            checkReversePath = "loose";
+          };
+        };
 
         nix = {
           extraOptions = ''
@@ -40,29 +47,38 @@ in
 
         };
 
-        services.buildkite-agents.neurasium = {
-          hooks.environment = ''
-            export PAGER=
-          '';
-          runtimePackages = [
-            pkgs.bash
-            pkgs.direnv
-            pkgs.git
-            pkgs.gnugrep
-            pkgs.gnutar
-            pkgs.gzip
-            (pkgs.writeShellScriptBin "nix-env" ''
-              exec ${pkgs.nix}/bin/nix-env "$@"
-            '')
-            (pkgs.writeShellScriptBin "nix-store" ''
-              exec ${pkgs.nix}/bin/nix-store "$@"
-            '')
-            (pkgs.writeShellScriptBin "nix" ''
-              exec ${pkgs.nix}/bin/nix --print-build-logs "$@"
-            '')
-          ];
-          shell = "${pkgs.bash}/bin/bash -euo pipefail -c";
-          tokenPath = "/secrets/buildkite.token";
+        services = {
+
+          gerrit = {
+            enable = true;
+            serverId = "iron-neurasium";
+          };
+
+          buildkite-agents.neurasium = {
+            hooks.environment = ''
+              export PAGER=
+            '';
+            runtimePackages = [
+              pkgs.bash
+              pkgs.direnv
+              pkgs.git
+              pkgs.gnugrep
+              pkgs.gnutar
+              pkgs.gzip
+              (pkgs.writeShellScriptBin "nix-env" ''
+                exec ${pkgs.nix}/bin/nix-env "$@"
+              '')
+              (pkgs.writeShellScriptBin "nix-store" ''
+                exec ${pkgs.nix}/bin/nix-store "$@"
+              '')
+              (pkgs.writeShellScriptBin "nix" ''
+                exec ${pkgs.nix}/bin/nix --print-build-logs "$@"
+              '')
+            ];
+            shell = "${pkgs.bash}/bin/bash -euo pipefail -c";
+            tokenPath = "/secrets/buildkite.token";
+          };
+
         };
 
         system.stateVersion = "23.11";
