@@ -46,6 +46,7 @@ in {
         # Communication
         skypeforlinux
         signal-desktop
+        whatsapp-for-linux
         tdesktop # Telegram.
         tutanota-desktop
         zoom-us
@@ -425,6 +426,8 @@ in {
         udiskie = autostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
 
         signal = autostart "${pkgs.signal-desktop}/bin/signal-desktop";
+
+        whatsapp = autostart "${pkgs.whatsapp-for-linux}/bin/whatsapp-for-linux";
 
         telegram = autostart "${pkgs.tdesktop}/bin/telegram-desktop";
 
