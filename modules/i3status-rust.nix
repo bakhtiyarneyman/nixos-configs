@@ -75,6 +75,32 @@ in {
       alternating_tint_bg = "#111111"
       alternating_tint_fg = "#111111"
     '';
+    make_status_block = which: icon: let
+      get_status = pkgs.writeText "get-systemd-status-for-i3.fish" ''
+        if test (systemctl ${which} is-system-running) != running
+            set state Warning
+            set failed (systemctl ${which} --failed --no-pager --plain --quiet list-units | awk '{print $1}')
+            set text (for line in $failed
+              echo $line | string split --fields 1 '.'
+            end | string join -- ',')
+            set text "${icon} $text"
+        else
+            set text "${icon}"
+            set state Idle
+        end
+
+        # echo "{\"icon\": \"\", \"state\":\"$state\",\"text\": \"$text\"}"
+        # echo "{\"icon\": \"\", \"state\":\"$state\",\"text\": \"$text\"}"
+        # echo "{\"icon\": \"\", \"state\":\"$state\",\"text\": \"$text\"}"
+        echo "{\"icon\": \"\", \"state\":\"$state\",\"text\": \"$text\"}"
+      '';
+    in ''
+      [[block]]
+      block = "custom"
+      command = "${pkgs.fish}/bin/fish ${get_status}"
+      json = true
+    '';
+
     configFile = pkgs.writeText "i3status-rust.toml" ''
 
       scrolling = "natural"
@@ -82,6 +108,10 @@ in {
       icons = "awesome6"
       [theme]
       theme = "${themeFile}"
+
+      ${make_status_block "" "\\ue4e5"}
+
+      ${make_status_block "--user" "\\uf007"}
 
       [[block]]
       block = "disk_space"
