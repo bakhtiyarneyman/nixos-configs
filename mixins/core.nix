@@ -479,7 +479,6 @@ in {
 
       git = {
         enable = true;
-        package = pkgs.gitFull;
         config = {
           user = {
             email = myEmail;
@@ -493,6 +492,8 @@ in {
             "https://github.com/neurasium".username = "neurasium";
           };
         };
+        lfs.enable = true;
+        package = pkgs.gitFull;
       };
 
       msmtp = {
