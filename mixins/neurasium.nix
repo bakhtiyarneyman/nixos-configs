@@ -1,29 +1,40 @@
 {
-  config,
   hostName,
   lib,
   pkgs,
   ...
 }: let
-  hostCfg = config;
   containerName = "neurasium";
   agentName = "builder";
-  userName = "buildkite-agent-${agentName}";
-  uid = 986;
-  gid = 982;
+  buildkiteAgentName = "buildkite-agent-${agentName}";
+  buildkiteUid = 986;
+  buildkiteGid = 982;
+  makeUserAndGroup = name: uid: gid: {
+    users."${name}" = {
+      uid = uid;
+      group = name;
+    };
+    groups."${name}".gid = gid;
+  };
+
+  # Shared definitions of users and groups for file permissions.
+  users =
+    makeUserAndGroup buildkiteAgentName buildkiteUid buildkiteGid
 in {
   config = {
     containers."${containerName}" = {
       autoStart = true;
 
       bindMounts = {
-        "/secrets/buildkite.pat".hostPath = "/etc/nixos/secrets/buildkite.pat";
-        "/secrets/buildkite.token".hostPath = "/etc/nixos/secrets/buildkite.token";
+        "/secrets/buildkite.pat".hostPath = "/etc/nixos/secrets/neurasium/buildkite.pat";
+        "/secrets/buildkite.token".hostPath = "/etc/nixos/secrets/neurasium/buildkite.token";
       };
 
-      config = let
-        containerCfg = hostCfg.containers."${containerName}".config;
-      in {
+      config = {
+        config,
+        pkgs,
+        ...
+      }: {
         networking = {
           firewall = {
             enable = true;
@@ -85,22 +96,17 @@ in {
 
         system.stateVersion = "23.11";
 
-        systemd.services."${userName}" = {
+        systemd.services."${buildkiteAgentName}" = {
           preStart = ''
             set -euo pipefail
             export BUILDKITE_PAT=$(cat /secrets/buildkite.pat)
             echo \
               "https://neurasium-buildkite-agent:$BUILDKITE_PAT@github.com" \
-              > "${containerCfg.services.buildkite-agents.${agentName}.dataDir}/.git-credentials"
+              > "${config.services.buildkite-agents.${agentName}.dataDir}/.git-credentials"
           '';
         };
 
-        users = {
-          users."${userName}" = {
-            inherit uid;
-          };
-          groups."${userName}" = {
-            inherit gid;
+        inherit users;
           };
         };
       };
@@ -121,14 +127,6 @@ in {
       useDHCP = lib.mkDefault true;
     };
 
-    users = {
-      users.${userName} = {
-        inherit uid;
-        group = userName;
-      };
-      groups.${userName} = {
-        inherit gid;
-      };
-    };
+    inherit users;
   };
 }
