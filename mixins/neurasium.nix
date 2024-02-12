@@ -59,6 +59,7 @@ in {
             config = {
               credential.helper = "store";
             };
+            lfs.enable = true;
           };
         };
 
@@ -76,6 +77,7 @@ in {
               pkgs.bash
               pkgs.direnv
               pkgs.git
+              pkgs.git-lfs
               pkgs.gnugrep
               pkgs.gnutar
               pkgs.gzip
@@ -97,12 +99,20 @@ in {
         system.stateVersion = "23.11";
 
         systemd.services."${buildkiteAgentName}" = {
-          preStart = ''
+          preStart = let
+            userDir = config.services.buildkite-agents.${agentName}.dataDir;
+            lfsCacheDir = "${userDir}/.cache/lfs";
+          in ''
             set -euo pipefail
             export BUILDKITE_PAT=$(cat /secrets/buildkite.pat)
             echo \
               "https://neurasium-buildkite-agent:$BUILDKITE_PAT@github.com" \
-              > "${config.services.buildkite-agents.${agentName}.dataDir}/.git-credentials"
+              > "${userDir}/.git-credentials"
+            mkdir -p ${lfsCacheDir}
+            cat > ${userDir}/.gitconfig <<EOF
+            [lfs]
+            storage = ${lfsCacheDir}
+            EOF
           '';
         };
 
