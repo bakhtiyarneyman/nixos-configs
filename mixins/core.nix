@@ -491,6 +491,7 @@ in {
             "https://github.com/".username = "bakhtiyarneyman";
             "https://github.com/neurasium".username = "neurasium";
           };
+          http.version = "HTTP/2";
         };
         lfs.enable = true;
         package = pkgs.gitFull;
