@@ -433,6 +433,8 @@ in {
 
         discord = autostart "${pkgs.unstable.discord}/bin/discord";
 
+        slack = autostart "${pkgs.slack}/bin/slack";
+
         nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
 
         inactive-windows-transparency =
