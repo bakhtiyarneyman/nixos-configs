@@ -173,7 +173,7 @@ in {
             block = "net";
             device = cfg.networkInterface;
             format = " $icon ^icon_net_down $speed_down.eng(prefix:M,width:3)/s   ^icon_net_up $speed_up.eng(prefix:M,width:3)/s ";
-            format_alt = " $icon {$ssid $signal_strength|N/A} ";
+            format_alt = " $icon {$signal_strength|N/A} ";
             interval = 1;
           }
           {
