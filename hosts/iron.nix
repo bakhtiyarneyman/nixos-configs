@@ -194,6 +194,12 @@ in {
     };
 
     services = {
+      hardware.openrgb = {
+        enable = true;
+        motherboard = "intel";
+        package = pkgs.openrgb-with-all-plugins;
+      };
+
       monero = {
         dataDir = "/var/lib/monero";
         enable = true;
