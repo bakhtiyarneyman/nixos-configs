@@ -115,10 +115,6 @@ in {
         cryfs
       ];
 
-      pathsToLink = [
-        "/share/nix-direnv"
-      ];
-
       etc = {
         "aliases" = {
           text = ''
