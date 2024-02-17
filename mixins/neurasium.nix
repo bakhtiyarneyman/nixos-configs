@@ -19,7 +19,7 @@
 
   # Shared definitions of users and groups for file permissions.
   users =
-    makeUserAndGroup buildkiteAgentName buildkiteUid buildkiteGid
+    makeUserAndGroup buildkiteAgentName buildkiteUid buildkiteGid;
 in {
   config = {
     containers."${containerName}" = {
@@ -117,8 +117,6 @@ in {
         };
 
         inherit users;
-          };
-        };
       };
 
       ephemeral = false;
