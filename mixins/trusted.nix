@@ -10,7 +10,16 @@
     };
 
     networking = {
-      firewall.trustedInterfaces = ["tailscale0"];
+      firewall = {
+        trustedInterfaces = [
+          "tailscale0"
+        ];
+        extraCommands = ''
+          iptables --append nixos-fw \
+            --source 172.28.14.0/24 \
+            --jump ACCEPT
+        '';
+      };
       hosts = {
         "100.65.77.115" = ["iron-tailscale"];
         "100.126.205.61" = ["kevlar-tailscale"];
