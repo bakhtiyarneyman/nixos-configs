@@ -165,14 +165,14 @@ in {
 
     programs = {
       i3status-rust = {
-        networkInterface = "eno1";
+        networkInterface = "wlp12s0";
         batteries = [
           {
             model = "Wireless Mouse MX Master 3";
             icon = "";
           }
           {
-            device = "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-2/1-2:1.0/usbmisc/hiddev1";
+            device = "/sys/devices/pci0000:00/0000:00:02.1/0000:04:00.0/0000:05:0c.0/0000:0e:00.0/usb1/1-6/1-6.3/1-6.3:1.0/usbmisc/hiddev6";
             icon = "";
           }
         ];
@@ -184,6 +184,8 @@ in {
           format_alt = " $icon ^icon_memory_mem $vram_used_percents.eng(width:3) "
           interval = 1
         '';
+
+        temperatureChip = "k10temp-*";
       };
       sway = {
         extraOptions = ["--unsupported-gpu"]; # TODO: remove this.

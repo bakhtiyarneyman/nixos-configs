@@ -106,6 +106,7 @@ in {
         fish
         peco
         # Hardware
+        dmidecode
         psmisc
         pciutils
         glxinfo

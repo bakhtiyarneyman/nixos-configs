@@ -14,6 +14,11 @@ in {
       default = "eno1";
       description = "An interface from /sys/class/net";
     };
+    temperatureChip = mkOption {
+      type = types.str;
+      default = "*-isa-*";
+      description = "A chip from /sys/class/hwmon";
+    };
     batteries = mkOption {
       type = types.listOf (types.submodule {
         options = {
@@ -139,7 +144,7 @@ in {
       interval = 1
       good = -100
       format = " $icon $max"
-      chip = "*-isa-*"
+      chip = "${cfg.temperatureChip}"
 
       [[block]]
       block = "sound"
