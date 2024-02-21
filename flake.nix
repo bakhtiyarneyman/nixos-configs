@@ -8,11 +8,11 @@
     };
   };
 
-  outputs = {
+  outputs = inputs @ {
     self,
     nixpkgs,
     nixpkgs-unstable,
-    vscode-server,
+    ...
   }: let
     system = "x86_64-linux";
     overlay-unstable = final: prev: {
@@ -27,6 +27,9 @@
         specialArgs = {inherit hostName;};
         modules =
           [
+            ./mixins/core.nix
+            ./mixins/palette.nix
+            (./hosts/${hostName} + ".nix")
             {
               nix.registry = {
                 nixpkgs.flake = nixpkgs;
@@ -35,8 +38,6 @@
               nixpkgs.overlays = [overlay-unstable];
               system.configurationRevision = self.rev or "dirty";
             }
-            (./hosts/${hostName} + ".nix") # rnix-lsp complains about this.
-            ./mixins/core.nix
           ]
           ++ extraModules;
       };
@@ -55,10 +56,7 @@
           ./mixins/ecc.nix
           ./mixins/neurasium.nix
           ./mixins/zfs.nix
-          (vscode-server.nixosModules.default)
-          {
-            services.vscode-server.enable = true;
-          }
+          inputs.vscode-server.nixosModules.default
         ]);
       kevlar = mkSystem "kevlar" owned;
       tungsten = mkSystem "tungsten" [

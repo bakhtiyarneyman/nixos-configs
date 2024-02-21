@@ -176,14 +176,15 @@ in {
             icon = "";
           }
         ];
-        extraConfig = ''
-          [[block]]
-          block = "amd_gpu"
-          device = "card0"
-          format = " $icon ^icon_cpu $utilization.eng(width:3) "
-          format_alt = " $icon ^icon_memory_mem $vram_used_percents.eng(width:3) "
-          interval = 1
-        '';
+        extraBlocks = [
+          {
+            block = "amd_gpu";
+            device = "card0";
+            format = " $icon ^icon_cpu $utilization.eng(width:3) ";
+            format_alt = " $icon ^icon_memory_mem $vram_used_percents.eng(width:3) ";
+            interval = 1;
+          }
+        ];
 
         temperatureChip = "k10temp-*";
       };
@@ -307,6 +308,8 @@ in {
         evdev:input:b0003v046DpC548*
           KEYBOARD_KEY_70049=sysrq
       '';
+
+      vscode-server.enable = true;
 
       xserver = {
         videoDrivers = ["amdgpu"];

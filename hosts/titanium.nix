@@ -4,11 +4,12 @@
 {lib, ...}: {
   programs.i3status-rust = {
     networkInterface = "wlp0s20f3";
-    extraConfig = ''
-      [[block]]
-      block = "bluetooth"
-      mac = "DC:2C:26:A4:97:20"
-    '';
+    extraBlocks = [
+      {
+        block = "bluetooth";
+        mac = "DC:2C:26:A4:97:20";
+      }
+    ];
   };
 
   boot.initrd.availableKernelModules = ["xhci_pci" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc"];
