@@ -19,7 +19,16 @@ in {
         config.boot.zfs.package.latestCompatibleLinuxPackages.rtl88x2bu
       ];
       initrd = {
-        availableKernelModules = ["xhci_pci" "ehci_pci" "nvme" "ahci" "usb_storage" "usbhid" "sd_mod"];
+        availableKernelModules = [
+          "ahci"
+          "edac_mce_amd" # Not sure if it's needed. Added in attempt to fix rasdaemon.
+          "ehci_pci"
+          "nvme"
+          "sd_mod"
+          "usb_storage"
+          "usbhid"
+          "xhci_pci"
+        ];
       };
       loader = {
         efi.efiSysMountPoint = "/boot/efis/${toPartitionId (head coreDiskIds) 1}";
