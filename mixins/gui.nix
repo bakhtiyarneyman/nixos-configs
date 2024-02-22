@@ -474,7 +474,9 @@ in {
           };
         };
 
-        tutanota = autostart "${pkgs.tutanota-desktop}/bin/tutanota-desktop";
+        # The flag might not be necessary after the fix:
+        # https://nixpk.gs/pr-tracker.html?pr=278953
+        tutanota = autostart "${pkgs.tutanota-desktop}/bin/tutanota-desktop --password-store=gnome-libsecret";
 
         wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
       }
