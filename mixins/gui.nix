@@ -87,6 +87,8 @@ in {
           mediaSupport = true;
           pulseaudioSupport = true;
         })
+        # VM
+        quickemu
       ];
 
       etc = {
@@ -536,6 +538,8 @@ in {
         ubuntu_font_family
       ];
     };
+
+    virtualisation.spiceUSBRedirection.enable = true;
 
     xdg.portal = {
       enable = true;
