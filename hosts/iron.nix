@@ -256,6 +256,18 @@ in {
       };
 
       journal-brief.settings.exclusions = [
+        # It's some USB hub internal to the ASRock B650E PG Riptide.
+        {
+          MESSAGE = ["hub 8-0:1.0: config failed, hub doesn't have any ports! (err -19)"];
+          _SELINUX_CONTEXT = ["kernel"];
+        }
+        # This stems from remapping the PrintScreen key on the MX Keys keyboard. The remapping
+        # works, so probably it's an issue with timing, i.e. this rule runs before we connect to
+        # the keyboard via wireless/usb.
+        {
+          MESSAGE = ["event4: Failed to call EVIOCSKEYCODE with scan code 0x70049, and key code 99: Invalid argument"];
+          _SELINUX_CONTEXT = ["kernel"];
+        }
         {
           CODE_FILE = ["src/login/logind-core.c"];
           _SELINUX_CONTEXT = ["kernel"];
