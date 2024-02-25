@@ -9,6 +9,8 @@
       logitech.wireless.enable = true;
     };
 
+    programs.corectrl.enable = true;
+
     services = {
       smartd = {
         enable = true;

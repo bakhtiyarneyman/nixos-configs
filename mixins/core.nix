@@ -107,10 +107,12 @@ in {
         peco
         # Hardware
         dmidecode
+        fio # Disk benchmarking.
+        glxinfo # OpenGL information.
+        inxi # System information.
+        pciutils # lspci
         psmisc
-        pciutils
-        glxinfo
-        inxi
+        usbutils # lsusb
         # Privacy
         namespaced-openvpn
         cryfs
