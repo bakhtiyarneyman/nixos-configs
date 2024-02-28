@@ -52,7 +52,7 @@ in {
     environment = {
       systemPackages = with pkgs; [
         liquidctl
-        radeontop
+        amdgpu_top
       ];
       variables = {
         LIBVA_DRIVER_NAME = "radeonsi";
