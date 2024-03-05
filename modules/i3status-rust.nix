@@ -45,7 +45,7 @@ in {
     };
     extraBlocks = mkOption {
       type = settingsFormat.type;
-      default = "";
+      default = [];
       description = "Extra blocks configuration";
     };
   };
