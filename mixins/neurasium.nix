@@ -24,10 +24,22 @@ in {
   config = {
     containers."${containerName}" = {
       autoStart = true;
+      additionalCapabilities = [
+        # Work around issue with spaces. https://github.com/NixOS/nixpkgs/issues/198857
+        ''all" --system-call-filter="add_key keyctl bpf''
+      ];
+
+      allowedDevices = [
+        {
+          node = "/dev/fuse";
+          modifier = "rwm";
+        }
+      ];
 
       bindMounts = {
         "/secrets/buildkite.pat".hostPath = "/etc/nixos/secrets/neurasium/buildkite.pat";
         "/secrets/buildkite.token".hostPath = "/etc/nixos/secrets/neurasium/buildkite.token";
+        "/dev/fuse".hostPath = "/dev/fuse";
       };
 
       config = {
@@ -98,25 +110,32 @@ in {
 
         system.stateVersion = "23.11";
 
-        systemd.services."${buildkiteAgentName}" = {
-          preStart = let
-            userDir = config.services.buildkite-agents.${agentName}.dataDir;
-            lfsCacheDir = "${userDir}/.cache/lfs";
-          in ''
-            set -euo pipefail
-            export BUILDKITE_PAT=$(cat /secrets/buildkite.pat)
-            echo \
-              "https://neurasium-buildkite-agent:$BUILDKITE_PAT@github.com" \
-              > "${userDir}/.git-credentials"
-            mkdir -p ${lfsCacheDir}
-            cat > ${userDir}/.gitconfig <<EOF
-            [lfs]
-            storage = ${lfsCacheDir}
-            EOF
-          '';
+        systemd.services = {
+          "${buildkiteAgentName}" = {
+            preStart = let
+              userDir = config.services.buildkite-agents.${agentName}.dataDir;
+              lfsCacheDir = "${userDir}/.cache/lfs";
+            in ''
+              set -euo pipefail
+              export BUILDKITE_PAT=$(cat /secrets/buildkite.pat)
+              echo \
+                "https://neurasium-buildkite-agent:$BUILDKITE_PAT@github.com" \
+                > "${userDir}/.git-credentials"
+              mkdir -p ${lfsCacheDir}
+              cat > ${userDir}/.gitconfig <<EOF
+              [lfs]
+              storage = ${lfsCacheDir}
+              EOF
+            '';
+          };
+          docker.path = [pkgs.fuse-overlayfs];
         };
 
-        inherit users;
+        users =
+          users
+          // {users.${buildkiteAgentName}.extraGroups = ["docker"];};
+
+        virtualisation.docker.enable = true;
       };
 
       ephemeral = false;
