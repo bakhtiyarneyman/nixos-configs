@@ -15,9 +15,6 @@
 in {
   config = {
     boot = {
-      extraModulePackages = [
-        config.boot.zfs.package.latestCompatibleLinuxPackages.rtl88x2bu
-      ];
       initrd = {
         availableKernelModules = [
           "ahci"
