@@ -537,7 +537,6 @@ in {
       package = pkgs.unstable.nix;
       settings = {
         trusted-users = ["root" "bakhtiyar"];
-        max-jobs = lib.mkDefault 8;
       };
       gc = {
         automatic = true;
