@@ -48,6 +48,10 @@ in {
           hostPath = "/dev/fuse";
           isReadOnly = false;
         };
+        "/etc/resolv.conf" = {
+          hostPath = "/etc/resolv.conf";
+          isReadOnly = true;
+        };
       };
 
       config = {
