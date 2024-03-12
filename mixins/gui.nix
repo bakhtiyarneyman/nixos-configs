@@ -57,7 +57,7 @@ in {
         cachix
         meld
         python3
-        nixd
+        # nixd
         nil
         alejandra
         nixpkgs-fmt
@@ -488,19 +488,23 @@ in {
         android_sdk.accept_license = true;
         permittedInsecurePackages = [
           "electron-25.9.0" # For Obsidian.
+          #   "nix-2.16.2" # For nixd.
         ];
       };
       overlays = [
         (self: super: {
           adwaita-one-dark = pkgs.callPackage ../pkgs/adwaita-one-dark.nix {};
           android-udev-rules = super.pkgs.unstable.android-udev-rules.override {};
-          dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix {dimSeconds = dimToLockSecs;};
           blender = super.blender.override {
             ffmpeg = pkgs.ffmpeg_6-full;
             hipSupport = true;
           };
+          dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix {dimSeconds = dimToLockSecs;};
           inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix {};
           journst = pkgs.callPackage ../pkgs/journst.nix {};
+          # nixd = super.pkgs.unstable.nixd.override {
+          #   # nix = self.pkgs.unstable.nix;
+          # };
           prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix {};
           tutanota-desktop = super.pkgs.unstable.tutanota-desktop;
         })
