@@ -16,6 +16,7 @@
     };
     groups."${name}".gid = gid;
   };
+  nix = pkgs.unstable.nix;
 
   # Shared definitions of users and groups for file permissions.
   users =
@@ -34,12 +35,19 @@ in {
           node = "/dev/fuse";
           modifier = "rwm";
         }
+        {
+          node = "/dev/console";
+          modifier = "rwm";
+        }
       ];
 
       bindMounts = {
         "/secrets/buildkite.pat".hostPath = "/etc/nixos/secrets/neurasium/buildkite.pat";
         "/secrets/buildkite.token".hostPath = "/etc/nixos/secrets/neurasium/buildkite.token";
-        "/dev/fuse".hostPath = "/dev/fuse";
+        "/dev/fuse" = {
+          hostPath = "/dev/fuse";
+          isReadOnly = false;
+        };
       };
 
       config = {
@@ -47,6 +55,8 @@ in {
         pkgs,
         ...
       }: {
+        boot.isContainer = true;
+
         networking = {
           firewall = {
             enable = true;
@@ -62,7 +72,7 @@ in {
           '';
           settings.cores = 8;
           settings.max-jobs = 1;
-          package = pkgs.nix;
+          package = nix;
         };
 
         programs = {
@@ -88,19 +98,20 @@ in {
             runtimePackages = [
               pkgs.bash
               pkgs.direnv
+              pkgs.docker
               pkgs.git
               pkgs.git-lfs
               pkgs.gnugrep
               pkgs.gnutar
               pkgs.gzip
               (pkgs.writeShellScriptBin "nix-env" ''
-                exec ${pkgs.nix}/bin/nix-env "$@"
+                exec ${nix}/bin/nix-env "$@"
               '')
               (pkgs.writeShellScriptBin "nix-store" ''
-                exec ${pkgs.nix}/bin/nix-store "$@"
+                exec ${nix}/bin/nix-store "$@"
               '')
               (pkgs.writeShellScriptBin "nix" ''
-                exec ${pkgs.nix}/bin/nix --print-build-logs "$@"
+                exec ${nix}/bin/nix --print-build-logs "$@"
               '')
             ];
             shell = "${pkgs.bash}/bin/bash -euo pipefail -c";
