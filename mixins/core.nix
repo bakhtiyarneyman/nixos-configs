@@ -152,6 +152,8 @@ in {
         };
       };
 
+      gvfs.enable = true;
+
       journal-brief = {
         enable = true;
         settings = {
