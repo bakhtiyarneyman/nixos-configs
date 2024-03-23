@@ -75,12 +75,13 @@ in {
         # Audio
         audacity
         # Video
-        libva-utils
-        vlc
+        blender
         ffmpeg_6-full
         guvcview
-        blender
+        libva-utils
+        mpv
         obs-studio
+        vlc
         # Privacy
         monero-gui
         (unstable.pkgs.tor-browser-bundle-bin.override {
