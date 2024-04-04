@@ -102,6 +102,7 @@ in {
         nethogs
         nmap
         shell-genie
+        github-cli
         # Shell packages
         fish
         peco
@@ -555,6 +556,7 @@ in {
         (self: super: {
           journal-brief = super.callPackage ../pkgs/journal-brief.nix {};
           namespaced-openvpn = super.python3Packages.callPackage ../pkgs/namespaced-openvpn.nix {};
+          github-cli = super.unstable.pkgs.github-cli;
         })
       ];
     };
