@@ -204,7 +204,7 @@ in {
 
       monero = {
         dataDir = "/var/lib/monero";
-        enable = true;
+        enable = false;
         extraConfig = ''
           rpc-restricted-bind-ip=100.65.77.115 # iron-tailscale
           rpc-restricted-bind-port=18081
@@ -218,7 +218,7 @@ in {
         '';
         limits = {
           upload = 10; # KB/s
-          download = 10;
+          download = 100;
         };
         # rpc.address = "100.0.0.0";
       };
