@@ -91,8 +91,9 @@ in {
 
         services = {
           gerrit = {
-            enable = true;
-            serverId = "iron-${containerName}";
+            enable = false;
+            serverId = "${hostName}-${containerName}";
+            listenAddress = "[::]:8081";
           };
 
           buildkite-agents."${agentName}" = {
