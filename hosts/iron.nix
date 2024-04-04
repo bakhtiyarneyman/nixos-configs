@@ -401,7 +401,10 @@ in {
                 "slow/root/media/movies" = false;
                 "slow/root/monero" = false;
               };
-              send.encrypted = true;
+              send = {
+                bandwidth_limit.max = "500 KiB";
+                encrypted = true;
+              };
               inherit snapshotting;
               pruning = {
                 keep_sender = [{type = "not_replicated";}] ++ kept;
