@@ -30,6 +30,21 @@
       _1password.enable = true;
     };
 
+    security.pam = {
+      yubico = {
+        enable = true;
+        control = "required";
+        debug = true;
+        mode = "client";
+        id = "99202";
+      };
+      services = {
+        swaylock.yubicoAuth = false;
+        login.yubicoAuth = false;
+        sudo.yubicoAuth = false;
+      };
+    };
+
     services = {
       openssh.knownHosts = {
         iron = {
