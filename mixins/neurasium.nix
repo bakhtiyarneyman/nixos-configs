@@ -42,7 +42,7 @@ in {
       ];
 
       bindMounts = {
-        "/secrets/buildkite.pat".hostPath = "/etc/nixos/secrets/neurasium/buildkite.pat";
+        "/secrets/buildkite.env".hostPath = "/etc/nixos/secrets/neurasium/buildkite.env";
         "/secrets/buildkite.token".hostPath = "/etc/nixos/secrets/neurasium/buildkite.token";
         "/dev/fuse" = {
           hostPath = "/dev/fuse";
@@ -74,8 +74,6 @@ in {
           extraOptions = ''
             extra-experimental-features = nix-command flakes
           '';
-          settings.cores = 8;
-          settings.max-jobs = 1;
           package = nix;
         };
 
@@ -99,6 +97,7 @@ in {
           buildkite-agents."${agentName}" = {
             hooks.environment = ''
               export PAGER=
+              export LOCALSTACK_VOLUME_DIR=/var/lib/localstack
             '';
             runtimePackages = [
               pkgs.bash
@@ -126,25 +125,30 @@ in {
 
         system.stateVersion = "23.11";
 
-        systemd.services = {
-          "${buildkiteAgentName}" = {
-            preStart = let
-              userDir = config.services.buildkite-agents.${agentName}.dataDir;
-              lfsCacheDir = "${userDir}/.cache/lfs";
-            in ''
-              set -euo pipefail
-              export BUILDKITE_PAT=$(cat /secrets/buildkite.pat)
-              echo \
-                "https://neurasium-buildkite-agent:$BUILDKITE_PAT@github.com" \
-                > "${userDir}/.git-credentials"
-              mkdir -p ${lfsCacheDir}
-              cat > ${userDir}/.gitconfig <<EOF
-              [lfs]
-              storage = ${lfsCacheDir}
-              EOF
-            '';
+        systemd = {
+          services = {
+            "${buildkiteAgentName}" = {
+              preStart = let
+                userDir = config.services.buildkite-agents.${agentName}.dataDir;
+                lfsCacheDir = "${userDir}/.cache/lfs";
+              in ''
+                set -euo pipefail
+                echo \
+                  "https://neurasium-buildkite-agent:$BUILDKITE_PAT@github.com" \
+                  > "${userDir}/.git-credentials"
+                mkdir -p ${lfsCacheDir}
+                cat > ${userDir}/.gitconfig <<EOF
+                [lfs]
+                storage = ${lfsCacheDir}
+                EOF
+              '';
+              serviceConfig.EnvironmentFile = "/secrets/buildkite.env";
+            };
+            docker.path = [pkgs.fuse-overlayfs];
           };
-          docker.path = [pkgs.fuse-overlayfs];
+          tmpfiles.rules = [
+            "d /var/lib/localstack 0755 root root - -"
+          ];
         };
 
         users =
