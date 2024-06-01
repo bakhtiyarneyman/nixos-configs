@@ -101,6 +101,7 @@
       systemd.services.namespaced-openvpn = {
         description = "Network namespace using OpenVPN";
         wantedBy = ["multi-user.target"];
+        requires = ["network-online.target"];
         after = ["network-online.target"];
         serviceConfig = {
           ExecStart = [

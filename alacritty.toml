@@ -1,0 +1,38 @@
+[colors.normal]
+black = "#000000"
+blue = "#61afef"
+cyan = "#56b6c2"
+green = "#98c379"
+magenta = "#c678dd"
+red = "#e06c75"
+white = "#ffffff"
+yellow = "#e5c07b"
+
+[colors.primary]
+background = "#282c34"
+foreground = "#abb2bf"
+
+[cursor]
+style = "Beam"
+
+[font]
+size = 12
+
+[font.bold]
+family = "Fira Mono for Powerline"
+style = "Bold"
+
+[font.bold_italic]
+family = "Roboto Mono for Powerline"
+style = "Bold Italic"
+
+[font.italic]
+family = "Roboto Mono for Powerline"
+style = "Italic"
+
+[font.normal]
+family = "Fira Mono for Powerline"
+style = "Regular"
+
+[scrolling]
+history = 100000

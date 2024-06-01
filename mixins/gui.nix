@@ -173,23 +173,24 @@ in {
     };
 
     services = {
+      displayManager = {
+        enable = true;
+        defaultSession = "sway";
+      };
       # Enable the X11 windowing system.
       xserver = {
-        enable = true;
         displayManager = {
           gdm = {
             enable = true;
             autoSuspend = false;
           };
-          defaultSession = "sway";
         };
-        # TODO: use this when unblocked: https://github.com/NixOS/nixpkgs/issues/54150
-        # desktopManager.gnome.extraGSettingsOverrides = ''
-        #   [org.gnome.desktop.interface]
-        #   gtk-theme='Adwaita-One-Dark'
-        #   icon-theme='kora'
-        #   font-name='Fira Sans'
-        # '';
+        desktopManager.gnome.extraGSettingsOverrides = ''
+          [org.gnome.desktop.interface]
+          gtk-theme='Adwaita-One-Dark'
+          icon-theme='kora'
+          font-name='Fira Sans'
+        '';
         exportConfiguration = true;
       };
 
@@ -362,7 +363,7 @@ in {
       seahorse.enable = true;
       gnupg.agent = {
         enable = true;
-        pinentryFlavor = "gtk2";
+        pinentryPackage = pkgs.pinentry-gtk2;
       };
       steam = {
         enable = true;
