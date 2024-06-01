@@ -101,6 +101,7 @@ in {
         xcp # Better cp.
         nethogs
         nmap
+        lsof
         shell-genie
         github-cli
         # Shell packages
@@ -519,6 +520,8 @@ in {
           };
         };
       };
+
+      nix-ld.enable = true;
 
       wireshark.enable = true;
     };
