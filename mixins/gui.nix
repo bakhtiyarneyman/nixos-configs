@@ -173,6 +173,7 @@ in {
     };
 
     services = {
+      dbus.implementation = "broker";
       displayManager = {
         enable = true;
         defaultSession = "sway";
