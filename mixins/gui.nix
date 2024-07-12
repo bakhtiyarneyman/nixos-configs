@@ -37,6 +37,7 @@ in {
         libnotify # Notification service API.
         krusader
         wlr-randr
+        junction
         # Themes.
         breeze-icons
         adwaita-one-dark
@@ -331,7 +332,7 @@ in {
       sway = {
         enable = true;
         extraOptions = [
-          "--config=${../sway.conf}"
+          "--config=/etc/nixos/sway.conf"
         ];
         extraPackages = with pkgs; [
           sway-contrib.grimshot
@@ -482,6 +483,11 @@ in {
         tutanota = autostart "${pkgs.tutanota-desktop}/bin/tutanota-desktop --password-store=gnome-libsecret";
 
         wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
+
+        # # Execute shell script that runs "env > /tmp/vars.systemd". Useful for finding discrepancies between systemd and shell environments.
+        # dump_vars = autostart "${pkgs.writeShellScriptBin "dump_vars" ''
+        #   env | sort > /tmp/vars.systemd
+        # ''}/bin/dump_vars";
       }
       // mkJournst "boot"
       // mkJournst "run";

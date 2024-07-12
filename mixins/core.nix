@@ -104,6 +104,8 @@ in {
         lsof
         shell-genie
         github-cli
+        ngrok
+        jq
         # Shell packages
         fish
         peco
