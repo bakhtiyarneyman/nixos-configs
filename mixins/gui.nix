@@ -38,6 +38,7 @@ in {
         krusader
         wlr-randr
         junction
+        glib # Needed for junction.
         # Themes.
         breeze-icons
         adwaita-one-dark
