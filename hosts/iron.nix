@@ -5,7 +5,7 @@
 }: let
   coreDiskIds = [
     "nvme-WD_BLACK_SN770_1TB_23085A802755"
-    "nvme-WD_BLACK_SN770_1TB_23100L801126"
+    "nvme-WD_BLACK_SN770_1TB_241802801839"
   ];
 
   toPartitionId = diskId: partition: "${diskId}-part${toString partition}";
