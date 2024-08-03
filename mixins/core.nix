@@ -183,6 +183,18 @@ in {
                 "/pw.node: (bluez_output.*) .* -> error (Received error event)/"
               ];
             }
+            {
+              SYSLOG_IDENTIFIER = ["pipewire"];
+              MESSAGE = [
+                "pipewire-pulse[12823]: mod.protocol-pulse: server 0x55b5e001ba20: failed to create client: Connection refused"
+              ];
+            }
+            {
+              SYSLOG_IDENTIFIER = ["dbus-broker-launch"];
+              MESSAGE = [
+                "/Ignoring duplicate name/"
+              ];
+            }
           ];
           inclusions = [
             {

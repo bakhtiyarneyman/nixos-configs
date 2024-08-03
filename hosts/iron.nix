@@ -313,6 +313,9 @@ in {
           MESSAGE = ["GLib-GObject: g_object_unref: assertion ''G_IS_OBJECT (object)'' failed"];
           _SELINUX_CONTEXT = ["kernel"];
         }
+        {
+          MESSAGE = [''/msg="Reset initiated: SandboxTerminated" func=go.amzn.com/lambda/rapid.handleReset file="/home/runner/work/lambda-runtime-init/lambda-runtime-init/lambda/rapid/handlers.go:710"/''];
+        }
       ];
 
       udev.extraHwdb = ''
