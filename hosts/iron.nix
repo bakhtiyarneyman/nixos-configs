@@ -320,8 +320,6 @@ in {
           KEYBOARD_KEY_70049=sysrq
       '';
 
-      vscode-server.enable = true;
-
       xserver = {
         videoDrivers = ["amdgpu"];
         xrandrHeads = [

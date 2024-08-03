@@ -523,7 +523,10 @@ in {
         };
       };
 
-      nix-ld.enable = true;
+      nix-ld = {
+        enable = true;
+        package = pkgs.nix-ld-rs;
+      };
 
       wireshark.enable = true;
     };
