@@ -45,6 +45,7 @@ in {
         # Browsers
         (google-chrome.override {commandLineArgs = "--enable-features=VaapiVideoDecoder";})
         brave
+        firefoxpwa
         # Communication
         skypeforlinux
         signal-desktop
@@ -351,6 +352,7 @@ in {
       };
       firefox = {
         enable = true;
+        nativeMessagingHosts.packages = [pkgs.firefoxpwa];
         preferences = {
           "media.ffmpeg.vaapi.enabled" = true;
           "media.navigator.mediadatadecoder_vpx_enabled" = true;
