@@ -337,15 +337,15 @@ in {
           "--config=/etc/nixos/sway.conf"
         ];
         extraPackages = with pkgs; [
-          sway-contrib.grimshot
-          inactive-windows-transparency
-          swayidle
-          gammastep
-          upower # Charging state.
-          lm_sensors # Temperature.
-          xkblayout-state # Keyboard layout (a hack).
-          wl-clipboard
           clipman # Clipboard manager.
+          inactive-windows-transparency
+          lm_sensors # Temperature.
+          sway-contrib.grimshot
+          swayidle
+          upower # Charging state.
+          wl-clipboard
+          wlsunset
+          xkblayout-state # Keyboard layout (a hack).
         ];
         wrapperFeatures.base = true;
         wrapperFeatures.gtk = true;
@@ -450,7 +450,12 @@ in {
           autostart
           "${pkgs.inactive-windows-transparency}/bin/inactive-windows-transparency.py";
 
-        gammastep = autostart "${pkgs.gammastep}/bin/gammastep -t 6500:3300";
+        wlsunset = let
+          wlsunset-here = pkgs.writeShellScriptBin "wlsunset-here" ''
+            ${pkgs.wlsunset}/bin/wlsunset -t 3300 $(${pkgs.curl}/bin/curl -s http://ip-api.com/json | ${pkgs.jq}/bin/jq -r '"-l \(.lat) -L \(.lon)"')
+          '';
+        in
+          autostart ''${wlsunset-here}/bin/wlsunset-here'';
 
         swayidle = let
           idleToDimSecs = 60;
