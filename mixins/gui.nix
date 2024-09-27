@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  config,
   ...
 }: let
   dimToLockSecs = 15;
@@ -518,7 +519,7 @@ in {
           };
           dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix {dimSeconds = dimToLockSecs;};
           inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix {};
-          journst = pkgs.callPackage ../pkgs/journst.nix {};
+          journst = pkgs.callPackage ../pkgs/journst.nix {inherit config;};
           # nixd = super.pkgs.unstable.nixd.override {
           #   # nix = self.pkgs.unstable.nix;
           # };
