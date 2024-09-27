@@ -5,9 +5,6 @@
 }: let
   inherit (pkgs.lib) concatStringsSep stringToCharacters;
 
-  # Read exclusions from the configuration
-  exclusions = config.services.journal-brief.settings.exclusions;
-
   # Function to escape special characters in a string
   escapeCharIfInList = list: char:
     if builtins.elem char list
@@ -49,7 +46,7 @@
     concatStringsSep "|" processedPatterns;
 
   # Function to generate jq expressions for a condition
-  conditionToJq = condition: let
+  conditionToFilter = condition: let
     # Generate field expressions
     fieldExpressions =
       lib.mapAttrsToList (
@@ -67,15 +64,14 @@
     # Wrap the condition expression
     "(${conditionExpression})";
 
+  settings = config.services.journal-brief.settings;
+
+  conditionsToFilter = conditions: concatStringsSep " or " (map conditionToFilter conditions);
+
   # Generate the complete jq expression
-  jqExpression = let
-    # Generate condition expressions
-    conditionExpressions = map conditionToJq exclusions;
-    # Combine condition expressions using ' or '
-    combinedConditions = concatStringsSep " or " conditionExpressions;
-  in
-    # Final jq expression (no array or 'any' needed)
-    ''if ${combinedConditions} then empty else "\(.SYSLOG_IDENTIFIER)\u0000\(.MESSAGE)\u0000" end'';
+  satisfiesExclusionsFilter = conditionsToFilter settings.exclusions;
+
+  jqExpression = ''if ${satisfiesExclusionsFilter} not (then empty else "\(.SYSLOG_IDENTIFIER)\u0000\(.MESSAGE)\u0000" end'';
 in
   pkgs.writeTextFile {
     name = "journst";
