@@ -71,7 +71,7 @@
   # Generate the complete jq expression
   satisfiesExclusionsFilter = conditionsToFilter settings.exclusions;
 
-  jqExpression = ''if ${satisfiesExclusionsFilter} not (then empty else "\(.SYSLOG_IDENTIFIER)\u0000\(.MESSAGE)\u0000" end'';
+  jqExpression = ''if ${satisfiesExclusionsFilter} then empty else "\(.SYSLOG_IDENTIFIER)\u0000\(.MESSAGE // "\(.COREDUMP_COMM) died")\u0000" end'';
 in
   pkgs.writeTextFile {
     name = "journst";
