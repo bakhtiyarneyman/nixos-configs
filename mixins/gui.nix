@@ -58,6 +58,7 @@ in {
         slack
         # Development
         (unstable.vscode.override {isInsiders = false;})
+        cursor
         cachix
         meld
         python3
@@ -524,6 +525,7 @@ in {
           #   # nix = self.pkgs.unstable.nix;
           # };
           prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix {};
+          cursor = pkgs.callPackage ../pkgs/cursor.nix {};
           tutanota-desktop = super.pkgs.unstable.tutanota-desktop;
         })
       ];
