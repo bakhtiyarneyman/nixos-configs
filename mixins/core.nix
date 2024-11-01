@@ -509,6 +509,7 @@ in {
             "https://github.com/neurasium".username = "neurasium";
           };
           http.version = "HTTP/2";
+          safe.directory = "/etc/nixos";
         };
         lfs.enable = true;
         package = pkgs.gitFull;
