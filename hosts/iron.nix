@@ -453,7 +453,5 @@ in {
     system.stateVersion = "22.11";
 
     users.users.bakhtiyar.uid = 1000;
-
-    virtualisation.docker.enableNvidia = true;
   };
 }
