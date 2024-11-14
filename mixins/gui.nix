@@ -564,7 +564,10 @@ in {
       ];
     };
 
-    virtualisation.spiceUSBRedirection.enable = true;
+    virtualisation = {
+      spiceUSBRedirection.enable = true;
+      waydroid.enable = true;
+    };
 
     xdg.portal = {
       enable = true;
