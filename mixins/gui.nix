@@ -507,8 +507,7 @@ in {
       config = {
         android_sdk.accept_license = true;
         permittedInsecurePackages = [
-          "electron-25.9.0" # For Obsidian.
-          #   "nix-2.16.2" # For nixd.
+          "qbittorrent-4.6.4" # For qbittorrent.
         ];
       };
       overlays = [
