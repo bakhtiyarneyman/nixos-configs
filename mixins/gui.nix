@@ -95,6 +95,7 @@ in {
         })
         # VM
         quickemu
+        waydroid_script
       ];
 
       etc = {
@@ -526,6 +527,7 @@ in {
           # };
           prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix {};
           tutanota-desktop = super.pkgs.unstable.tutanota-desktop;
+          waydroid_script = pkgs.callPackage ../pkgs/waydroid_script.nix {};
         })
       ];
     };
