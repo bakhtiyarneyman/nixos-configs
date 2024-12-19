@@ -32,16 +32,14 @@
 
     security.pam = {
       yubico = {
-        enable = true;
+        enable = false;
         control = "required";
         debug = true;
         mode = "client";
         id = "99202";
       };
       services = {
-        swaylock.yubicoAuth = false;
-        login.yubicoAuth = false;
-        sudo.yubicoAuth = false;
+        sshd.yubicoAuth = true;
       };
     };
 
