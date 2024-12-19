@@ -2,6 +2,7 @@
   config = {
     environment.systemPackages = with pkgs; [
       powertop
+      smartmontools
     ];
 
     hardware = {
