@@ -175,6 +175,8 @@ in {
       logitech.wireless.enableGraphical = true;
     };
 
+    security.soteria.enable = true;
+
     services = {
       dbus.implementation = "broker";
       displayManager = {
@@ -472,20 +474,6 @@ in {
                 resume 'echo "Screen on"; ${pkgs.sway}/bin/swaymsg "output * dpms on"' \
               before-sleep ${pkgs.prettyLock}/bin/prettyLock
           ''}/bin/autolock";
-
-        polkit-gnome-authentication-agent-1 = {
-          description = "polkit-gnome-authentication-agent-1";
-          wantedBy = ["graphical-session.target"];
-          wants = ["graphical-session.target"];
-          after = ["graphical-session.target"];
-          serviceConfig = {
-            Type = "simple";
-            ExecStart = "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1";
-            Restart = "on-failure";
-            RestartSec = 1;
-            TimeoutStopSec = 10;
-          };
-        };
 
         # The flag might not be necessary after the fix:
         # https://nixpk.gs/pr-tracker.html?pr=278953
