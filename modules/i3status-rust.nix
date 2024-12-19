@@ -195,7 +195,7 @@ in {
             click = [
               {
                 button = "left";
-                cmd = "${pkgs.gnome3.gnome-calendar}/bin/gnome-calendar";
+                cmd = "${pkgs.gnome-calendar}/bin/gnome-calendar";
               }
             ];
           }
