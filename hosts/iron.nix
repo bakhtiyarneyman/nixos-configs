@@ -153,11 +153,9 @@ in {
     in
       foldl' insertBootFilesystem fss coreDiskIds;
 
-    hardware = {
-      opengl.extraPackages = [
-        pkgs.rocmPackages.clr
-      ];
-    };
+    hardware.graphics.extraPackages = [
+      pkgs.rocmPackages.clr
+    ];
 
     networking.hostId = "a7a93500";
 
