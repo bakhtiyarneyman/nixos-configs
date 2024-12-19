@@ -201,7 +201,7 @@ in {
           }
           {
             block = "bluetooth";
-            mac = "8C:64:A2:AB:D5:15";
+            mac = "84:0F:2A:DE:EF:11";
             disconnected_format = " OP ";
             format = " $icon  OP{ $percentage|} ";
           }
