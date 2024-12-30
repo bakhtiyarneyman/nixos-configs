@@ -349,7 +349,6 @@ in {
           wlsunset
           xkblayout-state # Keyboard layout (a hack).
         ];
-        wrapperFeatures.base = true;
         wrapperFeatures.gtk = true;
       };
       firefox = {
