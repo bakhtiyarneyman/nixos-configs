@@ -27,22 +27,18 @@ in {
           "xhci_pci"
         ];
       };
-      loader = {
-        efi.efiSysMountPoint = "/boot/efis/${toPartitionId (head coreDiskIds) 1}";
-        grub = {
-          enable = true;
-          devices = map toDevice coreDiskIds;
-          efiSupport = true;
-          extraInstallCommands = toString (map
-            (diskId: ''
-              set -x
-              ${pkgs.coreutils-full}/bin/cp -r \
-                ${config.boot.loader.efi.efiSysMountPoint}/EFI \
-                /boot/efis/${toPartitionId diskId 1}
-              set +x
-            '')
-            (tail coreDiskIds));
-        };
+      loader.grub = {
+        enable = true;
+        efiSupport = true;
+        mirroredBoots = let
+          toBoot = diskId: {
+            devices = [(toDevice diskId)];
+            efiBootloaderId = "NixOS-${diskId}";
+            efiSysMountPoint = "/boot/efis/${toPartitionId diskId 1}";
+            path = "/boot";
+          };
+        in
+          map toBoot coreDiskIds;
       };
     };
 
