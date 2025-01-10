@@ -5,6 +5,8 @@
       smartmontools
     ];
 
+    boot.loader.grub.memtest86.enable = true;
+
     hardware = {
       enableRedistributableFirmware = true;
       logitech.wireless.enable = true;
