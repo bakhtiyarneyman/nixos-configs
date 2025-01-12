@@ -149,7 +149,11 @@ in {
       pkgs.rocmPackages.clr
     ];
 
-    networking.hostId = "a7a93500";
+    networking = {
+      hostId = "a7a93500";
+      wifiInterface = "wlp12s0";
+      kernelModules = ["mt7921e"];
+    };
 
     programs = {
       i3status-rust = {
