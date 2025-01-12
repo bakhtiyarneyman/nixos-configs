@@ -428,7 +428,7 @@ in {
           blkDev = device;
           enable = true;
           # Created with `dd count=1 bs=512 if=/dev/urandom of=/etc/nixos/secrets/swap.key`.
-          keyFile = "/mnt-root/etc/nixos/secrets/swap.key";
+          keyFile = "/sysroot/etc/nixos/secrets/swap.key";
           label = "decrypted-${partitionId}";
         };
       };

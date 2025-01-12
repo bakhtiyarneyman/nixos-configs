@@ -1,11 +1,21 @@
-{pkgs, ...}: {
+{
+  config,
+  pkgs,
+  ...
+}: {
   config = {
     environment.systemPackages = with pkgs; [
       powertop
       smartmontools
     ];
 
-    boot.loader.grub.memtest86.enable = true;
+    boot = {
+      initrd.systemd = {
+        enable = true;
+        emergencyAccess = config.users.users.root.hashedPassword;
+      };
+      loader.grub.memtest86.enable = true;
+    };
 
     hardware = {
       enableRedistributableFirmware = true;
