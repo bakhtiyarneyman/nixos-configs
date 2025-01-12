@@ -1,8 +1,4 @@
-{
-  config,
-  pkgs,
-  ...
-}: let
+{pkgs, ...}: let
   coreDiskIds = [
     "nvme-WD_BLACK_SN770_1TB_23051T800986"
     "nvme-WD_BLACK_SN770_1TB_22307Y440407"
@@ -11,7 +7,7 @@
   toPartitionId = diskId: partition: "${diskId}-part${toString partition}";
   toDevice = id: "/dev/disk/by-id/${id}";
 
-  inherit (builtins) head toString map tail foldl';
+  inherit (builtins) toString map foldl';
 in {
   config = {
     boot = {
