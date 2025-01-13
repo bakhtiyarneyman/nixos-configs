@@ -93,6 +93,7 @@ in {
           mediaSupport = true;
           pulseaudioSupport = true;
         })
+        yubioath-flutter
         # VM
         quickemu
         waydroid_script
@@ -304,6 +305,7 @@ in {
       };
 
       blueman.enable = true; # Bluetooth applet.
+      pcscd.enable = true;
       printing = {
         enable = true;
         drivers = with pkgs; [
