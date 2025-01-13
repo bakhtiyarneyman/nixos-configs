@@ -5,6 +5,7 @@
   ...
 }: {
   imports = [
+    ../modules/initrd-tailscale.nix
     ../modules/wifi-interface.nix
   ];
 

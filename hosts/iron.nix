@@ -22,6 +22,7 @@ in {
           "usbhid"
           "xhci_pci"
         ];
+        network.tailscale.state = "/var/lib/tailscale/tailscaled.state";
       };
       loader.grub = {
         enable = true;
