@@ -64,11 +64,8 @@ in {
             set text "${icon}"
             set state Idle
         end
-
-        # echo "{\"icon\": \"\", \"state\":\"$state\",\"text\": \"$text\"}"
-        # echo "{\"icon\": \"\", \"state\":\"$state\",\"text\": \"$text\"}"
-        # echo "{\"icon\": \"\", \"state\":\"$state\",\"text\": \"$text\"}"
-        echo "{\"icon\": \"\", \"state\":\"$state\",\"text\": \"$text\"}"
+        # Use jq for escaping.
+        echo "$text" | jq --raw-input --arg state $state '{"icon": "", "state": $state, "text": . }'
       '';
     in {
       block = "custom";
