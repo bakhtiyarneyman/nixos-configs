@@ -24,7 +24,13 @@
     mkSystem = hostName: extraModules:
       nixpkgs.lib.nixosSystem {
         inherit system;
-        specialArgs = {inherit hostName;};
+        specialArgs = {
+          inherit hostName;
+          yubikeys = [
+            "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIG1XG551t2Yb8ryQ/lGRJXhfnWwz3B/MmOjMoz7x3G9iAAAABHNzaDo= blue"
+            "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICDUZrPTStLzzGeHC+c81L4u1B47CwOW3N3HRfM/2tzvAAAABHNzaDo= green"
+          ];
+        };
         modules =
           [
             ./mixins/core.nix

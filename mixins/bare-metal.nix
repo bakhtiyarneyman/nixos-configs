@@ -2,6 +2,7 @@
   config,
   lib,
   pkgs,
+  yubikeys,
   ...
 }: {
   imports = [
@@ -25,9 +26,10 @@
               port = 22;
               hostKeys = ["/etc/ssh/initrd_ssh_host_ed25519_key"];
               # Password-based login is disabled in the initrd.
-              authorizedKeys = [
-                ''command="echo 'Password to unlock ZFS?' && systemd-tty-ask-password-agent",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICT17FwJcNp9/YMx73tOakZutUtEbcjct4YPCywWsDL7 bakhtiyar@kevlar''
-              ];
+              authorizedKeys = let
+                harden = key: ''command="echo 'Password to unlock ZFS?' && systemd-tty-ask-password-agent",restrict ${key}'';
+              in
+                map harden yubikeys;
             };
           };
           systemd = {

@@ -1,6 +1,7 @@
 {
   lib,
   modulesPath,
+  yubikeys,
   ...
 }: {
   imports = [
@@ -102,9 +103,11 @@
   users.users.root.openssh.authorizedKeys.keys = [
     ''command="zrepl stdinserver iron",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJEhmdQV/OLmYQFKIMCs17JssVqPlkaQCSTmwyhkhqVo''
   ];
-  users.users.bakhtiyar.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGxoBwt5zviLpPomH5vHq0OQzN/G9dMKmyq+2y91xkRe github@1password"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsGRMyBB18Gnhf5Igw/w5rbm6ks49TPZ2wY7iXKKh2L bakhtiyar@iron"
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICT17FwJcNp9/YMx73tOakZutUtEbcjct4YPCywWsDL7 bakhtiyar@kevlar"
-  ];
+  users.users.bakhtiyar.openssh.authorizedKeys.keys =
+    [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGxoBwt5zviLpPomH5vHq0OQzN/G9dMKmyq+2y91xkRe github@1password"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDsGRMyBB18Gnhf5Igw/w5rbm6ks49TPZ2wY7iXKKh2L bakhtiyar@iron"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICT17FwJcNp9/YMx73tOakZutUtEbcjct4YPCywWsDL7 bakhtiyar@kevlar"
+    ]
+    ++ yubikeys;
 }
