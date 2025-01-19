@@ -58,7 +58,6 @@ in {
         slack
         # Development
         (unstable.vscode.override {isInsiders = false;})
-        unstable.code-cursor
         cachix
         meld
         python3
