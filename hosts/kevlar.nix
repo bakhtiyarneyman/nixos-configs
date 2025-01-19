@@ -32,11 +32,6 @@
         device = "/dev/disk/by-label/BOOT";
         fsType = "vfat";
       };
-
-      "/tailnet/iron/home" = {
-        device = "iron:/tailnet/export/home";
-        fsType = "nfs";
-      };
     };
 
     hardware = {
