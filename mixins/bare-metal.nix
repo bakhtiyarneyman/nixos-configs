@@ -86,11 +86,6 @@
       };
 
       fwupd.enable = true;
-
-      # For battery conservation. Powertop disables wired mice.
-      tlp = {
-        enable = true;
-      };
     };
   };
 }

@@ -505,7 +505,10 @@ in {
             ffmpeg = pkgs.ffmpeg_6-full;
             hipSupport = true;
           };
-          dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix {dimSeconds = dimToLockSecs;};
+          dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix {
+            inherit config;
+            dimSeconds = dimToLockSecs;
+          };
           inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix {};
           journst = pkgs.callPackage ../pkgs/journst.nix {inherit config;};
           # nixd = super.pkgs.unstable.nixd.override {

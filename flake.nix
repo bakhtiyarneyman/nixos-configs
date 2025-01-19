@@ -52,6 +52,7 @@
       owned = [
         ./mixins/bare-metal.nix
         ./mixins/gui.nix
+        ./mixins/on-battery.nix
         ./mixins/trusted.nix
       ];
     in {

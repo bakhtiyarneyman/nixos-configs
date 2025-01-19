@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   dimSeconds ? 10,
   dimStepSeconds ? 0.25,
@@ -54,7 +55,11 @@ in
 
       if os.system('${upower} --dump | grep "online.*no"') == 0:
         print("Battery is discharging, invoke suspend")
-        os.system("systemctl suspend")
+        os.system("systemctl ${
+        if builtins.elem "nohibernate" config.boot.kernelParams
+        then "suspend"
+        else "suspend-then-hibernate"
+      }")
 
       signal.pause()
     '';

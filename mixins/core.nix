@@ -214,7 +214,11 @@ in {
       };
 
       logind.extraConfig = ''
-        HandlePowerKey=suspend
+        HandlePowerKey=${
+          if builtins.elem "nohibernate" config.boot.kernelParams
+          then "suspend"
+          else "suspend-then-hibernate"
+        }
       '';
 
       avahi = {
