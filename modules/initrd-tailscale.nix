@@ -11,7 +11,8 @@ in {
   options = {
     boot.initrd.network.tailscale = with lib; {
       state = mkOption {
-        type = types.path;
+        type = with types; nullOr path;
+        default = null;
         description = lib.mdDoc ''
           Path to a pre-initialized Tailscale state file. This is needed to authenticate the
           connection to Tailscale.
