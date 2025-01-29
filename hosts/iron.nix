@@ -196,6 +196,30 @@ in {
         package = pkgs.openrgb-with-all-plugins;
       };
 
+      home-assistant = {
+        enable = true;
+        extraPackages = python3Packages:
+          with python3Packages; [
+            aiohomekit
+            aiolifx
+            aiolifx-effects
+            aiolifx-themes
+            androidtvremote2
+            brother
+            getmac
+            govee-ble
+            gtts
+            pychromecast
+            pyipp
+            python-otbr-api
+            radios
+            tuya-device-sharing-sdk
+          ];
+        config = {
+          default_config = {};
+        };
+      };
+
       monero = {
         dataDir = "/var/lib/monero";
         enable = false;
