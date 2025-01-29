@@ -209,6 +209,7 @@ in {
             getmac
             govee-ble
             gtts
+            pyatv
             pychromecast
             pyipp
             python-otbr-api
@@ -217,6 +218,8 @@ in {
           ];
         config = {
           default_config = {};
+          automation = "!include automations.yaml";
+          scene = "!include scenes.yaml";
         };
       };
 
