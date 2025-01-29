@@ -212,42 +212,20 @@ in {
         enable = true;
         globalConfig = {
           follow = "keyboard";
+          enable_posix_regex = "true";
           width = "(0, 500)";
           height = "300";
           notification_limit = "5";
           origin = "top-right";
           offset = "50x50";
-          shrink = "true";
           separator_height = "1";
-          padding = "8";
-          horizontal_padding = "8";
-          text_icon_padding = "8";
           frame_width = "1";
           separator_color = "foreground";
           sort = "false";
           idle_threshold = "120";
           font = "Fira Sans 12";
-          line_height = "0";
           markup = "full";
           format = ''"<span size="larger" weight="light">%s</span> <span size="smaller" weight="bold" fgalpha="50%%">%a</span>\n%b"'';
-          alignment = "left";
-          show_age_threshold = "60";
-          word_wrap = "yes";
-          ellipsize = "middle";
-          ignore_newline = "no";
-          hide_duplicate_count = "false";
-          show_indicators = "yes";
-          icon_position = "left";
-          # max_icon_size = "64";
-          sticky_history = "yes";
-          history_length = "100";
-          dmenu = "${pkgs.rofi-wayland}/bin/rofi -dmenu -theme /etc/nixos/onedark.rasi -p dunst";
-          always_run_script = "true";
-          corner_radius = "10";
-          force_xinerama = "false";
-          mouse_left_click = "context";
-          mouse_middle_click = "close_all";
-          mouse_right_click = "close_current";
           icon_path = let
             categories = [
               "actions"
@@ -267,9 +245,21 @@ in {
             lib.concatStringsSep ":"
             (map prefix
               (map (category: "${category}/scalable") categories ++ ["panel/24"]));
-        };
-        experimentalConfig = {
-          per_monitor_dpi = "true";
+
+          history_length = "100";
+          dmenu = "${pkgs.rofi-wayland}/bin/rofi -dmenu -theme /etc/nixos/onedark.rasi -p dunst";
+          browser = "${pkgs.xdg-utils}/bin/xdg-open";
+          always_run_script = "true";
+          corner_radius = "10";
+          force_xinerama = "false";
+          mouse_left_click = "do_action";
+          mouse_middle_click = "close_all";
+          mouse_right_click = "close_current";
+
+          icon_position = "left";
+          alignment = "left";
+          word_wrap = "yes";
+          ellipsize = "middle";
         };
         urgencyConfig = let
           q = s: ''"${s}"'';

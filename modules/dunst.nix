@@ -106,7 +106,6 @@ in {
     allOptions =
       {
         global = cfg.globalConfig;
-        experimental = cfg.experimentalConfig;
         shortcuts = cfg.shortcutsConfig;
         urgency_normal = cfg.urgencyConfig.normal;
         urgency_low = cfg.urgencyConfig.low;
