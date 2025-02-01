@@ -213,8 +213,11 @@ in {
             pychromecast
             pyipp
             python-otbr-api
+            python-roborock
             radios
             tuya-device-sharing-sdk
+            vacuum-map-parser-base
+            wakeonlan
           ];
         config = {
           default_config = {};
