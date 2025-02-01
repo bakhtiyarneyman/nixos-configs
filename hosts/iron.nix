@@ -104,8 +104,8 @@ in {
           device = "slow/root/media";
           fsType = "zfs";
         };
-        "/home/bakhtiyar/media/movies" = {
-          device = "slow/root/media/movies";
+        "/home/bakhtiyar/media/video" = {
+          device = "slow/root/media/video";
           fsType = "zfs";
         };
         "/home/bakhtiyar/personal" = {
@@ -423,7 +423,7 @@ in {
                 "fast/nixos/home<" = true;
                 "fast/nixos/home/dump" = false;
                 "slow/root<" = true;
-                "slow/root/media/movies" = false;
+                "slow/root/media/video" = false;
                 "slow/root/monero" = false;
               };
               send = {
@@ -441,7 +441,7 @@ in {
               name = "snap";
               filesystems = {
                 "fast/nixos/home/dump" = true;
-                "fast/nixos/media/movies" = true;
+                "fast/nixos/media/video" = true;
               };
               inherit snapshotting;
               pruning = {
