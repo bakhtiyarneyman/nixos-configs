@@ -40,6 +40,7 @@ in {
         wlr-randr
         junction
         glib # Needed for junction.
+        dim-screen
         # Themes.
         breeze-icons
         adwaita-one-dark
