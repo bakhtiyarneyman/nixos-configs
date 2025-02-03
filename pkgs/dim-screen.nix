@@ -15,7 +15,7 @@ pkgs.stdenv.mkDerivation {
     cp $src $out/bin/dim-screen
     chmod +x $out/bin/dim-screen
     wrapProgram $out/bin/dim-screen \
-      --prefix PATH : ${pkgs.light}/bin:${pkgs.libnotify}/bin:${pkgs.upower}/bin \
+      --prefix PATH : ${pkgs.light}/bin:${pkgs.libnotify}/bin:${pkgs.upower}/bin:${pkgs.swaynotificationcenter}/bin \
       --add-flags "\
       --dim-seconds ${builtins.toString dimSeconds} \
       --dim-step-seconds ${builtins.toString dimStepSeconds} \

@@ -66,14 +66,18 @@ class Notification:
           current_notification_id = int(
             subprocess.check_output(cmd, universal_newlines=True).strip()
           )
-          print(f"Notification id: {message}")
       except Exception as e:
           print(f"Failed to send notification: {e}")
           current_notification_id = None
 
   @staticmethod
   def close(message: str):
-      Notification.send(message, timeout_ms=1)
+      Notification.send(message)
+      cmd = ["swaync-client", "--close-latest"]
+      try:
+          subprocess.check_output(cmd, universal_newlines=True)
+      except Exception as e:
+          print(f"Failed to close notification: {e}")
 
 
 def restore(sig: signal.Signals, frame: Any):
