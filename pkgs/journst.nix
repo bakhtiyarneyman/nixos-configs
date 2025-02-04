@@ -84,7 +84,7 @@ in
         escapeStringIfInList ["'" ''\''] jqExpression
       }' | \
       while IFS= read --null appname; and read --null message;
-        ${pkgs.dunst}/bin/dunstify --urgency=critical --appname=$appname Error $message;
+        ${pkgs.libnotify}/bin/notify-send --urgency=critical --app-name=$appname Error $message;
       end
     '';
   }

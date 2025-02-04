@@ -7,7 +7,6 @@
   dimToLockSecs = 15;
 in {
   imports = [
-    ../modules/dunst.nix
     ../modules/i3status-rust.nix
   ];
 
@@ -31,6 +30,7 @@ in {
         libreoffice
         # UI
         alacritty
+        swaynotificationcenter
         prettyLock
         rofi-wayland
         pavucontrol # Pulse audio volume control.
@@ -208,75 +208,6 @@ in {
         wireplumber.enable = true;
       };
 
-      # Notification service.
-      dunst = {
-        enable = true;
-        globalConfig = {
-          follow = "keyboard";
-          enable_posix_regex = "true";
-          width = "(0, 500)";
-          height = "300";
-          notification_limit = "5";
-          origin = "top-right";
-          offset = "50x50";
-          separator_height = "1";
-          frame_width = "1";
-          separator_color = "foreground";
-          sort = "false";
-          idle_threshold = "120";
-          font = "Fira Sans 12";
-          markup = "full";
-          format = ''"<span size="larger" weight="light">%s</span> <span size="smaller" weight="bold" fgalpha="50%%">%a</span>\n%b"'';
-          icon_path = let
-            categories = [
-              "actions"
-              "places"
-              "animations"
-              "devices"
-              "status"
-              "apps"
-              "emblems"
-              "mimetypes"
-              "categories"
-              "emotes"
-              "panel"
-            ];
-            prefix = x: "${pkgs.kora-icon-theme}/share/icons/kora/${x}";
-          in
-            lib.concatStringsSep ":"
-            (map prefix
-              (map (category: "${category}/scalable") categories ++ ["panel/24"]));
-
-          history_length = "100";
-          dmenu = "${pkgs.rofi-wayland}/bin/rofi -dmenu -theme /etc/nixos/onedark.rasi -p dunst";
-          browser = "${pkgs.xdg-utils}/bin/xdg-open";
-          always_run_script = "true";
-          corner_radius = "10";
-          force_xinerama = "false";
-          mouse_left_click = "do_action";
-          mouse_middle_click = "close_all";
-          mouse_right_click = "close_current";
-
-          icon_position = "left";
-          alignment = "left";
-          word_wrap = "yes";
-          ellipsize = "middle";
-        };
-        urgencyConfig = let
-          q = s: ''"${s}"'';
-          urgency = bg: fg: timeout: {
-            background = q bg;
-            foreground = q fg;
-            frame_color = q fg;
-            timeout = toString timeout;
-          };
-        in {
-          low = urgency "#282c34" "#abb2bf" 10;
-          normal = urgency "#61afef" "#282c34" 30;
-          critical = urgency "#ff0000" "#ffffff" 0;
-        };
-      };
-
       gnome = {
         gnome-browser-connector.enable = true;
         gnome-keyring.enable = true;
@@ -413,8 +344,8 @@ in {
       in {
         "journst-${phase}" = {
           wantedBy = ["sway-session.target"];
-          requires = ["dunst.service"];
-          after = ["dunst.service"];
+          requires = ["swaync.service"];
+          after = ["swaync.service"];
           serviceConfig = {
             ExecStart = ["${pkgs.journst}/bin/journst ${cfg.flags}"];
             Restart = cfg.restart;
@@ -443,6 +374,8 @@ in {
         inactive-windows-transparency =
           autostart
           "${pkgs.inactive-windows-transparency}/bin/inactive-windows-transparency.py";
+
+        swaync = autostart "${pkgs.swaynotificationcenter}/bin/swaync --config /etc/nixos/swaync.conf --style /etc/nixos/swaync.css";
 
         wlsunset = let
           wlsunset-here = pkgs.writeShellScriptBin "wlsunset-here" ''
@@ -557,8 +490,8 @@ in {
         settings = {
           screencast = {
             max_fps = 30;
-            exec_before = "${pkgs.dunst}/bin/dunstctl set-paused true";
-            exec_after = "${pkgs.dunst}/bin/dunstctl set-paused false";
+            exec_before = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-add xdg-desktop-portal-wlr";
+            exec_after = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-remove xdg-desktop-portal-wlr";
             chooser_type = "simple";
             chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
           };
