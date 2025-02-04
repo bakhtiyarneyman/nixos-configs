@@ -62,6 +62,14 @@
         START_CHARGE_THRESH_BAT0 = 90;
         STOP_CHARGE_THRESH_BAT0 = 95;
       };
+      wyoming = {
+        faster-whisper.servers.test = {
+          enable = true;
+          uri = "tcp://0.0.0.0:10300";
+          language = "en";
+          model = "tiny.en";
+        };
+      };
     };
 
     swapDevices = [{label = "swap";}];

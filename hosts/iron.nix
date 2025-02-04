@@ -249,7 +249,7 @@ in {
       nfs.server = {
         enable = true;
         exports = ''
-          /tailnet/export/home kevlar-tailscale(rw,fsid=0,no_subtree_check)
+          /tailnet/export/home mercury-tailscale(rw,fsid=0,no_subtree_check)
         '';
         statdPort = 4000;
         lockdPort = 4001;

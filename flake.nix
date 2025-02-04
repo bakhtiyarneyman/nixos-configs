@@ -65,7 +65,7 @@
           ./mixins/zfs.nix
           inputs.vscode-server.nixosModules.default
         ]);
-      kevlar = mkSystem "kevlar" owned;
+      mercury = mkSystem "mercury" owned;
       tungsten = mkSystem "tungsten" [
         ./mixins/always-on.nix
         ./mixins/untrusted.nix

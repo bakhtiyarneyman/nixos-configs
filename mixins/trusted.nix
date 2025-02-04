@@ -22,7 +22,7 @@
       };
       hosts = {
         "100.65.77.115" = ["iron-tailscale" "iron-initrd"];
-        "100.126.205.61" = ["kevlar-tailscale"];
+        "100.126.205.61" = ["mercury-tailscale"];
       };
     };
 
@@ -53,8 +53,8 @@
           hostNames = ["iron-initrd"];
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJZsOTJo1rw8XwP0ErdkXlRnGY5A6C7NtO93IXht2lNT";
         };
-        kevlar = {
-          hostNames = ["kevlar-tailscale"];
+        mercury = {
+          hostNames = ["mercury-tailscale"];
           publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKSyMQogWih9Tk8cpckwxP6CLzJxZqtg+qdFbXYbF9Sc";
         };
       };
