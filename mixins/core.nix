@@ -102,6 +102,7 @@ in {
         nethogs
         nmap
         lsof
+        iperf3
         shell-genie
         github-cli
         ngrok
@@ -232,6 +233,8 @@ in {
       journald.extraConfig = ''
         SystemMaxUse=50M
       '';
+
+      iperf3.enable = true;
     };
 
     system = {
