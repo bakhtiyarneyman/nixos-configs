@@ -44,10 +44,6 @@
       ];
     };
 
-    programs.i3status-rust = {
-      networkInterface = "wlp170s0";
-    };
-
     services = {
       rpcbind.enable = true;
       xserver = {
