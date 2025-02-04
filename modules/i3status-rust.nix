@@ -8,31 +8,26 @@ with lib; let
   cfg = config.programs.i3status-rust;
   settingsFormat = pkgs.formats.toml {};
 in {
-  options.programs.i3status-rust = {
+  options.programs.i3status-rust = with types; {
     enable = mkEnableOption "A status bar for i3";
-    networkInterface = mkOption {
-      type = types.str;
-      default = "eno1";
-      description = "An interface from /sys/class/net";
-    };
     temperatureChip = mkOption {
-      type = types.str;
+      type = str;
       default = "*-isa-*";
       description = "A chip from /sys/class/hwmon";
     };
     batteries = mkOption {
-      type = types.listOf (types.submodule {
+      type = listOf (submodule {
         options = {
           device = mkOption {
-            type = types.nullOr types.str;
+            type = nullOr str;
             default = null;
           };
           model = mkOption {
-            type = types.nullOr types.str;
+            type = nullOr str;
             default = null;
           };
           icon = mkOption {
-            type = types.str;
+            type = str;
           };
         };
       });
@@ -168,9 +163,8 @@ in {
         ++ [
           {
             block = "net";
-            device = cfg.networkInterface;
             format = " $icon ^icon_net_down $speed_down.eng(prefix:M,width:3)/s   ^icon_net_up $speed_up.eng(prefix:M,width:3)/s ";
-            format_alt = " $icon {$signal_strength|N/A} ";
+            format_alt = " $icon {$signal_strength|} ";
             interval = 1;
           }
           {
@@ -210,6 +204,7 @@ in {
           }
           {
             block = "notify";
+            driver = "swaync";
             format = " $icon {$notification_count|0} ";
           }
         ]
