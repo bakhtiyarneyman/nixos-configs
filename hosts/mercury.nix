@@ -15,6 +15,7 @@
           device = "/dev/disk/by-uuid/74cf5bcb-f6a5-4410-8247-4a04ffe30826";
         };
       };
+      supportedFilesystems = ["nfs"];
     };
     environment = {
       variables = {
