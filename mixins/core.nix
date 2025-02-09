@@ -332,9 +332,12 @@ in {
       wireshark.enable = true;
     };
 
-    security.polkit = {
-      enable = true;
-      adminIdentities = ["unix-user:bakhtiyar"];
+    security = {
+      doas.enable = true;
+      polkit = {
+        enable = true;
+        adminIdentities = ["unix-user:bakhtiyar"];
+      };
     };
 
     location.provider = "geoclue2";
