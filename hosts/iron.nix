@@ -208,6 +208,7 @@ in {
             getmac
             govee-ble
             gtts
+            openai
             pyatv
             pychromecast
             pyipp
@@ -217,6 +218,7 @@ in {
             tuya-device-sharing-sdk
             vacuum-map-parser-base
             wakeonlan
+            wyoming
           ];
         config = {
           default_config = {};
@@ -447,6 +449,20 @@ in {
                 keep = kept;
               };
             }
+          ];
+        };
+      };
+
+      wyoming = {
+        satellite = {
+          enable = true;
+          name = "iron";
+          area = "Orc room";
+          user = "bakhtiyar";
+          extraArgs = [
+            "--debug"
+            "--wake-word-name=duh_meenuh"
+            "--wake-uri=tcp://mercury:10400"
           ];
         };
       };
