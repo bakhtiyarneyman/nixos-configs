@@ -4,6 +4,30 @@ function fish_user_key_bindings
 end
 
 
+function print_error -d "Print error message"
+    set_color red
+    echo $argv
+    set_color normal
+end
+
+function print_warning -d "Print warning message"
+    set_color yellow
+    echo $argv
+    set_color normal
+end
+
+function print_info -d "Print info message"
+    set_color blue
+    echo $argv
+    set_color normal
+end
+
+function print_success -d "Print success message"
+    set_color green
+    echo $argv
+    set_color normal
+end
+
 function list
     eza -l --icons --color=always | bat -
 end
@@ -203,30 +227,41 @@ function recode
 end
 
 function move_to_cache -d "Move to cache"
-    set cache_dir /var/cache(pwd)
-    set moved_path $argv[1]
-    # Remove trailing slash from the moved_path.
-    set moved_path (path dirname $moved_path/foo)
+    # Remove trailing slash from the src.
+    set src (path dirname $argv[1]/foo)
+    string match --regex '^/' $src
+    if test $status -eq 0
+        # Absolute path.
+        set dst /var/cache$src
+    else
+        # Relative path.
+        set dst /var/cache(pwd)/$src
+    end
 
-    if not test -e $moved_path
-        echo "Path $moved_path does not exist"
+    if not test -e $src
+        print_error "Path `$src` does not exist."
         return 1
     end
 
-    # Check if the moved_path is already a symlink to the cache.
-    if test -L $moved_path
-        set link_target (readlink $moved_path)
-        if test $link_target = $cache_dir/$moved_path
-            echo "Path $moved_path is already a symlink to the cache"
+
+    if test -L $src
+        set link_target (readlink $src)
+        if test $link_target = $dst
+            print_info "Path `$src` is already a symlink to the cache."
             return 0
+        else
+            print_error "Path `$src` is a symlink to `$link_target`."
+            return 1
         end
     end
 
-    if test -e $cache_dir/$moved_path
-        echo "Path $cache_dir/$moved_path already exists"
+    if test -e $dst
+        print_error "Path `$dst` already exists."
         return 1
     end
 
-    mv --no-target-directory $moved_path $cache_dir/$moved_path
-    ln --symbolic $cache_dir/$moved_path $moved_path
+    mkdir --parents (path dirname $dst); or return 1
+    mv --no-target-directory $src $dst; or return 1
+    ln --symbolic $dst $src; or return 1
+    print_success "Moved `$src` to cache."
 end
