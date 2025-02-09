@@ -227,9 +227,6 @@ function move_to_cache -d "Move to cache"
         return 1
     end
 
-    mkdir --parents $cache_dir/$moved_path
     mv --no-target-directory $moved_path $cache_dir/$moved_path
-    # Strip a trailing slash from the moved_path if present
-
     ln --symbolic $cache_dir/$moved_path $moved_path
 end
