@@ -24,6 +24,9 @@ in {
         ];
         network.tailscale.state = "/var/lib/tailscale/tailscaled.state";
       };
+      kernel.sysctl = {
+        "vm.swappiness" = 10;
+      };
       loader.grub = {
         enable = true;
         efiSupport = true;
