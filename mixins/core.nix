@@ -85,6 +85,7 @@ in {
         ntfs3g
         google-drive-ocamlfuse
         parted
+        smem
         # Utilities
         wget
         neovim
