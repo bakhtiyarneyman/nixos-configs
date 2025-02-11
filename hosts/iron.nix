@@ -27,6 +27,7 @@ in {
       kernel.sysctl = {
         "vm.swappiness" = 10;
       };
+      kernelParams = ["zfs.zfs_arc_max=17179869184"];
       loader.grub = {
         enable = true;
         efiSupport = true;
