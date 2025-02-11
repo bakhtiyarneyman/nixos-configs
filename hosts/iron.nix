@@ -219,7 +219,6 @@ in {
         '';
         limits = {
           upload = 10; # KB/s
-          download = 100;
         };
         # rpc.address = "100.0.0.0";
       };
