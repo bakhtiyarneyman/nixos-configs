@@ -56,6 +56,7 @@ in {
         zoom-us
         unstable.pkgs.discord
         slack
+        rofimoji
         # Development
         (unstable.vscode.override {isInsiders = false;})
         cachix
