@@ -2,6 +2,7 @@
   config.services = {
     home-assistant = {
       enable = true;
+      package = pkgs.unstable.home-assistant;
       extraPackages = python3Packages:
         with python3Packages; [
           aiohomekit
