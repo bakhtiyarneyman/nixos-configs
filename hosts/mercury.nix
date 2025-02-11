@@ -64,6 +64,15 @@
         STOP_CHARGE_THRESH_BAT0 = 95;
       };
       wyoming = {
+        openwakeword = {
+          enable = true;
+          customModelsDirectories = [
+            "/etc/nixos/models/openwakeword"
+          ];
+          preloadModels = [
+            "duh_meenuh"
+          ];
+        };
         faster-whisper.servers.listen = {
           enable = true;
           uri = "tcp://0.0.0.0:10300";
