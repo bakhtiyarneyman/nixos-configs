@@ -9,6 +9,10 @@
 
   inherit (builtins) toString map foldl';
 in {
+  imports = [
+    ../mixins/home_assistant.nix
+  ];
+
   config = {
     boot = {
       initrd = {
@@ -197,38 +201,6 @@ in {
         enable = true;
         motherboard = "intel";
         package = pkgs.openrgb-with-all-plugins;
-      };
-
-      home-assistant = {
-        enable = true;
-        extraPackages = python3Packages:
-          with python3Packages; [
-            aiohomekit
-            aiolifx
-            aiolifx-effects
-            aiolifx-themes
-            androidtvremote2
-            brother
-            getmac
-            govee-ble
-            gtts
-            openai
-            pyatv
-            pychromecast
-            pyipp
-            python-otbr-api
-            python-roborock
-            radios
-            tuya-device-sharing-sdk
-            vacuum-map-parser-base
-            wakeonlan
-            wyoming
-          ];
-        config = {
-          default_config = {};
-          automation = "!include automations.yaml";
-          scene = "!include scenes.yaml";
-        };
       };
 
       monero = {
@@ -466,7 +438,7 @@ in {
           extraArgs = [
             "--debug"
             "--wake-word-name=duh_meenuh"
-            "--wake-uri=tcp://mercury:10400"
+            "--wake-uri=tcp://localhost:10400"
           ];
         };
       };

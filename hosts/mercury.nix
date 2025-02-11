@@ -63,28 +63,6 @@
         START_CHARGE_THRESH_BAT0 = 90;
         STOP_CHARGE_THRESH_BAT0 = 95;
       };
-      wyoming = {
-        openwakeword = {
-          enable = true;
-          customModelsDirectories = [
-            "/etc/nixos/models/openwakeword"
-          ];
-          preloadModels = [
-            "duh_meenuh"
-          ];
-        };
-        faster-whisper.servers.listen = {
-          enable = true;
-          uri = "tcp://0.0.0.0:10300";
-          language = "en";
-          model = "small.en";
-        };
-        piper.servers.speak = {
-          enable = true;
-          uri = "tcp://0.0.0.0:10200";
-          voice = "en_US-amy-medium";
-        };
-      };
     };
 
     swapDevices = [{label = "swap";}];
