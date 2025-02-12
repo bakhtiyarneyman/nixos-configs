@@ -42,17 +42,26 @@
         preloadModels = [
           "duh_meenuh"
         ];
+        extraArgs = [
+          "--debug"
+        ];
       };
       faster-whisper.servers.listen = {
         enable = true;
         uri = "tcp://0.0.0.0:10300";
         language = "en";
         model = "small.en";
+        extraArgs = [
+          "--debug"
+        ];
       };
       piper.servers.speak = {
         enable = true;
         uri = "tcp://0.0.0.0:10200";
-        voice = "en_US-amy-medium";
+        voice = "en_US-lessac-high";
+        extraArgs = [
+          "--debug"
+        ];
       };
     };
   };
