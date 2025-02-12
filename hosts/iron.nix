@@ -434,6 +434,9 @@ in {
           name = "iron";
           area = "Orc room";
           user = "bakhtiyar";
+          sounds = {
+            awake = /etc/nixos/sounds/awake.wav;
+          };
           extraArgs = [
             "--debug"
             "--wake-word-name=duh_meenuh"
