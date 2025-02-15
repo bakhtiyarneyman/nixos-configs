@@ -14,6 +14,8 @@
           getmac
           govee-ble
           gtts
+          ibeacon-ble
+          led-ble
           openai
           pyatv
           pychromecast
@@ -25,6 +27,7 @@
           vacuum-map-parser-base
           wakeonlan
           wyoming
+          yalexs-ble
         ];
       config = {
         default_config = {};
