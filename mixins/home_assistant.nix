@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  hostName,
+  ...
+}: {
   config.services = {
     home-assistant = {
       enable = true;
@@ -33,6 +37,10 @@
         default_config = {};
         automation = "!include automations.yaml";
         scene = "!include scenes.yaml";
+        http = {
+          ssl_certificate = "/etc/nixos/secrets/${hostName}.orkhon-mohs.ts.net.crt";
+          ssl_key = "/etc/nixos/secrets/${hostName}.orkhon-mohs.ts.net.key";
+        };
       };
     };
 
