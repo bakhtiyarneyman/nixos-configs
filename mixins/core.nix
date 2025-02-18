@@ -96,6 +96,7 @@ in {
         procs # Better ps.
         bat # Better cat.
         bottom # Better top.
+        htop # Better top.
         fd # Better find.
         du-dust # Better du.
         sd # Better sed.
