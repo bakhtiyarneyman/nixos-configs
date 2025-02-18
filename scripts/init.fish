@@ -227,6 +227,28 @@ function recode
 end
 
 function move_to_cache -d "Move to cache"
+    argparse --name='move_to_cache' f/force h/help -- $argv
+    or return
+
+    if test $_flag_help
+        echo "Usage:"
+        echo "  move_to_cache [--help] [--force] <path>"
+        echo "    -h / --help             Show this help"
+        echo "    -f / --force            Overwrite existing cache"
+        echo "    path     The path to move to cache"
+        return 0
+    end
+
+    if test (count $argv) -lt 1
+        print_error "You must specify a path."
+        return 1
+    end
+
+    if test (count $argv) -gt 1
+        print_error "You must specify only one path."
+        return 1
+    end
+
     # Remove trailing slash from the src.
     set src (path dirname $argv[1]/foo)
     string match --regex '^/' $src
@@ -256,8 +278,12 @@ function move_to_cache -d "Move to cache"
     end
 
     if test -e $dst
-        print_error "Path `$dst` already exists."
-        return 1
+        if test $_flag_force
+            rm -rf $dst; or return 1
+        else
+            print_error "Path `$dst` already exists. Run with --force to overwrite."
+            return 1
+        end
     end
 
     mkdir --parents (path dirname $dst); or return 1
