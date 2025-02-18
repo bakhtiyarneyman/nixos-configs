@@ -21,6 +21,7 @@
           ibeacon-ble
           led-ble
           openai
+          openrgb-python
           pyatv
           pychromecast
           pyipp
