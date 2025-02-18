@@ -7,6 +7,9 @@
     home-assistant = {
       enable = true;
       package = pkgs.unstable.home-assistant;
+      customComponents = builtins.attrValues {
+        openrgb-ha = pkgs.callPackage ../pkgs/home-assistant/openrgb-ha.nix {};
+      };
       extraPackages = python3Packages:
         with python3Packages; [
           aiohomekit
@@ -42,6 +45,17 @@
           ssl_certificate = "/etc/nixos/secrets/${hostName}.orkhon-mohs.ts.net.crt";
           ssl_key = "/etc/nixos/secrets/${hostName}.orkhon-mohs.ts.net.key";
         };
+        camera = [
+          {
+            platform = "xiaomi_cloud_map_extractor";
+            host = "!secret xiaomi_vacuum_host";
+            token = "!secret xiaomi_vacuum_token";
+            username = "!secret xiaomi_cloud_username";
+            password = "!secret xiaomi_cloud_password";
+            draw = ["all"];
+            attributes = ["calibration_points"];
+          }
+        ];
       };
     };
 
@@ -62,7 +76,7 @@
         enable = true;
         uri = "tcp://0.0.0.0:10300";
         language = "en";
-        model = "small.en";
+        model = "small-int8";
         extraArgs = [
           "--debug"
         ];
