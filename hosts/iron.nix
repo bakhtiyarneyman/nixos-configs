@@ -29,7 +29,7 @@ in {
         network.tailscale.state = "/var/lib/tailscale/tailscaled.state";
       };
       kernel.sysctl = {
-        "vm.swappiness" = 10;
+        "vm.swappiness" = 1;
       };
       kernelParams = ["zfs.zfs_arc_max=17179869184"];
       loader.grub = {
