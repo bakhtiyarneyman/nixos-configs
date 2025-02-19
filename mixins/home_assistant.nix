@@ -9,6 +9,7 @@
       package = pkgs.unstable.home-assistant;
       customComponents = builtins.attrValues {
         openrgb-ha = pkgs.callPackage ../pkgs/home-assistant/openrgb-ha.nix {};
+        xiaomi_cloud_map_extractor = pkgs.callPackage ../pkgs/home-assistant/xiaomi_cloud_map_extractor.nix {};
       };
       extraPackages = python3Packages:
         builtins.attrValues {

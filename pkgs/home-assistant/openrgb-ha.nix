@@ -1,6 +1,5 @@
 {
   pkgs,
-  buildHomeAssistantComponent,
   fetchFromGitHub,
 }:
 pkgs.unstable.buildHomeAssistantComponent rec {
