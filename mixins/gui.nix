@@ -390,7 +390,7 @@ in {
           autostart "${pkgs.writeShellScriptBin "autolock" ''
             ${pkgs.swayidle}/bin/swayidle -w \
               timeout ${builtins.toString idleToDimSecs} 'echo "Dimming..."; ${pkgs.dim-screen}/bin/dim-screen &' \
-                resume 'echo "Undim."; ${pkgs.psmisc}/bin/killall dim-screen' \
+                resume 'echo "Undim."; ${pkgs.procps}/bin/pkill dim-screen' \
               timeout ${builtins.toString idleToLockSecs} 'echo "Locking..."; ${pkgs.prettyLock}/bin/prettyLock &' \
               timeout ${builtins.toString idleToScreenOffSecs} 'echo "Screen off..."; ${pkgs.sway}/bin/swaymsg "output * dpms off"' \
                 resume 'echo "Screen on"; ${pkgs.sway}/bin/swaymsg "output * dpms on"' \
