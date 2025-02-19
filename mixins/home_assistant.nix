@@ -11,32 +11,38 @@
         openrgb-ha = pkgs.callPackage ../pkgs/home-assistant/openrgb-ha.nix {};
       };
       extraPackages = python3Packages:
-        with python3Packages; [
-          aiohomekit
-          aiolifx
-          aiolifx-effects
-          aiolifx-themes
-          androidtvremote2
-          brother
-          getmac
-          govee-ble
-          gtts
-          ibeacon-ble
-          led-ble
-          openai
-          openrgb-python
-          pyatv
-          pychromecast
-          pyipp
-          python-otbr-api
-          python-roborock
-          radios
-          tuya-device-sharing-sdk
-          vacuum-map-parser-base
-          wakeonlan
-          wyoming
-          yalexs-ble
-        ];
+        builtins.attrValues {
+          inherit
+            (python3Packages)
+            aiohomekit
+            aiohttp-fast-zlib
+            aiolifx
+            aiolifx-effects
+            aiolifx-themes
+            androidtvremote2
+            brother
+            getmac
+            govee-ble
+            gtts
+            ibeacon-ble
+            led-ble
+            openai
+            openrgb-python
+            pyatv
+            pychromecast
+            pyipp
+            python-otbr-api
+            python-roborock
+            radios
+            tuya-device-sharing-sdk
+            vacuum-map-parser-base
+            wakeonlan
+            wyoming
+            yalexs-ble
+            ;
+        }
+        ++ python3Packages.aiohttp-fast-zlib.optional-dependencies.isal
+        ++ python3Packages.aiohttp-fast-zlib.optional-dependencies.zlib_ng;
       config = {
         default_config = {};
         automation = "!include automations.yaml";
