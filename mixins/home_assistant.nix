@@ -69,6 +69,7 @@
     wyoming = {
       openwakeword = {
         enable = true;
+        package = pkgs.unstable.wyoming-openwakeword;
         customModelsDirectories = [
           "/etc/nixos/models/openwakeword"
         ];
@@ -79,22 +80,28 @@
           "--debug"
         ];
       };
-      faster-whisper.servers.listen = {
-        enable = true;
-        uri = "tcp://0.0.0.0:10300";
-        language = "en";
-        model = "small-int8";
-        extraArgs = [
-          "--debug"
-        ];
+      faster-whisper = {
+        package = pkgs.unstable.wyoming-faster-whisper;
+        servers.listen = {
+          enable = true;
+          uri = "tcp://0.0.0.0:10300";
+          language = "en";
+          model = "small-int8";
+          extraArgs = [
+            "--debug"
+          ];
+        };
       };
-      piper.servers.speak = {
-        enable = true;
-        uri = "tcp://0.0.0.0:10200";
-        voice = "en_US-lessac-high";
-        extraArgs = [
-          "--debug"
-        ];
+      piper = {
+        package = pkgs.unstable.wyoming-piper;
+        servers.speak = {
+          enable = true;
+          uri = "tcp://0.0.0.0:10200";
+          voice = "en_US-lessac-high";
+          extraArgs = [
+            "--debug"
+          ];
+        };
       };
     };
   };
