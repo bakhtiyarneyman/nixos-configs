@@ -431,6 +431,9 @@ in {
       wyoming = {
         satellite = {
           enable = true;
+          package = pkgs.unstable.pkgs.wyoming-satellite.overridePythonAttrs (oldAttrs: {
+            propagatedBuildInputs = [];
+          });
           name = "iron";
           area = "Orc room";
           user = "bakhtiyar";
