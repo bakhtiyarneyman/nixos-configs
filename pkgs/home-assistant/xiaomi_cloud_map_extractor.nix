@@ -21,8 +21,4 @@ pkgs.unstable.buildHomeAssistantComponent rec {
     requests
     pycryptodome
   ];
-
-  ignoreVersionRequirement = [
-    "openrgb-python"
-  ];
 }
