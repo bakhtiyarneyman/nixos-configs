@@ -198,8 +198,12 @@ in {
     services = {
       hardware.openrgb = {
         enable = true;
-        motherboard = "intel";
-        package = pkgs.openrgb-with-all-plugins;
+        package = with pkgs;
+          openrgb.withPlugins [
+            openrgb-plugin-effects
+            openrgb-plugin-hardwaresync
+            (pkgs.callPackage ../pkgs/openrgb-plugin-httphook.nix {})
+          ];
       };
 
       monero = {
