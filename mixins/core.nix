@@ -88,6 +88,7 @@ in {
         smem
         # Utilities
         wget
+        lnav
         neovim
         mkpasswd
         file
