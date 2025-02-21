@@ -53,17 +53,9 @@
           ssl_certificate = "/etc/nixos/secrets/${hostName}.orkhon-mohs.ts.net.crt";
           ssl_key = "/etc/nixos/secrets/${hostName}.orkhon-mohs.ts.net.key";
         };
-        camera = [
-          {
-            platform = "xiaomi_cloud_map_extractor";
-            host = "!secret xiaomi_vacuum_host";
-            token = "!secret xiaomi_vacuum_token";
-            username = "!secret xiaomi_cloud_username";
-            password = "!secret xiaomi_cloud_password";
-            draw = ["all"];
-            attributes = ["calibration_points"];
-          }
-        ];
+        logger.logs = {
+          "custom_components.extended_openai_conversation" = "info";
+        };
       };
     };
 
