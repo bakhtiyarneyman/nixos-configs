@@ -189,7 +189,6 @@ in {
         temperatureChip = "k10temp-*";
       };
       sway = {
-        extraOptions = ["--unsupported-gpu"]; # TODO: remove this.
         extraSessionCommands = ''
           export WLR_NO_HARDWARE_CURSORS=1
         '';
