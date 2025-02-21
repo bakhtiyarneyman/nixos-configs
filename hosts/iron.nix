@@ -443,11 +443,46 @@ in {
           sounds = {
             awake = /etc/nixos/sounds/awake.wav;
           };
-          extraArgs = [
-            "--debug"
-            "--wake-word-name=duh_meenuh"
-            "--wake-uri=tcp://localhost:10400"
-          ];
+          extraArgs = let
+            # OpenRGB HttpHook plugin is configured to set the colors when a GET request is made to localhost:6743/COMMAND, where COMMAND is one of: listen, parse, think, speak, wait.
+            effectCommand = {
+              event,
+              effect,
+            }: let
+              script = pkgs.writeScript "execute-openrgb-effect-hook-${effect}" ''
+                #!${pkgs.bash}/bin/bash
+                ${pkgs.curl}/bin/curl --silent http://localhost:6743/${effect}
+              '';
+            in ''--${event}-command=${script}'';
+          in
+            [
+              "--debug"
+              "--wake-word-name=duh_meenuh"
+              "--wake-uri=tcp://localhost:10400"
+              "--event-uri=tcp://localhost:10401"
+            ]
+            ++ map effectCommand [
+              {
+                event = "streaming-start";
+                effect = "listen";
+              }
+              {
+                event = "stt-stop";
+                effect = "parse";
+              }
+              {
+                event = "transcript";
+                effect = "think";
+              }
+              {
+                event = "tts-start";
+                effect = "speak";
+              }
+              {
+                event = "tts-played";
+                effect = "wait";
+              }
+            ];
         };
       };
     };
