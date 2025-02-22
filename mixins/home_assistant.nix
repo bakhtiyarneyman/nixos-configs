@@ -66,6 +66,7 @@
         customModelsDirectories = [
           "/etc/nixos/models/openwakeword"
         ];
+        threshold = 0.1;
         preloadModels = [
           "duh_meenuh"
         ];
