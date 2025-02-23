@@ -60,7 +60,7 @@ function assistant_effect
     openrgb_hook $effect_command; or return 1
 
     if test $nap_after_secs -gt 0
-        fish -c "sleep $nap_after_secs; curl http://localhost:6743/nap" &
+        fish -c "sleep $nap_after_secs; curl --silent http://localhost:6743/nap" &
         echo $last_pid >/tmp/assistant_effect.pid
     end
 end
