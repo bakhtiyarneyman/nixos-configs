@@ -448,7 +448,7 @@ in {
             awake = /etc/nixos/sounds/awake.wav;
           };
           extraArgs = let
-            # OpenRGB HttpHook plugin is configured to set the colors when a GET request is made to localhost:6743/COMMAND, where COMMAND is one of: listen, parse, think, speak, wait.
+            # OpenRGB HttpHook plugin is configured to set the colors when a GET request is made to localhost:6743/COMMAND, where COMMAND is one of: listen, parse, think, speak, nap.
             effectCommand = {
               event,
               effect,
@@ -493,7 +493,7 @@ in {
               }
               {
                 event = "tts-played";
-                effect = "wait";
+                effect = "nap";
               }
             ];
         };
