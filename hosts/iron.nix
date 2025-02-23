@@ -1,4 +1,8 @@
-{pkgs, ...}: let
+{
+  lib,
+  pkgs,
+  ...
+}: let
   coreDiskIds = [
     "nvme-WD_BLACK_SN770_1TB_23051T800986"
     "nvme-WD_BLACK_SN770_1TB_22307Y440407"
@@ -449,10 +453,20 @@ in {
               event,
               effect,
             }: let
-              script = pkgs.writeScript "execute-openrgb-effect-hook-${effect}" ''
-                #!${pkgs.bash}/bin/bash
-                ${pkgs.curl}/bin/curl --silent http://localhost:6743/${effect}
-              '';
+              script =
+                pkgs.writers.writeFish "execute-openrgb-effect-hook-${effect}"
+                {
+                  makeWrapperArgs = [
+                    "--prefix"
+                    "PATH"
+                    ":"
+                    "${lib.makeBinPath [pkgs.curl pkgs.fish]}"
+                  ];
+                }
+                ''
+                  source ${../scripts/effects.fish}
+                  assistant_effect ${effect}
+                '';
             in ''--${event}-command=${script}'';
           in
             [
