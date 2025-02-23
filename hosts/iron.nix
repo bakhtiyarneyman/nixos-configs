@@ -459,7 +459,6 @@ in {
               "--debug"
               "--wake-word-name=duh_meenuh"
               "--wake-uri=tcp://localhost:10400"
-              "--event-uri=tcp://localhost:10401"
             ]
             ++ map effectCommand [
               {
