@@ -210,6 +210,15 @@ in {
           ];
       };
 
+      ollama = {
+        enable = true;
+        acceleration = "rocm";
+        rocmOverrideGfx = "10.3.2";
+      };
+      nextjs-ollama-llm-ui = {
+        hostname = "0.0.0.0";
+        enable = true;
+      };
       monero = {
         enable = false;
         dataDir = "/var/lib/monero";
