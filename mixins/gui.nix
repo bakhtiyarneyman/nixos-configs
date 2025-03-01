@@ -1,6 +1,5 @@
 {
   pkgs,
-  lib,
   config,
   ...
 }: let
@@ -85,7 +84,6 @@ in {
         guvcview
         libva-utils
         mpv
-        obs-studio
         vlc
         # Privacy
         monero-gui
@@ -256,6 +254,16 @@ in {
 
       i3status-rust.enable = true;
       file-roller.enable = true;
+      obs-studio = {
+        enable = true;
+        enableVirtualCamera = true;
+        plugins = with pkgs.obs-studio-plugins; [
+          wlrobs
+          obs-pipewire-audio-capture
+          droidcam-obs
+          obs-source-switcher
+        ];
+      };
       sway = {
         enable = true;
         extraOptions = [

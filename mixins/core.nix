@@ -24,9 +24,6 @@ in {
       loader = {
         efi.canTouchEfiVariables = true;
       };
-      extraModprobeConfig = ''
-        options v4l2loopback exclusive_caps=1 video_nr=9 card_label="DroidCam"
-      '';
     };
 
     # i18n = {
