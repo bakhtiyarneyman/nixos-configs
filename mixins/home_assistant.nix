@@ -72,7 +72,7 @@
           ];
           threshold = 0.2;
           preloadModels = [
-            "duh_meenuh"
+            "duh_meenah"
           ];
           extraArgs = [
             "--debug"
