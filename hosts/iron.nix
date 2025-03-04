@@ -86,38 +86,6 @@ in {
           fsType = "zfs";
           neededForBoot = true;
         };
-        "/var" = {
-          device = "fast/nixos/var";
-          fsType = "zfs";
-        };
-        "/var/cache" = {
-          device = "fast/nixos/var/cache";
-          fsType = "zfs";
-        };
-        "/var/lib" = {
-          device = "fast/nixos/var/lib";
-          fsType = "zfs";
-        };
-        "/var/log" = {
-          device = "fast/nixos/var/log";
-          fsType = "zfs";
-        };
-        "/var/tmp" = {
-          device = "fast/nixos/var/tmp";
-          fsType = "zfs";
-        };
-        "/home" = {
-          device = "fast/nixos/home";
-          fsType = "zfs";
-        };
-        "/home/bakhtiyar/dev" = {
-          device = "fast/nixos/home/dev";
-          fsType = "zfs";
-        };
-        "/home/bakhtiyar/dump" = {
-          device = "fast/nixos/home/dump";
-          fsType = "zfs";
-        };
         "/tailnet/export/home" = {
           device = "/home/bakhtiyar";
           options = ["bind"];
@@ -347,10 +315,10 @@ in {
       zrepl = {
         settings = {
           jobs = let
-            kept = [
+            makeGrid = grid: [
               {
                 type = "grid";
-                grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
+                inherit grid;
                 regex = "^zrepl_.*";
               }
               {
@@ -397,9 +365,9 @@ in {
                 options = ["IdentitiesOnly=yes"];
               };
               filesystems = {
-                "fast/nixos/etc-nixos" = true;
+                "fast/nixos/etc-nixos<" = true;
                 "fast/nixos/home<" = true;
-                "fast/nixos/home/dump" = false;
+                "fast/nixos/home/bakhtiyar/dump<" = false;
                 "slow/root/home/bakhtiyar<" = true;
                 "slow/root/home/bakhtiyar/entertainment/video<" = false;
               };
@@ -408,21 +376,24 @@ in {
                 encrypted = true;
               };
               inherit snapshotting;
-              pruning = {
-                keep_sender = [{type = "not_replicated";}] ++ kept;
-                keep_receiver = kept;
+              pruning = let
+                keptLong = makeGrid "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
+              in {
+                keep_sender = [{type = "not_replicated";}] ++ keptLong;
+                keep_receiver = keptLong;
               };
             }
             {
               type = "snap";
               name = "snap";
               filesystems = {
-                "fast/nixos/home/dump" = true;
-                "fast/nixos/media/video" = true;
+                "fast/nixos/var<" = true;
+                "fast/nixos/home/bakhtiyar/dump<" = true;
+                "slow/root/home/bakhtiyar/entertainment/video<" = true;
               };
               inherit snapshotting;
               pruning = {
-                keep = kept;
+                keep = makeGrid "1x1h(keep=all)";
               };
             }
           ];
