@@ -58,6 +58,7 @@ in {
         in
           map toBoot coreDiskIds;
       };
+      zfs.extraPools = ["slow"];
     };
 
     environment = {
@@ -97,10 +98,6 @@ in {
           device = "fast/nixos/var/lib";
           fsType = "zfs";
         };
-        "/var/lib/monero" = {
-          device = "slow/root/monero";
-          fsType = "zfs";
-        };
         "/var/log" = {
           device = "fast/nixos/var/log";
           fsType = "zfs";
@@ -119,26 +116,6 @@ in {
         };
         "/home/bakhtiyar/dump" = {
           device = "fast/nixos/home/dump";
-          fsType = "zfs";
-        };
-        "/home/bakhtiyar/media" = {
-          device = "slow/root/media";
-          fsType = "zfs";
-        };
-        "/home/bakhtiyar/media/video" = {
-          device = "slow/root/media/video";
-          fsType = "zfs";
-        };
-        "/home/bakhtiyar/personal" = {
-          device = "slow/root/personal";
-          fsType = "zfs";
-        };
-        "/home/bakhtiyar/personal/video" = {
-          device = "slow/root/personal/video";
-          fsType = "zfs";
-        };
-        "/home/bakhtiyar/warehouse" = {
-          device = "slow/root/warehouse";
           fsType = "zfs";
         };
         "/tailnet/export/home" = {
@@ -423,9 +400,8 @@ in {
                 "fast/nixos/etc-nixos" = true;
                 "fast/nixos/home<" = true;
                 "fast/nixos/home/dump" = false;
-                "slow/root<" = true;
-                "slow/root/media/video" = false;
-                "slow/root/monero" = false;
+                "slow/root/home/bakhtiyar<" = true;
+                "slow/root/home/bakhtiyar/entertainment/video<" = false;
               };
               send = {
                 bandwidth_limit.max = "500 KiB";
