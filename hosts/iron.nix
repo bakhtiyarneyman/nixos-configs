@@ -436,7 +436,7 @@ in {
           in
             [
               "--debug"
-              "--wake-word-name=duh_meenuh"
+              "--wake-word-name=duh_meenah"
               "--wake-uri=tcp://localhost:10400"
             ]
             ++ map effectCommand [
