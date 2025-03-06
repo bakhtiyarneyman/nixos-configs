@@ -70,11 +70,6 @@
     };
   };
   networking = {
-    firewall = {
-      allowedTCPPorts = [
-        3000
-      ];
-    };
     hostId = "3b777fc4";
   };
 
