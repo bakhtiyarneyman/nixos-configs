@@ -33,6 +33,7 @@
         };
         modules =
           [
+            inputs.vscode-server.nixosModules.default
             ./mixins/core.nix
             ./mixins/palette.nix
             (./hosts/${hostName} + ".nix")
@@ -63,8 +64,8 @@
           ./mixins/ecc.nix
           ./mixins/neurasium.nix
           ./mixins/zfs.nix
-          inputs.vscode-server.nixosModules.default
         ]);
+      tin = mkSystem "tin" [];
       mercury = mkSystem "mercury" owned;
       tungsten = mkSystem "tungsten" [
         ./mixins/always-on.nix
