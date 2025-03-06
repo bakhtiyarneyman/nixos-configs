@@ -81,22 +81,6 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   services = {
-    kmscon = {
-      enable = true;
-      extraConfig = ''
-        font-size=32
-      '';
-      fonts = [
-        {
-          name = "Fira Mono for Powerline";
-          package = pkgs.fira;
-        }
-        {
-          name = "Font Awesome 6 Free";
-          package = pkgs.font-awesome_6;
-        }
-      ];
-    };
     tailscale.enable = true;
     openvscode-server = {
       enable = true;

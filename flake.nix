@@ -6,12 +6,14 @@
       url = "github:nix-community/nixos-vscode-server";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nix-colors.url = "github:misterio77/nix-colors";
   };
 
   outputs = inputs @ {
     self,
     nixpkgs,
     nixpkgs-unstable,
+    nix-colors,
     ...
   }: let
     system = "x86_64-linux";
@@ -30,6 +32,7 @@
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIG1XG551t2Yb8ryQ/lGRJXhfnWwz3B/MmOjMoz7x3G9iAAAABHNzaDo= blue"
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICDUZrPTStLzzGeHC+c81L4u1B47CwOW3N3HRfM/2tzvAAAABHNzaDo= green"
           ];
+          inherit nix-colors;
         };
         modules =
           [
