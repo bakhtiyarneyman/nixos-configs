@@ -61,9 +61,6 @@ in {
         cachix
         meld
         python3
-        # nixd
-        nil
-        alejandra
         nixpkgs-fmt
         cntr
         (haskellPackages.ghcWithPackages (ps: with ps; [protolude text turtle text]))

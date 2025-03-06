@@ -108,6 +108,10 @@ in {
         github-cli
         ngrok
         jq
+        # Nix
+        # nixd
+        nil
+        alejandra
         # Shell packages
         fish
         peco
