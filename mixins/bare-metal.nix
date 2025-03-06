@@ -11,11 +11,6 @@
   ];
 
   config = {
-    environment.systemPackages = with pkgs; [
-      powertop
-      smartmontools
-    ];
-
     boot = {
       initrd = lib.mkMerge [
         {
@@ -68,6 +63,12 @@
       ];
       loader.grub.memtest86.enable = true;
     };
+
+    environment.systemPackages = with pkgs; [
+      powertop
+      sbctl
+      smartmontools
+    ];
 
     hardware = {
       enableRedistributableFirmware = true;

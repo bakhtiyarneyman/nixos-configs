@@ -74,10 +74,7 @@
     };
   };
 
-  environment.systemPackages = [
-    pkgs.sbctl
-  ];
-
+  
   fileSystems = {
     "/mnt/secrets" = {
       device = "/dev/mapper/secrets";
