@@ -27,7 +27,7 @@
               hostKeys = ["/etc/ssh/initrd_ssh_host_ed25519_key"];
               # Password-based login is disabled in the initrd.
               authorizedKeys = let
-                harden = key: ''command="echo 'Password to unlock ZFS?' && systemd-tty-ask-password-agent",restrict ${key}'';
+                harden = key: ''command="echo 'Password to decrypt the disks?' && systemd-tty-ask-password-agent",restrict ${key}'';
               in
                 map harden yubikeys;
             };
@@ -73,8 +73,6 @@
       enableRedistributableFirmware = true;
       logitech.wireless.enable = true;
     };
-
-    programs.corectrl.enable = true;
 
     services = {
       smartd = {

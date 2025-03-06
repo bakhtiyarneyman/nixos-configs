@@ -238,6 +238,8 @@ in {
     };
 
     programs = {
+      corectrl.enable = true;
+
       dconf.enable = true; # For gnome-keyring. See: https://github.com/NixOS/nixpkgs/issues/161224
 
       git.config = {

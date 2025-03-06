@@ -1,7 +1,4 @@
-{
-  config,
-  ...
-}: let
+{config, ...}: let
   canHibernate = builtins.elem "nohibernate" config.boot.kernelParams;
 in {
   services = {
