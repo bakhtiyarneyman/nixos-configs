@@ -1,4 +1,8 @@
-{lib, ...}: {
+{
+  lib,
+  config,
+  ...
+}: {
   # `kmscon` supports all of these, so don't introduce new colors here.
   options.palette = {
     black = lib.mkOption {
@@ -37,5 +41,14 @@
       type = lib.types.str;
       default = "ffffff";
     };
+  };
+
+  config = {
+    environment.etc."sway/colors.conf".text = let
+      toColor = name: hex: "set $" + "${name} #${hex}";
+    in
+      builtins.concatStringsSep "\n" (
+        builtins.attrValues (builtins.mapAttrs toColor config.palette)
+      );
   };
 }
