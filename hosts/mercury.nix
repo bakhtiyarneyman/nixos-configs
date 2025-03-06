@@ -1,5 +1,6 @@
 {pkgs, ...}: {
   imports = [
+    ../mixins/gui.nix
     ../mixins/intel.nix
   ];
 

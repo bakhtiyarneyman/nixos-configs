@@ -14,6 +14,7 @@
   inherit (builtins) toString map foldl';
 in {
   imports = [
+    ../mixins/gui.nix
     ../mixins/home_assistant.nix
   ];
 
