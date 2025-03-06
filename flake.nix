@@ -7,6 +7,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-colors.url = "github:misterio77/nix-colors";
+    # Reminder: tend to `always-on.nix` when adding new inputs.
   };
 
   outputs = inputs @ {

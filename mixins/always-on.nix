@@ -1,18 +1,18 @@
 {
   config.system.autoUpgrade = {
     enable = true;
-    allowReboot = true;
     flags = [
-      "--update-input"
-      "nixpkgs"
-      "--update-input"
-      "nixpkgs-unstable"
-      "--commit-lock-file"
+      "--update-input=nixpkgs"
+      "--update-input=nixpkgs-unstable"
+      "--update-input=vscode-server"
+      "--update-input=nix-colors"
+      "--update-input=lanzaboote"
     ];
     flake = "/etc/nixos";
+    allowReboot = true;
     rebootWindow = {
-      lower = "12:00";
-      upper = "16:00";
+      lower = "04:00";
+      upper = "06:00";
     };
   };
 }
