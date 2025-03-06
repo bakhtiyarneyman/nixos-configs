@@ -59,16 +59,9 @@
         ./mixins/trusted.nix
       ];
     in {
-      iron = mkSystem "iron" (owned
-        ++ [
-          ./mixins/always-on.nix
-          ./mixins/amd.nix
-          ./mixins/ecc.nix
-          ./mixins/neurasium.nix
-          ./mixins/zfs.nix
-        ]);
-      tin = mkSystem "tin" [];
+      iron = mkSystem "iron" owned;
       mercury = mkSystem "mercury" owned;
+      tin = mkSystem "tin" [];
       tungsten = mkSystem "tungsten" [];
     };
   };

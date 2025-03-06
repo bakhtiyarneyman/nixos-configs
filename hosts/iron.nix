@@ -14,8 +14,13 @@
   inherit (builtins) toString map foldl';
 in {
   imports = [
+    ../mixins/always-on.nix
+    ../mixins/amd.nix
+    ../mixins/ecc.nix
     ../mixins/gui.nix
     ../mixins/home_assistant.nix
+    ../mixins/neurasium.nix
+    ../mixins/zfs.nix
   ];
 
   config = {
