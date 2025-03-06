@@ -34,6 +34,36 @@
             /dev/mapper/secrets /secrets ext4 defaults,nofail,x-systemd.device-timeout=0,ro 0 2
           '';
         };
+        services = {
+          zfs-import-system.enable = false;
+          import-system-pool = let
+            partition = "${utils.escapeSystemdPath "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part2"}.device";
+          in {
+            requiredBy = ["load-system-key.service"];
+            after = [partition];
+            bindsTo = [partition];
+            unitConfig.DefaultDependencies = false;
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "${config.boot.zfs.package}/bin/zpool import -f -N -d /dev/disk/by-id system";
+              RemainAfterExit = true;
+            };
+          };
+
+          load-system-key = {
+            wantedBy = ["sysroot.mount"];
+            before = ["sysroot.mount"];
+            unitConfig = {
+              RequiresMountsFor = ["/secrets"];
+              DefaultDependencies = false;
+            };
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "${config.boot.zfs.package}/bin/zfs load-key -L file:///secrets/zfs.key system/root";
+              RemainAfterExit = true;
+            };
+          };
+        };
       };
     };
     loader = {
@@ -114,36 +144,6 @@
       };
     };
   };
+
   system.stateVersion = "24.11";
-
-  boot.initrd.systemd.services = {
-    zfs-import-system.enable = false;
-    import-system-pool = let
-      partition = "${utils.escapeSystemdPath "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part2"}.device";
-    in {
-      requiredBy = ["load-system-key.service"];
-      after = [partition];
-      bindsTo = [partition];
-      unitConfig.DefaultDependencies = false;
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "${config.boot.zfs.package}/bin/zpool import -f -N -d /dev/disk/by-id system";
-        RemainAfterExit = true;
-      };
-    };
-
-    load-system-key = {
-      wantedBy = ["sysroot.mount"];
-      before = ["sysroot.mount"];
-      unitConfig = {
-        RequiresMountsFor = ["/secrets"];
-        DefaultDependencies = false;
-      };
-      serviceConfig = {
-        Type = "oneshot";
-        ExecStart = "${config.boot.zfs.package}/bin/zfs load-key -L file:///secrets/zfs.key system/root";
-        RemainAfterExit = true;
-      };
-    };
-  };
 }
