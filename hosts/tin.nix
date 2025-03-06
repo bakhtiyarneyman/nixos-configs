@@ -17,55 +17,26 @@
   ];
 
   boot = {
-    initrd = {
-      kernelModules = ["tpm_crb"];
-      availableKernelModules = ["xhci_pci" "ahci" "nvme" "usb_storage" "usbhid" "sd_mod" "sdhci_pci" "ext4" "igb"];
-      luks.devices.secrets = {
-        device = "/dev/zvol/system/secrets";
-        crypttabExtraOpts = [
-          "tpm2-device=auto"
-          "tpm2-measure-pcr=yes"
-        ];
-      };
-      systemd = {
-        enable = true;
-        contents = {
-          "/etc/fstab".text = ''
-            /dev/mapper/secrets /secrets ext4 defaults,nofail,x-systemd.device-timeout=0,ro 0 2
-          '';
-        };
-        services = {
-          zfs-import-system.enable = false;
-          import-system-pool = let
-            partition = "${utils.escapeSystemdPath "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part2"}.device";
-          in {
-            requiredBy = ["load-system-key.service"];
-            after = [partition];
-            bindsTo = [partition];
-            unitConfig.DefaultDependencies = false;
-            serviceConfig = {
-              Type = "oneshot";
-              ExecStart = "${config.boot.zfs.package}/bin/zpool import -f -N -d /dev/disk/by-id system";
-              RemainAfterExit = true;
-            };
-          };
-
-          load-system-key = {
-            wantedBy = ["sysroot.mount"];
-            before = ["sysroot.mount"];
-            unitConfig = {
-              RequiresMountsFor = ["/secrets"];
-              DefaultDependencies = false;
-            };
-            serviceConfig = {
-              Type = "oneshot";
-              ExecStart = "${config.boot.zfs.package}/bin/zfs load-key -L file:///secrets/zfs.key system/root";
-              RemainAfterExit = true;
-            };
-          };
-        };
+    autoUnlock = {
+      enable = true;
+      keys = {
+        pool = "system";
+        partition = "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part2";
+        blockDevice = "/dev/zvol/system/secrets";
+        files = {"system/root" = "zfs.key";};
       };
     };
+
+    initrd.availableKernelModules = [
+      "xhci_pci"
+      "ahci"
+      "nvme"
+      "usb_storage"
+      "usbhid"
+      "sd_mod"
+      "sdhci_pci"
+      "igb"
+    ];
     loader = {
       systemd-boot = {
         enable = true;
@@ -74,13 +45,7 @@
     };
   };
 
-  
   fileSystems = {
-    "/mnt/secrets" = {
-      device = "/dev/mapper/secrets";
-      fsType = "ext4";
-      neededForBoot = true;
-    };
     "/boot" = {
       device = "/dev/disk/by-label/boot";
       fsType = "vfat";

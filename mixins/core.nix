@@ -14,6 +14,7 @@
   hostEmailFrom = "${hostName} (${myEmail})";
 in {
   imports = [
+    ../modules/auto-unlock.nix
     ../modules/journal-brief.nix
   ];
 
