@@ -39,8 +39,8 @@ in {
         powerline-fonts
       ];
       font = "ter-powerline-v32n";
-      colors = [
-        "282c34"
+      colors = with config.palette; [
+        background
         "e06c75"
         "98c379"
         "e5c07b"
@@ -49,13 +49,13 @@ in {
         "56b6c2"
         "5c6370"
         "abb2bf"
-        "be5046"
-        "7a9f60"
-        "d19a66"
-        "3b84c0"
-        "9a52af"
+        red
+        green
+        yellow
+        blue
+        magenta
         "3c909b"
-        "abb2bf" # Use white for gray.
+        foreground
       ];
     };
 

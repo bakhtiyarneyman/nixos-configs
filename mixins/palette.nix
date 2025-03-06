@@ -1,4 +1,5 @@
 {lib, ...}: {
+  # `kmscon` supports all of these, so don't introduce new colors here.
   options.palette = {
     black = lib.mkOption {
       type = lib.types.str;
@@ -6,7 +7,7 @@
     };
     background = lib.mkOption {
       type = lib.types.str;
-      default = "282c34";
+      default = "23272e";
     };
     red = lib.mkOption {
       type = lib.types.str;
