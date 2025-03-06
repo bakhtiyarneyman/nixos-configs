@@ -70,11 +70,7 @@
         ]);
       tin = mkSystem "tin" [];
       mercury = mkSystem "mercury" owned;
-      tungsten = mkSystem "tungsten" [
-        ./mixins/always-on.nix
-        ./mixins/untrusted.nix
-        ./mixins/zfs.nix
-      ];
+      tungsten = mkSystem "tungsten" [];
     };
   };
 }

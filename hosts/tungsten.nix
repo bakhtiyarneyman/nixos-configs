@@ -5,6 +5,9 @@
 }: {
   imports = [
     (modulesPath + "/profiles/qemu-guest.nix")
+    ../mixins/always-on.nix
+    ../mixins/untrusted.nix
+    ../mixins/zfs.nix
   ];
 
   boot = {
