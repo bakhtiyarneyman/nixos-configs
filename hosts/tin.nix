@@ -82,10 +82,6 @@
 
   services = {
     tailscale.enable = true;
-    openvscode-server = {
-      enable = true;
-      host = "0.0.0.0";
-    };
     vscode-server = {
       enable = true;
     };
