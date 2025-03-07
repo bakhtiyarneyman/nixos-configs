@@ -33,6 +33,10 @@
       type = lib.types.str;
       default = "9a52af";
     };
+    cyan = lib.mkOption {
+      type = lib.types.str;
+      default = "2aa198";
+    };
     foreground = lib.mkOption {
       type = lib.types.str;
       default = "abb2bf";

@@ -42,21 +42,21 @@ in {
       font = "ter-powerline-v32n";
       colors = with config.palette; [
         background
-        "e06c75"
-        "98c379"
-        "e5c07b"
-        "61afef"
-        "c678dd"
-        "56b6c2"
-        "5c6370"
-        "abb2bf"
         red
         green
         yellow
         blue
         magenta
-        "3c909b"
+        cyan
         foreground
+        black
+        "ff0000"
+        "00ff00"
+        "ffff00"
+        "0000ff"
+        "ff00ff"
+        "00ffff"
+        white
       ];
     };
 
