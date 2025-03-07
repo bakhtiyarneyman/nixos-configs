@@ -36,7 +36,10 @@ in {
           "usbhid"
           "xhci_pci"
         ];
-        network.tailscale.state = "/var/lib/tailscale/tailscaled.state";
+        network.access = {
+          enable = true;
+          tailscaleState = "/var/lib/tailscale/tailscaled.state";
+        };
       };
       kernel.sysctl = {
         "vm.swappiness" = 1;

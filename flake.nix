@@ -45,6 +45,8 @@
           [
             vscode-server.nixosModules.default
             lanzaboote.nixosModules.lanzaboote
+            ./modules/initrd-network-access.nix
+            ./modules/wifi-interface.nix
             ./mixins/core.nix
             ./mixins/palette.nix
             (./hosts/${hostName} + ".nix")

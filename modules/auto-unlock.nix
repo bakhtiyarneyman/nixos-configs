@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   utils,
   ...
 }:
@@ -22,12 +21,12 @@
 # - Has a LUKS device formatted as ext4. On it raw key files.
 #   - Can be generated with `dd if=/dev/urandom bs=32 count=1 of=/mnt/secrets/zfs.key`.
 let
-  cfg = config.boot.autoUnlock;
+  cfg = config.boot.initrd.autoUnlock;
   luksDevice = "auto-unlock-keys";
   mountPoint = "/" + luksDevice;
 in
   with lib; {
-    options.boot.autoUnlock = {
+    options.boot.initrd.autoUnlock = {
       enable = mkEnableOption "Enable TPM2-based automatic decryption of ZFS datasets";
       keys = {
         pool = mkOption {

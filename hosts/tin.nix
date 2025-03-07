@@ -14,28 +14,39 @@
   ];
 
   boot = {
-    autoUnlock = {
-      enable = true;
-      keys = {
-        pool = "system";
-        partition = "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part2";
-        blockDevice = "/dev/zvol/system/secrets";
-        files = {"system/root" = "zfs.key";};
+    initrd = {
+      autoUnlock = {
+        enable = true;
+        keys = {
+          pool = "system";
+          partition = "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part2";
+          blockDevice = "/dev/zvol/system/secrets";
+          files = {"system/root" = "zfs.key";};
+        };
+      };
+
+      availableKernelModules = [
+        "xhci_pci"
+        "ahci"
+        "nvme"
+        "usb_storage"
+        "usbhid"
+        "sd_mod"
+        "sdhci_pci"
+        "igc"
+      ];
+
+      network.access = {
+        enable = true;
+        tailscaleState = "/var/lib/tailscale/tailscaled.state";
       };
     };
 
-    initrd.availableKernelModules = [
-      "xhci_pci"
-      "ahci"
-      "nvme"
-      "usb_storage"
-      "usbhid"
-      "sd_mod"
-      "sdhci_pci"
-      "igb"
-    ];
-    lanzaboote.settings = {
-      console-mode = "max";
+    lanzaboote = {
+      configurationLimit = 10;
+      settings = {
+        console-mode = "max";
+      };
     };
   };
 
