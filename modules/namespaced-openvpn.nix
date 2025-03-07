@@ -89,12 +89,13 @@
       down ${update-resolv-conf}/bin/update-resolv-conf
       fast-io
       remote-random
-      remote 146.70.172.66 1302 # us-lax-ovpn-401
-      remote 146.70.174.2 1302 # us-lax-ovpn-404
-      remote 146.70.172.194 1302 # us-lax-ovpn-403
-      remote 169.150.203.54 1302 # us-lax-ovpn-202
+      remote 198.44.129.162 1302 # us-lax-ovpn-101
+      remote 198.44.129.130 1302 # us-lax-ovpn-102
       remote 169.150.203.41 1302 # us-lax-ovpn-201
+      remote 169.150.203.54 1302 # us-lax-ovpn-202
+      remote 146.70.172.66 1302 # us-lax-ovpn-401
       remote 146.70.172.130 1302 # us-lax-ovpn-402
+      remote 146.70.172.194 1302 # us-lax-ovpn-403
     '';
   in
     lib.mkIf config.services.namespaced-openvpn.enable {
