@@ -7,8 +7,8 @@
     boot.initrd.network.access.unlockOnly = false;
 
     users = {
-      users.root.hashedPassword = "$6$.9aOljbRDW00nl$vRfj6ZVwgWXLTw2Ti/I55ov9nNl6iQAqAuauCiVhoRWIv5txKFIb49FKY0X3dgVqE61rPOqBh8qQSk61P2lZI1";
-      users.bakhtiyar.hashedPassword = "$6$.9aOljbRDW00nl$vRfj6ZVwgWXLTw2Ti/I55ov9nNl6iQAqAuauCiVhoRWIv5txKFIb49FKY0X3dgVqE61rPOqBh8qQSk61P2lZI1";
+      users.root.hashedPassword = "$6$kk14WW519ZVXvG5u$jI0cFAwRdko9K3LnHzMpYTriPLI.d17JCbfmR/QubRpjNlFNj6xUbg8Pv10w.LQRSIZqifGu5JV0uT2R7AaHs/";
+      users.bakhtiyar.hashedPassword = "$6$5TwQDWuZT9WcJ4f7$yWDB9FXONsV4dTcIIf2SY3N.U56lDOL/t.PQPJOF5BmOFCTDyxIdPJeLiuC.u/9Mx6hKGQStuByi/zTh9N2Fc1";
     };
 
     networking = {
