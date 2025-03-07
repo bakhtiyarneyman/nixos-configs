@@ -73,6 +73,11 @@
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   services = {
+    openvpn.servers.mullvad = {
+      config = "config ${../mullvad/mullvad_us_sjc.conf}";
+      updateResolvConf = true;
+    };
+
     tailscale.enable = true;
     vscode-server = {
       enable = true;
