@@ -88,9 +88,5 @@
       preStop = "kill -SIGTERM $MAINPID";
       postStop = "${pkgs.sudo}/bin/sudo ${pkgs.util-linux}/bin/umount -l /home/bakhtiyar/sensitive";
     };
-
-    nix.settings.trusted-public-keys = [
-      "iron-tailscale:Qz1cJrsuEhnOHXU/FDiv0kaEkdq0HI2vIy8qxDLubFw="
-    ];
   };
 }
