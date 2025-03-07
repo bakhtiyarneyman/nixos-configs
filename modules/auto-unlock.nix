@@ -4,7 +4,19 @@
   utils,
   ...
 }:
-# Assumptions about the system:
+# Assumptions about the system.
+# - Secure boot is properly configured.
+#   - NOTE: This probably requires imaging NixOS with a minimal installation, and only then switching to this repo, because I have not tested running `sbctl` from the installer image. Nevertheless, `sbctl` accepts --database-path /mnt/etc/secureboot` flag to redirect to the directory, so might work.
+#   - Instructions:
+#     - Set BIOS password.
+#     - Run `sbctl create-keys --database-path=/etc/secureboot`.
+#     - (When installing) Do a `nixos-install`.
+#     - Run `sbctl verify`.
+#       - When installing do `sbctl verify (fd '.efi' /mnt/boot)`.
+#         - `--database-path` is not supported for `verify`. So probably won't work.
+#     - Reboot into BIOS, enable Secure Boot, and then exit via `Reset to Setup Mode`
+#     - Run `sbctl enroll-keys --microsoft`. Verify that the keys are in the UEFI firmware.
+#     - Reboot and verify via `bootctl status` that Secure Boot is enabled.
 # - Has a TPM 2.0 device.
 # - Has a LUKS device formatted as ext4. On it raw key files.
 #   - Can be generated with `dd if=/dev/urandom bs=32 count=1 of=/mnt/secrets/zfs.key`.
@@ -95,6 +107,13 @@ in
               };
             };
           };
+        };
+
+        # Necessary, because PCR 15 will remain blank unless secure boot is enabled.
+        lanzaboote = {
+          enable = true;
+          # Had to go to `pkgs.sbctl` source to find this. See assumptions above.
+          pkiBundle = "/etc/secureboot";
         };
       };
     };

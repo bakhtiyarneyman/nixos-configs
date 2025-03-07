@@ -7,14 +7,20 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nix-colors.url = "github:misterio77/nix-colors";
+    lanzaboote = {
+      url = "github:nix-community/lanzaboote/v0.4.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Reminder: tend to `always-on.nix` when adding new inputs.
   };
 
-  outputs = inputs @ {
+  outputs = {
     self,
     nixpkgs,
     nixpkgs-unstable,
     nix-colors,
+    vscode-server,
+    lanzaboote,
     ...
   }: let
     system = "x86_64-linux";
@@ -37,7 +43,8 @@
         };
         modules =
           [
-            inputs.vscode-server.nixosModules.default
+            vscode-server.nixosModules.default
+            lanzaboote.nixosModules.lanzaboote
             ./mixins/core.nix
             ./mixins/palette.nix
             (./hosts/${hostName} + ".nix")

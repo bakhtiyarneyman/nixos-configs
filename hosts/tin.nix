@@ -1,9 +1,6 @@
 {
-  config,
   lib,
-  pkgs,
   modulesPath,
-  utils,
   ...
 }: {
   imports = [
@@ -37,11 +34,8 @@
       "sdhci_pci"
       "igb"
     ];
-    loader = {
-      systemd-boot = {
-        enable = true;
-        consoleMode = "max";
-      };
+    lanzaboote.settings = {
+      console-mode = "max";
     };
   };
 
