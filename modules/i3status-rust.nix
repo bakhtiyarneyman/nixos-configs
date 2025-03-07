@@ -213,7 +213,7 @@ in {
 
     i3status-rust = pkgs.symlinkJoin {
       name = "i3status-rust";
-      paths = [pkgs.i3status-rust];
+      paths = [(pkgs.unstable.i3status-rust.override {withNotmuch = false;})];
       buildInputs = [pkgs.makeWrapper];
       postBuild = ''
         wrapProgram $out/bin/i3status-rs \
