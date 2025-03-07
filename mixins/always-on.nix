@@ -2,11 +2,16 @@
   config.system.autoUpgrade = {
     enable = true;
     flags = [
-      "--update-input=nixpkgs"
-      "--update-input=nixpkgs-unstable"
-      "--update-input=vscode-server"
-      "--update-input=nix-colors"
-      "--update-input=lanzaboote"
+      "--update-input"
+      "nixpkgs"
+      "--update-input"
+      "nixpkgs-unstable"
+      "--update-input"
+      "vscode-server"
+      "--update-input"
+      "nix-colors"
+      "--update-input"
+      "lanzaboote"
     ];
     flake = "/etc/nixos";
     allowReboot = true;
