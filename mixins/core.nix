@@ -387,7 +387,7 @@ in {
       package = pkgs.unstable.nix;
       settings = {
         trusted-public-keys = [
-          "iron:Qz1cJrsuEhnOHXU/FDiv0kaEkdq0HI2vIy8qxDLubFw="
+          "iron:OaC7pyOu4UcI9Fgp4Go1d5Qo2dChSjr0bTuCJqfgirc="
         ];
         trusted-users = ["root" "bakhtiyar"];
       };
