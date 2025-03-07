@@ -47,8 +47,8 @@
             lanzaboote.nixosModules.lanzaboote
             ./modules/initrd-network-access.nix
             ./modules/wifi-interface.nix
+            ./modules/palette.nix
             ./mixins/core.nix
-            ./mixins/palette.nix
             (./hosts/${hostName} + ".nix")
             {
               nix.registry = {
