@@ -20,5 +20,7 @@ in {
         PCIE_ASPM_ON_BAT = "powersupersave";
       };
     };
+
+    upower.enable = true;
   };
 }
