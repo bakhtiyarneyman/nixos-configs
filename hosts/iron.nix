@@ -488,9 +488,12 @@ in {
     # should.
     system = {
       stateVersion = "22.11";
-      autoUpgrade.flags = [
-        "--commit-lock-file"
-      ];
+      autoUpgrade = {
+        dates = "3:40"; # An hour before the default, so that other machines can use this one as a cache.
+        flags = [
+          "--commit-lock-file"
+        ];
+      };
     };
 
     users.users.bakhtiyar.uid = 1000;
