@@ -3,7 +3,7 @@
     programs.ssh.startAgent = true;
 
     security.pam = {
-      enableSSHAgentAuth = true;
+      sshAgentAuth.enable = true;
       services = {
         sudo.sshAgentAuth = true;
       };
