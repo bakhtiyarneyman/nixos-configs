@@ -1,10 +1,12 @@
 {
   config,
   lib,
+  pkgs,
   utils,
   ...
 }:
 # Assumptions about the system.
+# - Has a TPM 2.0 device. (`bootctl status`)
 # - Secure boot is properly configured.
 #   - NOTE: This probably requires imaging NixOS with a minimal installation, and only then switching to this repo, because I have not tested running `sbctl` from the installer image. Nevertheless, `sbctl` accepts --database-path /mnt/etc/secureboot` flag to redirect to the directory, so might work.
 #   - Instructions:
@@ -17,7 +19,6 @@
 #     - Reboot into BIOS, enable Secure Boot, and then exit via `Reset to Setup Mode`
 #     - Run `sbctl enroll-keys --microsoft`. Verify that the keys are in the UEFI firmware.
 #     - Reboot and verify via `bootctl status` that Secure Boot is enabled.
-# - Has a TPM 2.0 device.
 # - Has a LUKS device formatted as ext4. On it raw key files.
 #   - Can be generated with `dd if=/dev/urandom bs=32 count=1 of=/mnt/secrets/zfs.key`.
 let
@@ -65,7 +66,9 @@ in
               "tpm2-measure-pcr=yes"
             ];
           };
-          systemd = {
+          systemd = let
+            zfs = config.boot.zfs.package;
+          in {
             enable = true;
             contents = {
               "/etc/fstab".text = ''
@@ -84,13 +87,13 @@ in
                 unitConfig.DefaultDependencies = false;
                 serviceConfig = {
                   Type = "oneshot";
-                  ExecStart = "${config.boot.zfs.package}/bin/zpool import -f -N -d /dev/disk/by-id ${cfg.keys.pool}";
+                  ExecStart = "${zfs}/bin/zpool import -f -N -d /dev/disk/by-id ${cfg.keys.pool}";
                   RemainAfterExit = true;
                 };
               };
 
               load-system-key = {
-                wantedBy = ["sysroot.mount"];
+                requiredBy = ["sysroot.mount"];
                 before = ["sysroot.mount"];
                 unitConfig = {
                   RequiresMountsFor = [mountPoint];
@@ -100,9 +103,16 @@ in
                   Type = "oneshot";
                   RemainAfterExit = true;
                   ExecStart = let
-                    loadKey = dataset: key: "${config.boot.zfs.package}/bin/zfs load-key -L file://${mountPoint}/${key} ${dataset}";
+                    # `-a` flag doesn't work with key location supplied via `-L`, so we iterate over all datasets.
+                    loadKey = dataset: key: "${zfs}/bin/zfs load-key -L file://${mountPoint}/${key} ${dataset}";
                   in
-                    builtins.attrValues (builtins.mapAttrs loadKey cfg.keys.files);
+                    # Load the keys for all datasets.
+                    builtins.attrValues (builtins.mapAttrs loadKey cfg.keys.files)
+                    # Ensure that the key volume can't be mounted again.
+                    ++ [
+                      "/bin/umount -l ${mountPoint}"
+                      "${config.boot.initrd.systemd.package}/bin/systemd-cryptsetup detach ${luksDevice}"
+                    ];
                 };
               };
             };
