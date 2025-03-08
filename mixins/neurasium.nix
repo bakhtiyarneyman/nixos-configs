@@ -67,7 +67,7 @@ in {
             logRefusedConnections = true;
             checkReversePath = "loose";
           };
-          machineName = "${machineName}-${containerName}";
+          hostName = "${machineName}-${containerName}";
         };
 
         nix = {
