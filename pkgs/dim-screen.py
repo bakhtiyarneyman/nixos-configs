@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument('--dim-seconds', type=int, default=10, help='Time in seconds to dim the screen')
 parser.add_argument('--dim-step-seconds', type=float, default=0.25, help='Time in seconds to wait between each step')
 parser.add_argument('--min-brightness-percents', type=int, default=1, help='Minimum brightness in percents')
-parser.add_argument('--hibernate', type=bool, default='False', help='Invoke `suspend-then-hibernate` on battery discharge, instead of `suspend`')
+parser.add_argument('--hibernate', action='store_true', help='Invoke `suspend-then-hibernate` on battery discharge, instead of `suspend`')
 
 args = parser.parse_args()
 
