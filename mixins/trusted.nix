@@ -4,7 +4,7 @@
   ];
 
   config = {
-    boot.initrd.network.access.unlockOnly = false;
+    boot.initrd.network.access.unlockOnly = true;
 
     users = {
       users.root.hashedPassword = "$6$kk14WW519ZVXvG5u$jI0cFAwRdko9K3LnHzMpYTriPLI.d17JCbfmR/QubRpjNlFNj6xUbg8Pv10w.LQRSIZqifGu5JV0uT2R7AaHs/";
