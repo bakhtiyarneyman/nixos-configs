@@ -1,8 +1,11 @@
 {
   lib,
   modulesPath,
+  pkgs,
   ...
-}: {
+}: let
+  qbittorrent = pkgs.qbittorrent {useGui = false;};
+in {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
     ../mixins/always-on.nix
@@ -49,6 +52,10 @@
       };
     };
   };
+
+  environment.systemPackages = [
+    qbittorrent
+  ];
 
   fileSystems = {
     "/boot" = {

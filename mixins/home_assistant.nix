@@ -1,6 +1,6 @@
 {
   pkgs,
-  hostName,
+  machineName,
   ...
 }: {
   config = {
@@ -53,8 +53,8 @@
           automation = "!include automations.yaml";
           scene = "!include scenes.yaml";
           http = {
-            ssl_certificate = "/etc/nixos/secrets/${hostName}.orkhon-mohs.ts.net.crt";
-            ssl_key = "/etc/nixos/secrets/${hostName}.orkhon-mohs.ts.net.key";
+            ssl_certificate = "/etc/nixos/secrets/${machineName}.orkhon-mohs.ts.net.crt";
+            ssl_key = "/etc/nixos/secrets/${machineName}.orkhon-mohs.ts.net.key";
           };
           logger.logs = {
             "custom_components.extended_openai_conversation" = "info";

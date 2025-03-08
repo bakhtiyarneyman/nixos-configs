@@ -1,5 +1,5 @@
 {
-  hostName,
+  machineName,
   lib,
   pkgs,
   ...
@@ -67,7 +67,7 @@ in {
             logRefusedConnections = true;
             checkReversePath = "loose";
           };
-          hostName = "${hostName}-${containerName}";
+          machineName = "${machineName}-${containerName}";
         };
 
         nix = {
@@ -90,7 +90,7 @@ in {
         services = {
           gerrit = {
             enable = false;
-            serverId = "${hostName}-${containerName}";
+            serverId = "${machineName}-${containerName}";
             listenAddress = "[::]:8081";
           };
 

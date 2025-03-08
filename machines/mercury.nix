@@ -1,7 +1,10 @@
 {pkgs, ...}: {
   imports = [
+    ../mixins/bare-metal.nix
     ../mixins/gui.nix
     ../mixins/intel.nix
+    ../mixins/on-battery.nix
+    ../mixins/trusted.nix
   ];
 
   config = {

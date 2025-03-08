@@ -6,12 +6,13 @@
   pkgs,
   lib,
   nix-colors,
-  hostName,
+  machineName,
+  machines,
   ...
 }: let
   atGmail = address: "${address}@gmail.com";
   myEmail = atGmail "bakhtiyarneyman";
-  hostEmailFrom = "${hostName} (${myEmail})";
+  hostEmailFrom = "${machineName} (${myEmail})";
 in {
   imports = [
     ../modules/auto-unlock.nix
@@ -146,7 +147,7 @@ in {
     };
 
     networking = {
-      inherit hostName;
+      hostName = machineName;
       networkmanager.enable = true;
       firewall = {
         enable = true;
@@ -293,6 +294,8 @@ in {
     };
 
     programs = {
+      direnv.enable = true;
+
       fish = {
         enable = true;
         interactiveShellInit = with pkgs; let
@@ -317,8 +320,6 @@ in {
           '';
       };
 
-      direnv.enable = true;
-
       git = {
         enable = true;
         config = {
@@ -339,6 +340,15 @@ in {
         lfs.enable = true;
         package = pkgs.gitFull;
       };
+
+      ssh.extraConfig = let
+        toHost = host: _config: ''
+          Host ${host} ${host}.orkhon-mohs.ts.net
+            HostName ${host}
+            ForwardAgent yes
+        '';
+      in
+        builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines));
 
       msmtp = {
         enable = true;

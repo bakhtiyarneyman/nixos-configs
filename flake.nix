@@ -30,49 +30,46 @@
         config.allowUnfree = true;
       };
     };
-    mkSystem = hostName: extraModules:
-      nixpkgs.lib.nixosSystem {
+    machineNames = [
+      "iron"
+      "mercury"
+      "tin"
+      "tungsten"
+    ];
+    mkSystem = machineName: {
+      name = machineName;
+      value = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
-          inherit hostName;
+          inherit machineName;
+          inherit machines;
           yubikeys = [
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIG1XG551t2Yb8ryQ/lGRJXhfnWwz3B/MmOjMoz7x3G9iAAAABHNzaDo= blue"
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICDUZrPTStLzzGeHC+c81L4u1B47CwOW3N3HRfM/2tzvAAAABHNzaDo= green"
           ];
           inherit nix-colors;
         };
-        modules =
-          [
-            vscode-server.nixosModules.default
-            lanzaboote.nixosModules.lanzaboote
-            ./modules/initrd-network-access.nix
-            ./modules/wifi-interface.nix
-            ./modules/palette.nix
-            ./mixins/core.nix
-            (./hosts/${hostName} + ".nix")
-            {
-              nix.registry = {
-                nixpkgs.flake = nixpkgs;
-                nixpkgs-unstable.flake = nixpkgs-unstable;
-              };
-              nixpkgs.overlays = [overlay-unstable];
-              system.configurationRevision = self.rev or "dirty";
-            }
-          ]
-          ++ extraModules;
+        modules = [
+          vscode-server.nixosModules.default
+          lanzaboote.nixosModules.lanzaboote
+          ./modules/initrd-network-access.nix
+          ./modules/wifi-interface.nix
+          ./modules/palette.nix
+          ./mixins/core.nix
+          (./machines/${machineName} + ".nix")
+          {
+            nix.registry = {
+              nixpkgs.flake = nixpkgs;
+              nixpkgs-unstable.flake = nixpkgs-unstable;
+            };
+            nixpkgs.overlays = [overlay-unstable];
+            system.configurationRevision = self.rev or "dirty";
+          }
+        ];
       };
-  in {
-    nixosConfigurations = let
-      owned = [
-        ./mixins/bare-metal.nix
-        ./mixins/on-battery.nix
-        ./mixins/trusted.nix
-      ];
-    in {
-      iron = mkSystem "iron" owned;
-      mercury = mkSystem "mercury" owned;
-      tin = mkSystem "tin" [];
-      tungsten = mkSystem "tungsten" [];
     };
+    machines = builtins.listToAttrs (map mkSystem machineNames);
+  in {
+    nixosConfigurations = machines;
   };
 }
