@@ -228,30 +228,6 @@ in {
         };
       };
 
-      kmscon = {
-        enable = true;
-        extraConfig = let
-          toColor = name: hex: "palette-${name}=${nix-colors.lib.conversions.hexToRGBString ", " hex}";
-          colors = builtins.concatStringsSep "\n" (
-            builtins.attrValues (builtins.mapAttrs toColor config.palette)
-          );
-        in ''
-          font-size=32
-          palette=custom
-          ${colors}
-        '';
-        fonts = [
-          {
-            name = "Fira Mono for Powerline";
-            package = pkgs.fira;
-          }
-          {
-            name = "Font Awesome 6 Free";
-            package = pkgs.font-awesome_6;
-          }
-        ];
-      };
-
       avahi = {
         enable = true;
         # Important to resolve .local domains of printers, otherwise you get an error
