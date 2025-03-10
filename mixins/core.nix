@@ -89,7 +89,6 @@ in {
         # Utilities
         wget
         lnav
-        neovim
         mkpasswd
         file
         unzip
@@ -309,15 +308,6 @@ in {
         package = pkgs.gitFull;
       };
 
-      ssh.extraConfig = let
-        toHost = host: _config: ''
-          Host ${host} ${host}.orkhon-mohs.ts.net
-            HostName ${host}
-            ForwardAgent yes
-        '';
-      in
-        builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines));
-
       msmtp = {
         enable = true;
         setSendmail = true;
@@ -343,6 +333,21 @@ in {
         enable = true;
         package = pkgs.nix-ld-rs;
       };
+
+      neovim = {
+        enable = true;
+        defaultEditor = true;
+        viAlias = true;
+      };
+
+      ssh.extraConfig = let
+        toHost = host: _config: ''
+          Host ${host} ${host}.orkhon-mohs.ts.net
+            HostName ${host}
+            ForwardAgent yes
+        '';
+      in
+        builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines));
 
       wireshark.enable = true;
     };
