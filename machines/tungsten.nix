@@ -103,5 +103,6 @@
 
   users.users.root.openssh.authorizedKeys.keys = [
     ''command="zrepl stdinserver iron",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJEhmdQV/OLmYQFKIMCs17JssVqPlkaQCSTmwyhkhqVo''
+    ''command="zrepl stdinserver tin",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGsCjGJ3jpYghhtc8u4Rjj+ZNufbpGlJi5C5cEp1wavs''
   ];
 }
