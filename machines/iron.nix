@@ -61,7 +61,6 @@ in {
         in
           map toBoot coreDiskIds;
       };
-      zfs.extraPools = ["slow"];
     };
 
     environment = {
@@ -371,8 +370,6 @@ in {
                 "fast/nixos/etc-nixos<" = true;
                 "fast/nixos/home<" = true;
                 "fast/nixos/home/bakhtiyar/dump<" = false;
-                "slow/root/home/bakhtiyar<" = true;
-                "slow/root/home/bakhtiyar/entertainment/video<" = false;
               };
               send = {
                 bandwidth_limit.max = "500 KiB";
@@ -392,7 +389,6 @@ in {
               filesystems = {
                 "fast/nixos/var<" = true;
                 "fast/nixos/home/bakhtiyar/dump<" = true;
-                "slow/root/home/bakhtiyar/entertainment/video<" = true;
               };
               inherit snapshotting;
               pruning = {
