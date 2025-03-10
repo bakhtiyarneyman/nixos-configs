@@ -5,7 +5,6 @@
   config,
   pkgs,
   lib,
-  nix-colors,
   machineName,
   machines,
   ...

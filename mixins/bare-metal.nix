@@ -1,5 +1,6 @@
 {
   config,
+  nix-colors,
   pkgs,
   ...
 }: {
