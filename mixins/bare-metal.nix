@@ -25,6 +25,16 @@
     };
 
     services = {
+      fwupd.enable = true;
+
+      logind = {
+        powerKey =
+          if builtins.elem "nohibernate" config.boot.kernelParams
+          then "suspend"
+          else "suspend-then-hibernate";
+        powerKeyLongPress = "poweroff";
+      };
+
       smartd = {
         enable = true;
         extraOptions = [
@@ -32,8 +42,6 @@
           "--interval=3600"
         ];
       };
-
-      fwupd.enable = true;
     };
   };
 }

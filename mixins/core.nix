@@ -252,14 +252,6 @@ in {
         ];
       };
 
-      logind = {
-        powerKey =
-          if builtins.elem "nohibernate" config.boot.kernelParams
-          then "suspend"
-          else "suspend-then-hibernate";
-        powerKeyLongPress = "poweroff";
-      };
-
       avahi = {
         enable = true;
         # Important to resolve .local domains of printers, otherwise you get an error
