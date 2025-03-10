@@ -14,6 +14,31 @@
       loader.systemd-boot.memtest86.enable = true;
     };
 
+    console = {
+      packages = with pkgs; [
+        powerline-fonts
+      ];
+      font = "ter-powerline-v32n";
+      colors = with config.palette; [
+        background
+        red
+        green
+        yellow
+        blue
+        magenta
+        cyan
+        foreground
+        black
+        "ff0000"
+        "00ff00"
+        "ffff00"
+        "0000ff"
+        "ff00ff"
+        "00ffff"
+        white
+      ];
+    };
+
     environment.systemPackages = with pkgs; [
       powertop
       sbctl

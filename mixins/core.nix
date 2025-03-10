@@ -35,31 +35,6 @@ in {
     #   };
     # };
 
-    console = {
-      packages = with pkgs; [
-        powerline-fonts
-      ];
-      font = "ter-powerline-v32n";
-      colors = with config.palette; [
-        background
-        red
-        green
-        yellow
-        blue
-        magenta
-        cyan
-        foreground
-        black
-        "ff0000"
-        "00ff00"
-        "ffff00"
-        "0000ff"
-        "ff00ff"
-        "00ffff"
-        white
-      ];
-    };
-
     # This workaround is necessary even if service.localtime is enabled.
     time.timeZone = "America/Los_Angeles";
 
