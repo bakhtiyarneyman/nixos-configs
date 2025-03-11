@@ -108,6 +108,8 @@ in {
       config = "config ${../mullvad/mullvad_us_sjc.conf}";
       updateResolvConf = true;
     };
+    radarr.enable = true;
+    sonarr.enable = true;
     tailscale.enable = true;
     vscode-server.enable = true;
     zrepl = {
@@ -204,8 +206,10 @@ in {
     };
     groups = {
       qbittorrent = {};
-      entertainment.members = [
-        config.services.jellyfin.user
+      entertainment.members = map (service: "config.services.${service}.user") [
+        "jellyfin"
+        "radarr"
+        "sonarr"
       ];
     };
   };
