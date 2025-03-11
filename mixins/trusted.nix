@@ -46,21 +46,6 @@
     };
 
     services = {
-      openssh.knownHosts = {
-        iron = {
-          hostNames = ["iron-tailscale"];
-          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOeAfprNGrQ2RfrDT81UxfTD/GfnOwz8gPzGppNiTw40";
-        };
-        iron-initrd = {
-          hostNames = ["iron-initrd"];
-          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJZsOTJo1rw8XwP0ErdkXlRnGY5A6C7NtO93IXht2lNT";
-        };
-        mercury = {
-          hostNames = ["mercury-tailscale"];
-          publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKSyMQogWih9Tk8cpckwxP6CLzJxZqtg+qdFbXYbF9Sc";
-        };
-      };
-
       tailscale.enable = true;
       i2p.enable = true;
       namespaced-openvpn.enable = true;

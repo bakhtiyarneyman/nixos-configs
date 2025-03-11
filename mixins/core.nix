@@ -314,14 +314,35 @@ in {
         viAlias = true;
       };
 
-      ssh.extraConfig = let
-        toHost = host: _config: ''
-          Host ${host} ${host}.orkhon-mohs.ts.net
-            HostName ${host}
-            ForwardAgent yes
-        '';
-      in
-        builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines));
+      ssh = {
+        knownHosts = {
+          iron = {
+            hostNames = ["iron-tailscale"];
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOeAfprNGrQ2RfrDT81UxfTD/GfnOwz8gPzGppNiTw40";
+          };
+          iron-initrd = {
+            hostNames = ["iron-initrd"];
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJZsOTJo1rw8XwP0ErdkXlRnGY5A6C7NtO93IXht2lNT";
+          };
+          mercury = {
+            hostNames = ["mercury-tailscale"];
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKSyMQogWih9Tk8cpckwxP6CLzJxZqtg+qdFbXYbF9Sc";
+          };
+          tin.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHYdHpGj0w2iRMKgyDSmJuk7oEJHQHWMOavKMyrB/uQB";
+          tungsten = {
+            hostNames = ["bakhtiyar.zfs.rent"];
+            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFWtgyWNQ//nFGPEwdsUizf08UOL+EtFnergd2HgAkqy";
+          };
+        };
+        extraConfig = let
+          toHost = host: _config: ''
+            Host ${host} ${host}.orkhon-mohs.ts.net
+              HostName ${host}
+              ForwardAgent yes
+          '';
+        in
+          builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines));
+      };
 
       wireshark.enable = true;
     };
