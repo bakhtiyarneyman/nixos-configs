@@ -5,6 +5,13 @@
   ...
 }: let
   qbittorrent = pkgs.qbittorrent.override {guiSupport = false;};
+  sataDiskIds = [
+    "ata-SanDisk_Ultra_II_960GB_160401800296"
+    "ata-SanDisk_Ultra_II_960GB_160401800948"
+  ];
+  toDevice = id: "/dev/disk/by-id/${id}";
+  toPartitionId = diskId: partition: "${diskId}-part${toString partition}";
+  bootPartition = 1;
 in {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
@@ -21,10 +28,8 @@ in {
       autoUnlock = {
         enable = true;
         keys = {
-          pool = "system";
-          partition = "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part2";
-          blockDevice = "/dev/zvol/system/secrets";
-          files = {"system/root" = "zfs.key";};
+          pool = "slow";
+          blockDevice = "/dev/zvol/slow/auto-unlock-keys";
         };
       };
 
@@ -59,12 +64,13 @@ in {
 
   fileSystems = {
     "/boot" = {
-      device = "/dev/disk/by-label/boot";
+      device = toDevice (toPartitionId (builtins.head sataDiskIds) bootPartition);
       fsType = "vfat";
     };
     "/" = {
-      device = "system/root";
+      device = "slow/crypt";
       fsType = "zfs";
+      options = ["zfsutil"];
     };
   };
 
@@ -84,19 +90,66 @@ in {
       config = "config ${../mullvad/mullvad_us_sjc.conf}";
       updateResolvConf = true;
     };
-
     tailscale.enable = true;
-    vscode-server = {
-      enable = true;
-    };
+    vscode-server.enable = true;
     zrepl = {
       settings = {
-        jobs = [
+        jobs = let
+          makeGrid = grid: [
+            {
+              type = "grid";
+              inherit grid;
+              regex = "^zrepl_.*";
+            }
+            {
+              type = "regex";
+              negate = true;
+              regex = "^zrepl_.*";
+            }
+          ];
+          snapshotting = {
+            type = "periodic";
+            interval = "10m";
+            prefix = "zrepl_";
+            timestamp_format = "iso-8601";
+          };
+        in [
+          {
+            type = "push";
+            name = "push";
+            connect = {
+              type = "ssh+stdinserver";
+              host = "bakhtiyar.zfs.rent";
+              user = "root";
+              port = 22;
+              identity_file = "/etc/nixos/secrets/zrepl";
+              options = ["IdentitiesOnly=yes"];
+            };
+            filesystems = {
+              "slow/crypt/etc/nixos/secrets<" = true;
+              "slow/crypt/home/bakhtiyar<" = true;
+              "slow/crypt/entertainment<" = true;
+              "slow/crypt/entertainment/video<" = false;
+              "slow/crypt/var/lib/hass<" = true;
+              "slow/crypt/var/lib/hass/tts" = false;
+            };
+            send = {
+              bandwidth_limit.max = "500 KiB";
+              encrypted = true;
+            };
+            inherit snapshotting;
+            pruning = let
+              keptLong = makeGrid "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
+            in {
+              keep_sender = [{type = "not_replicated";}] ++ keptLong;
+              keep_receiver = keptLong;
+            };
+          }
           {
             type = "snap";
             name = "snap";
             filesystems = {
-              "system/root/var/lib" = true;
+              "slow/crypt/var/lib" = true;
             };
             snapshotting = {
               type = "periodic";
@@ -104,20 +157,18 @@ in {
               prefix = "zrepl_";
               timestamp_format = "iso-8601";
             };
-            pruning = {
-              keep = [
-                {
-                  type = "grid";
-                  grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
-                  regex = "^zrepl_.*";
-                }
-                {
-                  type = "regex";
-                  negate = true;
-                  regex = "^zrepl_.*";
-                }
-              ];
-            };
+            pruning.keep = [
+              {
+                type = "grid";
+                grid = "1x1h(keep=all) | 23x1h | 6x1d | 3x1w | 12x4w | 4x365d";
+                regex = "^zrepl_.*";
+              }
+              {
+                type = "regex";
+                negate = true;
+                regex = "^zrepl_.*";
+              }
+            ];
           }
         ];
       };

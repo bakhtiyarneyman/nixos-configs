@@ -1,7 +1,7 @@
 {
   config,
   lib,
-  utils,
+  pkgs,
   ...
 }:
 # Assumptions about the system.
@@ -32,23 +32,12 @@ in
         pool = mkOption {
           type = with types; str;
           example = "system";
-          description = "The name of the encrypted ZFS pool";
-        };
-        partition = mkOption {
-          # TODO: waiting for N devices out of a list.
-          type = with types; str;
-          example = "/dev/disk/by-id/foo-part3";
-          description = "The names of the partition backing the encrypted pool";
+          description = "The name of the ZFS pool with the key for all datasets. Datasets on it will be unlocked automatically.";
         };
         blockDevice = mkOption {
           type = with types; str;
           example = "/dev/zvol/system/keys";
           description = "The name of the LUKS device";
-        };
-        files = mkOption {
-          type = with types; attrsOf str;
-          example = {"system/secrets" = "zfs.key";};
-          description = "Path to the raw key the keys filesystem for each encryption root";
         };
       };
     };
@@ -66,7 +55,18 @@ in
             ];
           };
           systemd = let
-            zfs = config.boot.zfs.package;
+            zfsCfg = config.boot.zfs;
+            zfs = zfsCfg.package;
+            datasetToPool = x: lib.elemAt (lib.splitString "/" x) 0;
+            fsToPool = fs: datasetToPool fs.device;
+            zfsFilesystems = lib.filter (x: x.fsType == "zfs") config.system.build.fileSystems;
+            allPools = lib.unique ((map fsToPool zfsFilesystems) ++ zfsCfg.extraPools);
+            delayImport = pool: {
+              name = "zfs-import-${pool}";
+              value = {
+                unitConfig.RequiresMountsFor = [mountPoint];
+              };
+            };
           in {
             enable = true;
             contents = {
@@ -74,47 +74,72 @@ in
                 /dev/mapper/${luksDevice} ${mountPoint} ext4 defaults,nofail,x-systemd.device-timeout=0,ro 0 2
               '';
             };
-            services = {
-              "zfs-import-${cfg.keys.pool}".enable = false;
+            services =
+              builtins.listToAttrs (map delayImport allPools)
+              // {
+                import-auto-unlock-key-pool = let
+                  # TODO: waiting for N devices out of a list.
+                  pool = cfg.keys.pool;
+                  zpoolCmd = "${zfs}/sbin/zpool";
+                  awkCmd = "${pkgs.gawk}/bin/awk";
+                  devNodes = "/dev/disk/by-id";
+                  timeoutSecs = 5;
+                in {
+                  requiredBy = ["zfs-import-${pool}.service"];
+                  before = ["zfs-import-${pool}.service"];
+                  unitConfig.DefaultDependencies = false;
+                  serviceConfig = {
+                    Type = "oneshot";
+                    RemainAfterExit = true;
+                  };
+                  script = ''
+                    poolReady() {
+                      state="$("${zpoolCmd}" import -d "${devNodes}" 2>/dev/null | "${awkCmd}" "/pool: ${pool}/ { found = 1 }; /state:/ { if (found == 1) { print \$2; exit } }; END { if (found == 0) { print \"MISSING\" } }")"
+                      if [[ "$state" = "ONLINE" ]]; then
+                        return 0
+                      else
+                        echo "Pool ${pool} in state $state, waiting"
+                        return 1
+                      fi
+                    }
+                    poolImported() {
+                      "${zpoolCmd}" list ${pool} >/dev/null 2>/dev/null
+                    }
+                    poolImport() {
+                      # shellcheck disable=SC2086
+                      "${zpoolCmd}" import -d "${devNodes}" -N -f ${pool}
+                    }
 
-              import-auto-unlock-key-pool = let
-                device = "${utils.escapeSystemdPath cfg.keys.partition}.device";
-              in {
-                requiredBy = ["load-system-key.service"];
-                after = [device];
-                bindsTo = [device];
-                unitConfig.DefaultDependencies = false;
-                serviceConfig = {
-                  Type = "oneshot";
-                  ExecStart = "${zfs}/bin/zpool import -f -N -d /dev/disk/by-id ${cfg.keys.pool}";
-                  RemainAfterExit = true;
+                    if ! poolImported; then
+                      echo -n "importing ZFS pool \"${pool}\"..."
+                      # Loop across the import until it succeeds, because the devices needed may not be discovered yet.
+                      for _ in $(seq 1 ${toString timeoutSecs}); do
+                        poolReady && poolImport && break
+                        sleep 1
+                      done
+                      poolImported || poolImport  # Try one last time, e.g. to import a degraded pool.
+                    fi
+                  '';
                 };
-              };
 
-              load-system-key = {
-                requiredBy = ["sysroot.mount"];
-                before = ["sysroot.mount"];
-                unitConfig = {
-                  RequiresMountsFor = [mountPoint];
-                  DefaultDependencies = false;
-                };
-                serviceConfig = {
-                  Type = "oneshot";
-                  RemainAfterExit = true;
-                  ExecStart = let
-                    # `-a` flag doesn't work with key location supplied via `-L`, so we iterate over all datasets.
-                    loadKey = dataset: key: "${zfs}/bin/zfs load-key -L file://${mountPoint}/${key} ${dataset}";
-                  in
-                    # Load the keys for all datasets.
-                    builtins.attrValues (builtins.mapAttrs loadKey cfg.keys.files)
-                    # Ensure that the key volume can't be mounted again.
-                    ++ [
+                # Ensure that the key volume can't be mounted again.
+                relock-auto-unlock-key-pool = {
+                  after = ["zfs-import.target"];
+                  before = ["sysroot.mount"];
+                  requiredBy = ["sysroot.mount"];
+                  unitConfig = {
+                    DefaultDependencies = false;
+                  };
+                  serviceConfig = {
+                    Type = "oneshot";
+                    RemainAfterExit = true;
+                    ExecStart = [
                       "/bin/umount -l ${mountPoint}"
                       "${config.boot.initrd.systemd.package}/bin/systemd-cryptsetup detach ${luksDevice}"
                     ];
+                  };
                 };
               };
-            };
           };
         };
 
