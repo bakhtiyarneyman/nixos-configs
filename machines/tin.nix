@@ -193,9 +193,34 @@ in {
     };
   };
 
-  users.groups.entertainment.members = [
-    config.services.jellyfin.user
-  ];
+  users = {
+    users = {
+      qbittorrent = {
+        isSystemUser = true;
+        home = "/var/lib/qbittorrent";
+        group = "qbittorrent";
+        createHome = true;
+      };
+    };
+    groups = {
+      qbittorrent = {};
+      entertainment.members = [
+        config.services.jellyfin.user
+      ];
+    };
+  };
 
   system.stateVersion = "24.11";
+
+  systemd.services.qbittorrent = {
+    wantedBy = ["multi-user.target"];
+    after = ["network-online.target"];
+    serviceConfig = {
+      ExecStart = "${qbittorrent}/bin/qbittorrent-nox";
+      Restart = "always";
+      RestartSec = "5";
+      User = "qbittorrent";
+      Group = "qbittorrent";
+    };
+  };
 }
