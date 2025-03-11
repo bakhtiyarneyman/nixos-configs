@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  qbittorrent = pkgs.qbittorrent {useGui = false;};
+  qbittorrent = pkgs.qbittorrent.override {guiSupport = false;};
 in {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
