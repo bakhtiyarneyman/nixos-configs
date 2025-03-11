@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   modulesPath,
   pkgs,
@@ -72,13 +73,19 @@ in {
       fsType = "zfs";
       options = ["zfsutil"];
     };
+    # The following are not strictly needed for booting, but that's currently the only way to ensure that the pool is imported and unlocked in the initrd, which is necessary because that's the only time auto-unlock may happen. The implication is that if this data pool dies or gets removed, the system will go to rescue mode. Bad.
+    #
+    # Ideally upstream would expose something like `boot.initrd.zfs.unlockedPools` which is like `neededForBoot` but only for importing and unlocking.
     "/entertainment" = {
       device = "fast/crypt/entertainment";
       fsType = "zfs";
       options = ["zfsutil"];
-      # It's not strictly needed for booting, but that's currently the only way to ensure that the pool is imported and unlocked in the initrd, which is necessary because that's the only time auto-unlock may happen. The implication is that if this data pool dies or gets removed, the system will go to rescue mode. Bad.
-      #
-      # Ideally upstream would expose something like `boot.initrd.zfs.unlockedPools` which is like `neededForBoot` but only for importing and unlocking.
+      neededForBoot = true;
+    };
+    "/scratchpad" = {
+      device = "fast/crypt/scratchpad";
+      fsType = "zfs";
+      options = ["zfsutil"];
       neededForBoot = true;
     };
   };
@@ -95,6 +102,8 @@ in {
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   services = {
+    jellyfin.enable = true;
+    jellyseerr.enable = true;
     openvpn.servers.mullvad = {
       config = "config ${../mullvad/mullvad_us_sjc.conf}";
       updateResolvConf = true;
@@ -183,6 +192,10 @@ in {
       };
     };
   };
+
+  users.groups.entertainment.members = [
+    config.services.jellyfin.user
+  ];
 
   system.stateVersion = "24.11";
 }
