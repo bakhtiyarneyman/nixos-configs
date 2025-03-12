@@ -210,7 +210,7 @@ in {
       };
 
       journald.extraConfig = ''
-        SystemMaxUse=50M
+        SystemMaxUse=512M
       '';
 
       iperf3.enable = true;
