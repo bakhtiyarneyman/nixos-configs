@@ -14,6 +14,7 @@
         # Tiger Lake and Alder Lake are both supported by non-legacy runtime and vpl-gpu-rt.
         intel-compute-runtime
         vpl-gpu-rt
+        libvdpau-va-gl # VDPAU frontend for VA-API backend.
       ];
     };
 

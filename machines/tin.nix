@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   modulesPath,
   pkgs,
   ...
@@ -100,10 +99,8 @@ in {
     };
   };
 
-  hardware = {
-    graphics = {
-      enable = true;
-    };
+  hardware.graphics = {
+    enable = true;
   };
   networking = {
     hostId = "3b777fc4";
