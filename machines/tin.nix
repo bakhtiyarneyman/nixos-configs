@@ -212,12 +212,13 @@ in {
     };
     groups = {
       qbittorrent = {};
-      entertainment.members = map (service: "config.services.${service}.user") [
-        "jellyfin"
-        "prowlarr"
-        "radarr"
-        "sonarr"
-      ];
+      entertainment.members =
+        [config.users.users.bakhtiyar.name "qbittorrent"]
+        ++ map (service: config.services."${service}".user) [
+          "jellyfin"
+          "radarr"
+          "sonarr"
+        ];
     };
   };
 
