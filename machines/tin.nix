@@ -50,6 +50,10 @@ in {
         tailscaleState = "/var/lib/tailscale/tailscaled.state";
       };
     };
+    # For i915 on N150.
+    kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
+    # `lspci -nn | grep VGA` returns `[8086:46d4]`.
+    kernelParams = ["i915.force_probe=46d4"];
 
     lanzaboote = {
       configurationLimit = 10;
