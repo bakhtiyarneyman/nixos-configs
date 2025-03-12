@@ -266,6 +266,7 @@ in {
       Restart = "always";
       RestartSec = "5";
       User = "qbittorrent";
+      UMask = "0002";
       Group = "qbittorrent";
     };
   };
