@@ -5,7 +5,6 @@
   config = {
     boot = {
       kernelModules = ["zfs"];
-      kernelPackages = pkgs.linuxPackages; # This is required for ZFS to work.
       loader.grub.zfsSupport = true;
       supportedFilesystems = ["zfs"];
       zfs = {
