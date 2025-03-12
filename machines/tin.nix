@@ -99,6 +99,7 @@ in {
     hostId = "3b777fc4";
   };
 
+  networking.firewall.allowedTCPPorts = [52285];
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   services = {
