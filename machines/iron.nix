@@ -67,6 +67,8 @@ in {
       systemPackages = with pkgs; [
         liquidctl
         amdgpu_top
+        # Build a package for `tin` to pickup from cache.
+        jellyfin-ffmpeg
       ];
       variables = {
         LIBVA_DRIVER_NAME = "radeonsi";
