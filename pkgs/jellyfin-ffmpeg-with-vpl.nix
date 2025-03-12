@@ -1,6 +1,7 @@
 {
-  unstable,
   fetchFromGitHub,
+  lib,
+  unstable,
 }: let
   version = "7.0.2-9";
 in
