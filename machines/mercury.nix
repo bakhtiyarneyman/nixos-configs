@@ -21,11 +21,6 @@
       };
       supportedFilesystems = ["nfs"];
     };
-    environment = {
-      variables = {
-        LIBVA_DRIVER_NAME = "iHD";
-      };
-    };
 
     fileSystems = {
       "/" = {

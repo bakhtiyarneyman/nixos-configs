@@ -18,8 +18,13 @@
       ];
     };
 
-    environment.systemPackages = with pkgs; [
-      intel-gpu-tools
-    ];
+    environment = {
+      systemPackages = with pkgs; [
+        intel-gpu-tools
+      ];
+      variables = {
+        LIBVA_DRIVER_NAME = "iHD";
+      };
+    };
   };
 }
