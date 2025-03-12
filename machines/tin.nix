@@ -116,6 +116,25 @@ in {
       package = pkgs.unstable.jellyfin;
     };
     jellyseerr.enable = true;
+    monero = {
+      enable = true;
+      extraConfig = ''
+        rpc-ssl=enabled
+        rpc-ssl-private-key=/etc/nixos/secrets/tin.orkhon-mohs.ts.net.key
+        rpc-ssl-certificate=/etc/nixos/secrets/tin.orkhon-mohs.ts.net.crt
+
+        confirm-external-bind=true
+
+        prune-blockchain=1
+
+        out-peers=64
+        in-peers=1024
+      '';
+      limits = {
+        upload = 15; # KB/s
+      };
+      rpc.address = "0.0.0.0";
+    };
     openvpn.servers.mullvad = {
       config = "config ${../mullvad/mullvad_us_sjc.conf}";
       updateResolvConf = true;
