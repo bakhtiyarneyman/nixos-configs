@@ -124,6 +124,7 @@ in {
     sonarr.enable = true;
     tailscale.enable = true;
     vscode-server.enable = true;
+    xserver.videoDrivers = ["intel"];
     zrepl = {
       settings = {
         jobs = let
