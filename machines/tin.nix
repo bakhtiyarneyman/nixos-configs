@@ -108,6 +108,7 @@ in {
       config = "config ${../mullvad/mullvad_us_sjc.conf}";
       updateResolvConf = true;
     };
+    prowlarr.enable = true;
     radarr.enable = true;
     sonarr.enable = true;
     tailscale.enable = true;
@@ -208,13 +209,21 @@ in {
       qbittorrent = {};
       entertainment.members = map (service: "config.services.${service}.user") [
         "jellyfin"
+        "prowlarr"
         "radarr"
         "sonarr"
       ];
     };
   };
 
-  system.stateVersion = "24.11";
+  system = {
+    stateVersion = "24.11";
+    autoUpgrade.flags = [
+      "--option"
+      "extra-binary-caches"
+      "http://iron:5000"
+    ];
+  };
 
   systemd.services.qbittorrent = {
     wantedBy = ["multi-user.target"];
