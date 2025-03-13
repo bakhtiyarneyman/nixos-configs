@@ -86,7 +86,7 @@ in {
     "/var/cache/jellyfin/transcodes" = {
       device = "none";
       fsType = "tmpfs";
-      options = ["size=1G"];
+      options = ["size=20G"];
     };
     # The following are not strictly needed for booting, but that's currently the only way to ensure that the pool is imported and unlocked in the initrd, which is necessary because that's the only time auto-unlock may happen. The implication is that if this data pool dies or gets removed, the system will go to rescue mode. Bad.
     #
@@ -232,6 +232,10 @@ in {
       };
     };
   };
+
+  swapDevices = [
+    {device = "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part2";}
+  ];
 
   users = {
     users = {
