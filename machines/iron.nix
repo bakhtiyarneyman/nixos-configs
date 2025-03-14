@@ -212,11 +212,6 @@ in {
         secretKeyFile = "/etc/nixos/secrets/iron.cache.private-key.pem";
       };
 
-      jellyfin = {
-        enable = true;
-        openFirewall = true;
-      };
-
       journal-brief.settings.exclusions = [
         # It's some USB hub internal to the ASRock B650E PG Riptide.
         {
