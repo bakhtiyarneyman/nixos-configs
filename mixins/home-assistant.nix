@@ -1,9 +1,11 @@
 {
-  pkgs,
+  config,
   machineName,
+  pkgs,
   ...
 }: {
   config = {
+    environment.systemPackages = [config.services.home-assistant.package];
     services = {
       home-assistant = {
         enable = true;
@@ -24,6 +26,7 @@
               aiolifx-themes
               androidtvremote2
               brother
+              colorlog
               getmac
               govee-ble
               gtts
