@@ -19,7 +19,6 @@ in {
     ../mixins/bare-metal.nix
     ../mixins/ecc.nix
     ../mixins/gui.nix
-    ../mixins/home_assistant.nix
     ../mixins/neurasium.nix
     ../mixins/on-battery.nix
     ../mixins/trusted.nix
