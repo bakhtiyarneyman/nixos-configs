@@ -83,6 +83,7 @@ in {
         github-cli
         ngrok
         jq
+        config.boot.kernelPackages.perf
         # Nix
         # nixd
         nil
