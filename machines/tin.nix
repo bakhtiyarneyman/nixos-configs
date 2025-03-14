@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   modulesPath,
   pkgs,
   ...
@@ -65,8 +66,9 @@ in {
 
   environment = {
     systemPackages = with pkgs; [
-      qbittorrent
       jellyfin-ffmpeg
+      openvino
+      qbittorrent
     ];
     variables = {
       LIBVA_DRIVER_NAME = "iHD";
@@ -116,6 +118,7 @@ in {
   nixpkgs.hostPlatform = "x86_64-linux";
 
   services = {
+    immich.enable = true;
     jellyfin = {
       enable = true;
       package = pkgs.unstable.jellyfin;
@@ -139,6 +142,39 @@ in {
         upload = 15; # KB/s
       };
       rpc.address = "0.0.0.0";
+    };
+    nginx = {
+      enable = true;
+      recommendedBrotliSettings = true;
+      virtualHosts = let
+        immichPort = config.services.immich.port;
+        sslCertificate = "/etc/nixos/secrets/tin.orkhon-mohs.ts.net.crt";
+        sslCertificateKey = "/etc/nixos/secrets/tin.orkhon-mohs.ts.net.key";
+      in {
+        "tin.orkhon-mohs.ts.net" = {
+          inherit sslCertificate;
+          inherit sslCertificateKey;
+          forceSSL = true;
+          listen = [
+            {
+              ssl = true;
+              addr = "0.0.0.0";
+              port = immichPort;
+            }
+          ];
+          locations."/" = {
+            proxyPass = "http://[::1]:${toString immichPort}";
+            proxyWebsockets = true;
+            recommendedProxySettings = true;
+            extraConfig = ''
+              client_max_body_size 50000M;
+              proxy_read_timeout   600s;
+              proxy_send_timeout   600s;
+              send_timeout         600s;
+            '';
+          };
+        };
+      };
     };
     openvpn.servers.mullvad = {
       config = "config ${../mullvad/mullvad_us_sjc.conf}";
@@ -190,6 +226,7 @@ in {
               "slow/crypt/entertainment/video<" = false;
               "slow/crypt/var/lib/hass<" = true;
               "slow/crypt/var/lib/hass/tts" = false;
+              # "slow/crypt${config.services.immich.mediaLocation}" = true;
             };
             send = {
               bandwidth_limit.max = "500 KiB";
@@ -239,6 +276,7 @@ in {
 
   users = {
     users = {
+      immich.extraGroups = ["video" "render"];
       qbittorrent = {
         isSystemUser = true;
         home = "/var/lib/qbittorrent";
@@ -246,11 +284,23 @@ in {
         createHome = true;
       };
     };
-    groups = {
+    groups = let
+      userOf = service: config.services."${service}".user;
+    in {
       qbittorrent = {};
+      server.members =
+        ["monero" "qbittorrent"]
+        ++ map userOf [
+          # "hass"
+          "immich"
+          "jellyfin"
+          "radarr"
+          "sonarr"
+          "nginx"
+        ];
       entertainment.members =
         [config.users.users.bakhtiyar.name "qbittorrent"]
-        ++ map (service: config.services."${service}".user) [
+        ++ map userOf [
           "jellyfin"
           "radarr"
           "sonarr"
@@ -267,16 +317,26 @@ in {
     ];
   };
 
-  systemd.services.qbittorrent = {
-    wantedBy = ["multi-user.target"];
-    after = ["network-online.target"];
-    serviceConfig = {
-      ExecStart = "${qbittorrent}/bin/qbittorrent-nox";
-      Restart = "always";
-      RestartSec = "5";
-      User = "qbittorrent";
-      UMask = "0002";
-      Group = "qbittorrent";
+  systemd.services = let
+    # Only necessary for 24.11.
+    renderingServiceConfig = {
+      PrivateDevices = lib.mkForce false;
+      DeviceAllow = ["/dev/dri/renderD128"];
+    };
+  in {
+    immich-server = {serviceConfig = renderingServiceConfig;};
+    immich-machine-learning = {serviceConfig = renderingServiceConfig;};
+    qbittorrent = {
+      wantedBy = ["multi-user.target"];
+      after = ["network-online.target"];
+      serviceConfig = {
+        ExecStart = "${qbittorrent}/bin/qbittorrent-nox";
+        Restart = "always";
+        RestartSec = "5";
+        User = "qbittorrent";
+        UMask = "0002";
+        Group = "qbittorrent";
+      };
     };
   };
 }
