@@ -19,6 +19,7 @@ in {
     ../mixins/always-on.nix
     ../mixins/bare-metal.nix
     ../mixins/intel.nix
+    ../mixins/home-assistant.nix
     ../mixins/on-battery.nix
     ../mixins/untrusted.nix
     ../mixins/zfs.nix
@@ -289,9 +290,8 @@ in {
     in {
       qbittorrent = {};
       server.members =
-        ["monero" "qbittorrent"]
+        ["hass" "monero" "qbittorrent"]
         ++ map userOf [
-          # "hass"
           "immich"
           "jellyfin"
           "radarr"

@@ -432,7 +432,7 @@ in {
             [
               "--debug"
               "--wake-word-name=duh_meenah"
-              "--wake-uri=tcp://localhost:10400"
+              "--wake-uri=tcp://tin.orkhon-mohs.ts.net:10400"
             ]
             ++ map effectCommand [
               {
