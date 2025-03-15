@@ -278,6 +278,10 @@ in {
   users = {
     users = {
       immich.extraGroups = ["video" "render"];
+      prowlarr = {
+        isSystemUser = true;
+        group = "prowlarr";
+      };
       qbittorrent = {
         isSystemUser = true;
         home = "/var/lib/qbittorrent";
@@ -288,9 +292,15 @@ in {
     groups = let
       userOf = service: config.services."${service}".user;
     in {
+      prowlarr = {};
       qbittorrent = {};
       server.members =
-        ["hass" "monero" "qbittorrent"]
+        [
+          "hass"
+          "monero"
+          "prowlarr"
+          "qbittorrent"
+        ]
         ++ map userOf [
           "immich"
           "jellyfin"
@@ -326,8 +336,13 @@ in {
   in {
     immich-server = {serviceConfig = renderingServiceConfig;};
     immich-machine-learning = {serviceConfig = renderingServiceConfig;};
+    prowlarr.serviceConfig = {
+      User = "prowlarr";
+      Group = "prowlarr";
+    };
     qbittorrent = {
       wantedBy = ["multi-user.target"];
+      wants = ["network-online.target"];
       after = ["network-online.target"];
       serviceConfig = {
         ExecStart = "${qbittorrent}/bin/qbittorrent-nox";
