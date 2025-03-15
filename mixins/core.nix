@@ -209,6 +209,8 @@ in {
         SystemMaxUse=512M
       '';
 
+      nfs.server.importers = ["iron" "mercury"];
+
       openssh = {
         enable = true;
         settings = {

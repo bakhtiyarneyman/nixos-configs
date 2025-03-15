@@ -89,10 +89,6 @@ in {
           fsType = "zfs";
           neededForBoot = true;
         };
-        "/tailnet/export/home" = {
-          device = "/home/bakhtiyar";
-          options = ["bind"];
-        };
       };
       insertBootFilesystem = fss: diskId: let
         partitionId = toPartitionId diskId 1;
@@ -198,12 +194,9 @@ in {
 
       nfs.server = {
         enable = true;
-        exports = ''
-          /tailnet/export/home mercury-tailscale(rw,fsid=0,no_subtree_check)
-        '';
-        statdPort = 4000;
-        lockdPort = 4001;
-        mountdPort = 4002;
+        boundExports = {
+          home = "/home/bakhtiyar";
+        }
       };
 
       nix-serve = {

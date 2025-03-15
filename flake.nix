@@ -53,8 +53,9 @@
           vscode-server.nixosModules.default
           lanzaboote.nixosModules.lanzaboote
           ./modules/initrd-network-access.nix
-          ./modules/wifi-interface.nix
+          ./modules/nfs-exports.nix
           ./modules/palette.nix
+          ./modules/wifi-interface.nix
           ./mixins/core.nix
           (./machines/${machineName} + ".nix")
           {

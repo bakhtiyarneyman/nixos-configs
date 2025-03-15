@@ -144,6 +144,9 @@ in {
       };
       rpc.address = "0.0.0.0";
     };
+    nfs.server.boundExports = {
+      memories = "/home/bakhtiyar/memories";
+    };
     nginx = {
       enable = true;
       recommendedBrotliSettings = true;
