@@ -131,14 +131,17 @@ in {
     };
 
     services = {
-      openssh = {
+      avahi = {
         enable = true;
-        settings = {
-          AllowAgentForwarding = true;
-        };
+        # Important to resolve .local domains of printers, otherwise you get an error
+        # like  "Impossible to connect to XXX.local: Name or service not known"
+        nssmdns4 = false;
+        openFirewall = true;
       };
 
       gvfs.enable = true;
+
+      iperf3.enable = true;
 
       journal-brief = {
         enable = true;
@@ -202,19 +205,16 @@ in {
         };
       };
 
-      avahi = {
-        enable = true;
-        # Important to resolve .local domains of printers, otherwise you get an error
-        # like  "Impossible to connect to XXX.local: Name or service not known"
-        nssmdns4 = false;
-        openFirewall = true;
-      };
-
       journald.extraConfig = ''
         SystemMaxUse=512M
       '';
 
-      iperf3.enable = true;
+      openssh = {
+        enable = true;
+        settings = {
+          AllowAgentForwarding = true;
+        };
+      };
     };
 
     system = {
