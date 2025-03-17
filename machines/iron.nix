@@ -66,8 +66,9 @@ in {
       systemPackages = with pkgs; [
         liquidctl
         amdgpu_top
-        # Build a package for `tin` to pickup from cache.
+        # Build packages for `tin` to pickup from cache.
         jellyfin-ffmpeg
+        ctranslate2
       ];
       variables = {
         LIBVA_DRIVER_NAME = "radeonsi";
@@ -196,7 +197,7 @@ in {
         enable = true;
         boundExports = {
           home = "/home/bakhtiyar";
-        }
+        };
       };
 
       nix-serve = {

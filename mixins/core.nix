@@ -392,6 +392,10 @@ in {
           github-cli = super.unstable.pkgs.github-cli;
           # This is only needed on tin, but we build it on iron, so that it gets picked up from cache.
           jellyfin-ffmpeg = super.callPackage ../pkgs/jellyfin-ffmpeg-with-vpl.nix {};
+          ctranslate2 = super.unstable.ctranslate2.override {
+            withOneDNN = true;
+            withOpenblas = false;
+          };
         })
       ];
     };
