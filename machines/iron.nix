@@ -68,7 +68,7 @@ in {
         amdgpu_top
         # Build packages for `tin` to pickup from cache.
         jellyfin-ffmpeg
-        ctranslate2
+        unstable.ctranslate2
       ];
       variables = {
         LIBVA_DRIVER_NAME = "radeonsi";

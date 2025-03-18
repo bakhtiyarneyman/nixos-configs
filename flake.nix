@@ -27,7 +27,18 @@
     overlay-unstable = final: prev: {
       unstable = import nixpkgs-unstable {
         inherit system;
-        config.allowUnfree = true;
+        config = {
+          allowUnfree = true;
+        };
+        overlays = [
+          (self: super: {
+            ctranslate2 = super.ctranslate2.override {
+              withRuy = false;
+              withOneDNN = true;
+              withOpenblas = false;
+            };
+          })
+        ];
       };
     };
     machineNames = [
