@@ -62,6 +62,15 @@
             "custom_components.extended_openai_conversation" = "info";
             "homeassistant.components.openai_conversation" = "info";
           };
+          camera = [
+            {
+              platform = "xiaomi_cloud_map_extractor";
+              host = "!secret xiaomi_vacuum_host";
+              token = "!secret xiaomi_vacuum_token";
+              username = "!secret xiaomi_cloud_username";
+              password = "!secret xiaomi_cloud_password";
+            }
+          ];
         };
       };
 
