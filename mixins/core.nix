@@ -387,15 +387,15 @@ in {
       };
       overlays = [
         (self: super: {
-          journal-brief = super.callPackage ../pkgs/journal-brief.nix {};
-          namespaced-openvpn = super.python3Packages.callPackage ../pkgs/namespaced-openvpn.nix {};
-          github-cli = super.unstable.pkgs.github-cli;
           # This is only needed on tin, but we build it on iron, so that it gets picked up from cache.
           jellyfin-ffmpeg = super.callPackage ../pkgs/jellyfin-ffmpeg-with-vpl.nix {};
-          ctranslate2 = super.unstable.ctranslate2.override {
-            withOneDNN = true;
-            withOpenblas = false;
-          };
+          journal-brief = super.callPackage ../pkgs/journal-brief.nix {};
+          github-cli = super.unstable.pkgs.github-cli;
+          home-assistant = super.unstable.home-assistant;
+          namespaced-openvpn = super.python3Packages.callPackage ../pkgs/namespaced-openvpn.nix {};
+          wyoming-openwakeword = self.unstable.wyoming-openwakeword;
+          wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
+          wyoming-piper = self.unstable.wyoming-piper;
         })
       ];
     };
