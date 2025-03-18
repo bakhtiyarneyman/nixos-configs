@@ -14,6 +14,23 @@
           xiaomi_cloud_map_extractor = pkgs.callPackage ../pkgs/home-assistant/xiaomi_cloud_map_extractor.nix {};
           extended_openai_conversation = pkgs.callPackage ../pkgs/home-assistant/extended_openai_conversation.nix {};
         };
+        customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
+          apexcharts-card
+          atomic-calendar-revive
+          bubble-card
+          button-card
+          card-mod
+          decluttering-card
+          hourly-weather
+          light-entity-card
+          mini-graph-card
+          mini-media-player
+          multiple-entity-row
+          mushroom
+          template-entity-row
+          universal-remote-card
+          weather-card
+        ];
         extraPackages = python3Packages:
           builtins.attrValues {
             inherit
@@ -62,15 +79,6 @@
             "custom_components.extended_openai_conversation" = "info";
             "homeassistant.components.openai_conversation" = "info";
           };
-          camera = [
-            {
-              platform = "xiaomi_cloud_map_extractor";
-              host = "!secret xiaomi_vacuum_host";
-              token = "!secret xiaomi_vacuum_token";
-              username = "!secret xiaomi_cloud_username";
-              password = "!secret xiaomi_cloud_password";
-            }
-          ];
         };
       };
 
