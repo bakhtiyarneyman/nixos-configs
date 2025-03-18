@@ -38,7 +38,7 @@ function assistant_effect
         case listen
             set nap_after_secs 15
         case parse
-            set nap_after_secs 5
+            set nap_after_secs 15
         case think
             set nap_after_secs 10
         case speak
