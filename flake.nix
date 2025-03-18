@@ -33,9 +33,12 @@
         overlays = [
           (self: super: {
             ctranslate2 = super.ctranslate2.override {
-              withRuy = false;
-              withOneDNN = true;
+              withMkl = true;
+              withOneDNN = false;
               withOpenblas = false;
+              mkl = super.mkl.override {
+                enableStatic = true;
+              };
             };
           })
         ];
