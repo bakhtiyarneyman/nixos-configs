@@ -9,7 +9,6 @@
     services = {
       home-assistant = {
         enable = true;
-        package = pkgs.unstable.home-assistant;
         customComponents = builtins.attrValues {
           openrgb-ha = pkgs.callPackage ../pkgs/home-assistant/openrgb-ha.nix {};
           xiaomi_cloud_map_extractor = pkgs.callPackage ../pkgs/home-assistant/xiaomi_cloud_map_extractor.nix {};
@@ -69,7 +68,6 @@
       wyoming = {
         openwakeword = {
           enable = true;
-          package = pkgs.unstable.wyoming-openwakeword;
           customModelsDirectories = [
             "/etc/nixos/models/openwakeword"
           ];
@@ -82,7 +80,6 @@
           ];
         };
         faster-whisper = {
-          package = pkgs.unstable.wyoming-faster-whisper;
           servers.small-int8 = {
             enable = true;
             uri = "tcp://0.0.0.0:10300";
@@ -95,7 +92,6 @@
           };
         };
         piper = {
-          package = pkgs.unstable.wyoming-piper;
           servers.speak = {
             enable = true;
             uri = "tcp://0.0.0.0:10200";
@@ -106,11 +102,6 @@
           };
         };
       };
-    };
-
-    systemd.services.wyoming-faster-whisper-small-int8.environment = {
-      # Only good for iron.
-      "OMP_NUM_THREADS" = "16";
     };
   };
 }

@@ -336,7 +336,10 @@ in {
       PrivateDevices = lib.mkForce false;
       DeviceAllow = ["/dev/dri/renderD128"];
     };
+    OMP_NUM_THREADS = "4";
   in {
+    wyoming-faster-whisper-small-int8.environment = {inherit OMP_NUM_THREADS;};
+    wyoming-piper-speak.environment = {inherit OMP_NUM_THREADS;};
     immich-server = {serviceConfig = renderingServiceConfig;};
     immich-machine-learning = {serviceConfig = renderingServiceConfig;};
     prowlarr.serviceConfig = {
