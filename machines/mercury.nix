@@ -73,7 +73,7 @@
           automountConfig = {
             TimeoutIdleSec = "600";
           };
-          where = "/tailnet/iron/home";
+          where = "/imports/iron/home";
         }
       ];
 
@@ -83,8 +83,8 @@
           mountConfig = {
             Options = "noatime";
           };
-          what = "iron:/tailnet/export/home";
-          where = "/tailnet/iron/home";
+          what = "iron:/exports/home";
+          where = "/imports/iron/home";
         }
       ];
 
