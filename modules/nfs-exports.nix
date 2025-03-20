@@ -10,7 +10,7 @@
     };
     boundExports = mkOption {
       type = with types; attrsOf str;
-      default = [];
+      default = {};
     };
   };
 
