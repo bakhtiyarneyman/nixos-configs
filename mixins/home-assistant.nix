@@ -97,11 +97,11 @@
           ];
         };
         faster-whisper = {
-          servers.small-int8 = {
+          servers.listener = {
             enable = true;
             uri = "tcp://0.0.0.0:10300";
             language = "en";
-            model = "small-int8";
+            model = "Systran/faster-whisper-base";
             extraArgs = [
               "--debug"
               "--compute-type=int8"
@@ -109,7 +109,7 @@
           };
         };
         piper = {
-          servers.speak = {
+          servers.speaker = {
             enable = true;
             uri = "tcp://0.0.0.0:10200";
             voice = "en_US-lessac-high";

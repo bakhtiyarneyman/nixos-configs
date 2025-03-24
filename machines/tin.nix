@@ -338,6 +338,12 @@ in {
     };
     OMP_NUM_THREADS = "4";
   in {
+    wyoming-faster-whisper-listener.environment = {
+      inherit OMP_NUM_THREADS; # Doesn't seem to work.
+    };
+    wyoming-piper-speaker.environment = {
+      inherit OMP_NUM_THREADS; # Doesn't seem to work.
+    };
     immich-server = {
       environment = {
         IMMICH_LOG_LEVEL = "debug";
