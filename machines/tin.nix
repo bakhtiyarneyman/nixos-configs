@@ -338,10 +338,30 @@ in {
     };
     OMP_NUM_THREADS = "4";
   in {
-    wyoming-faster-whisper-small-int8.environment = {inherit OMP_NUM_THREADS;};
-    wyoming-piper-speak.environment = {inherit OMP_NUM_THREADS;};
-    immich-server = {serviceConfig = renderingServiceConfig;};
-    immich-machine-learning = {serviceConfig = renderingServiceConfig;};
+    immich-server = {
+      environment = {
+        IMMICH_LOG_LEVEL = "debug";
+      };
+      serviceConfig = renderingServiceConfig // {ProtectHome = lib.mkForce false;};
+    };
+    immich-machine-learning = {
+      environment = {
+        IMMICH_LOG_LEVEL = "debug"; # Doesn't seem to work.
+        MPLCONFIGDIR = "/var/lib/immich/mplconfig";
+        LD_LIBRARY_PATH = let
+          onnxruntime-openvino = pkgs.python312Packages.callPackage ../pkgs/onnxruntime-openvino.nix {};
+        in
+          builtins.concatStringsSep ":"
+          [
+            "${pkgs.python312Packages.openvino}/lib"
+            "${pkgs.python312Packages.openvino}/lib/python3.12/site-packages/openvino"
+            # Need to verify if openvino works.
+            "${onnxruntime-openvino}/lib"
+            "${onnxruntime-openvino}/lib/python3.12/site-packages/onnxruntime/capi"
+          ];
+      };
+      serviceConfig = renderingServiceConfig;
+    };
     prowlarr.serviceConfig = {
       User = "prowlarr";
       Group = "prowlarr";
