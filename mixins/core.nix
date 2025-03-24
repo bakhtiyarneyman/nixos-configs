@@ -217,6 +217,8 @@ in {
           AllowAgentForwarding = true;
         };
       };
+
+      vscode-server.enable = true;
     };
 
     system = {
