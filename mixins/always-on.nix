@@ -1,6 +1,6 @@
 {
   config.system.autoUpgrade = {
-    enable = false; # Disable temporarily.
+    enable = true;
     flags = [
       "--update-input"
       "nixpkgs"
