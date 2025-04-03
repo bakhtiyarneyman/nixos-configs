@@ -175,25 +175,6 @@ in {
         hostname = "0.0.0.0";
         port = 11435;
       };
-      monero = {
-        enable = false;
-        dataDir = "/var/lib/monero";
-        extraConfig = ''
-          rpc-restricted-bind-ip=100.65.77.115 # iron-tailscale
-          rpc-restricted-bind-port=18081
-          rpc-ssl=enabled
-          rpc-ssl-private-key=/etc/nixos/secrets/iron.monero.private-key.pem
-          rpc-ssl-certificate=${../certificates/iron.monero.cert.pem}
-
-          prune-blockchain=1
-          out-peers=64
-          in-peers=1024
-        '';
-        limits = {
-          upload = 10; # KB/s
-        };
-        # rpc.address = "100.0.0.0";
-      };
 
       nfs.server = {
         enable = true;
