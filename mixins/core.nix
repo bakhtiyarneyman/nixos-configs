@@ -371,6 +371,7 @@ in {
       settings = {
         trusted-public-keys = [
           "iron:OaC7pyOu4UcI9Fgp4Go1d5Qo2dChSjr0bTuCJqfgirc="
+          "tin:1xuVbjflY1Z/kH6uEaeNivgLHYvORLli3r//baX6N78="
         ];
         trusted-users = ["root" "bakhtiyar"];
       };

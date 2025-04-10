@@ -323,11 +323,6 @@ in {
 
   system = {
     stateVersion = "24.11";
-    autoUpgrade.flags = [
-      "--option"
-      "extra-binary-caches"
-      "http://iron:5000"
-    ];
   };
 
   systemd.services = let
