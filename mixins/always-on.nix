@@ -13,22 +13,21 @@
 
     system.autoUpgrade = {
       enable = true;
-      flags =
-        [
-          "--update-input"
-          "nixpkgs"
-          "--update-input"
-          "nixpkgs-unstable"
-          "--update-input"
-          "vscode-server"
-          "--update-input"
-          "nix-colors"
-          "--update-input"
-          "lanzaboote"
-          "--option"
-          "extra-binary-caches"
-        ]
-        ++ builtins.attrValues (builtins.mapAttrs (mn: _cfg: "http://${mn}:5000") machines);
+      flags = [
+        "--update-input"
+        "nixpkgs"
+        "--update-input"
+        "nixpkgs-unstable"
+        "--update-input"
+        "vscode-server"
+        "--update-input"
+        "nix-colors"
+        "--update-input"
+        "lanzaboote"
+        "--option"
+        "extra-binary-caches"
+        (builtins.concatStringsSep " " (builtins.attrValues (builtins.mapAttrs (mn: _cfg: "http://${mn}:5000") machines)))
+      ];
 
       flake = "/etc/nixos";
       allowReboot = true;
