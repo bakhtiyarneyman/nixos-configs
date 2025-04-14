@@ -26,7 +26,7 @@
         "lanzaboote"
         "--option"
         "extra-binary-caches"
-        (builtins.concatStringsSep " " (builtins.attrValues (builtins.mapAttrs (mn: _cfg: "http://${mn}:5000") machines)))
+        ''"${(builtins.concatStringsSep " " (builtins.attrValues (builtins.mapAttrs (mn: _cfg: "http://${mn}:5000") machines)))}"''
       ];
 
       flake = "/etc/nixos";
