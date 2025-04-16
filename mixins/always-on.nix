@@ -13,6 +13,7 @@
 
     system.autoUpgrade = {
       enable = true;
+      dates = "Mon *-*-* 04:40";
       flags = [
         "--update-input"
         "nixpkgs"

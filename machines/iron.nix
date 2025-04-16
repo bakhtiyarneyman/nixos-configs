@@ -472,7 +472,7 @@ in {
     system = {
       stateVersion = "22.11";
       autoUpgrade = {
-        dates = "3:40"; # An hour before the default, so that other machines can use this one as a cache.
+        dates = lib.mkForce "Mon *-*-* 03:40"; # An hour before the default, so that other machines can use this one as a cache.
         flags = [
           "--commit-lock-file"
         ];
