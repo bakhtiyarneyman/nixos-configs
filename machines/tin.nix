@@ -181,6 +181,12 @@ in {
         };
       };
     };
+    ntopng = {
+      interfaces = [
+        "tun0"
+        "tailscale0"
+      ];
+    };
     openvpn.servers.mullvad = {
       config = "config ${../mullvad/mullvad_us_sjc.conf}";
       updateResolvConf = true;
