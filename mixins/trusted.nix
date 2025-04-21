@@ -56,6 +56,8 @@
       onedrive.enable = true;
       syncthing = {
         enable = true;
+        key = "/etc/nixos/secrets/${machineName}.syncthing.secret-key.pem";
+        cert = "/etc/nixos/secrets/${machineName}.syncthing.public-key.pem";
         settings = {
           devices = {
             "iron" = {id = "3BDA4VS-QOLWHD3-2IYBEWR-A7KLWHI-AMQWEVP-ASGQSIS-HGGDXBI-T36EXAO";};
@@ -71,8 +73,6 @@
             user = "bakhtiyar";
             password = "$2a$10$.WS3YI4AUencLTTke3bgDOUb6q0qInVOPjSJysDGP2YgrGCI3KpNG";
           };
-          key = "/etc/nixos/secrets/${machineName}.syncthing.secret-key.pem";
-          crt = "/etc/nixos/secrets/${machineName}.syncthing.public-key.pem";
         };
       };
     };
