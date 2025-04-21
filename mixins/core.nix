@@ -188,13 +188,6 @@ in {
             }
             {
               PRIORITY = ["0" "1" "2" "3"];
-              SYSLOG_IDENTIFIER = ["mount-sensitive-start"];
-              MESSAGE = [
-                "/[Ee]rror/"
-              ];
-            }
-            {
-              PRIORITY = ["0" "1" "2" "3"];
               SYSLOG_IDENTIFIER = ["hass"];
               MESSAGE = [
                 "/ModuleNotFoundError:/"

@@ -53,7 +53,6 @@
       tailscale.enable = true;
       i2p.enable = true;
       namespaced-openvpn.enable = true;
-      onedrive.enable = true;
       syncthing = {
         enable = true;
         key = "/etc/nixos/secrets/${machineName}.syncthing.secret-key.pem";
@@ -75,28 +74,6 @@
           };
         };
       };
-    };
-
-    systemd.services.mount-sensitive = {
-      enable = true;
-      environment = {
-        CRYFS_FRONTEND = "noninteractive";
-        CRYFS_NO_UPDATE_CHECK = "true";
-      };
-      bindsTo = ["local-fs.target"];
-      wantedBy = ["local-fs.target"];
-      after = ["local-fs.target"];
-      script = ''
-        cat /etc/nixos/secrets/sensitive.passphrase |\
-          ${pkgs.sudo}/bin/sudo \
-          --user=bakhtiyar \
-          ${pkgs.cryfs}/bin/cryfs \
-            --foreground \
-            /home/bakhtiyar/OneDrive/encrypted \
-            /home/bakhtiyar/sensitive
-      '';
-      preStop = "kill -SIGTERM $MAINPID";
-      postStop = "${pkgs.sudo}/bin/sudo ${pkgs.util-linux}/bin/umount -l /home/bakhtiyar/sensitive";
     };
   };
 }
