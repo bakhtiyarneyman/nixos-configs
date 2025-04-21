@@ -46,9 +46,8 @@ in {
         homeMode = "701";
         isNormalUser = true;
         extraGroups = [
-          "wheel" # Enable ‘sudo’ for the user.
-          "docker"
           "networkmanager"
+          "wheel" # Enable ‘sudo’ for the user.
           "wireshark"
         ];
       };
@@ -368,10 +367,6 @@ in {
     };
 
     location.provider = "geoclue2";
-
-    virtualisation = {
-      docker.enable = true;
-    };
 
     nix = {
       package = pkgs.unstable.nix;

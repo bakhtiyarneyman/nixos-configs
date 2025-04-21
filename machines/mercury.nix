@@ -5,6 +5,7 @@
     ../mixins/intel.nix
     ../mixins/on-battery.nix
     ../mixins/trusted.nix
+    ../mixins/virtualization.nix
   ];
 
   config = {

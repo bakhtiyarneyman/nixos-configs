@@ -22,6 +22,7 @@ in {
     ../mixins/neurasium.nix
     ../mixins/on-battery.nix
     ../mixins/trusted.nix
+    ../mixins/virtualization.nix
     ../mixins/zfs.nix
   ];
 
