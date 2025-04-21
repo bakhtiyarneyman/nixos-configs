@@ -170,8 +170,9 @@ in {
         rocmOverrideGfx = "10.3.2";
       };
       nextjs-ollama-llm-ui = {
-        hostname = "0.0.0.0";
         enable = true;
+        hostname = "0.0.0.0";
+        port = 11435;
       };
       monero = {
         enable = false;
