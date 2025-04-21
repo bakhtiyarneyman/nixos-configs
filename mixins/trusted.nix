@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  machineName,
+  ...
+}: {
   imports = [
     ../modules/namespaced-openvpn.nix
   ];
@@ -50,6 +54,27 @@
       i2p.enable = true;
       namespaced-openvpn.enable = true;
       onedrive.enable = true;
+      syncthing = {
+        enable = true;
+        settings = {
+          devices = {
+            "iron" = {id = "3BDA4VS-QOLWHD3-2IYBEWR-A7KLWHI-AMQWEVP-ASGQSIS-HGGDXBI-T36EXAO";};
+            "mercury" = {id = "U2GZE3M-HHXAVHB-WRB7OIY-GM6W4EJ-PZVRPNA-SIBX4C4-MZ7PRRA-UXMGYQR";};
+          };
+          folders = {
+            "sync" = {
+              path = "/home/bakhtiyar/sync";
+              devices = ["iron" "mercury"];
+            };
+          };
+          gui = {
+            user = "bakhtiyar";
+            password = "$2a$10$.WS3YI4AUencLTTke3bgDOUb6q0qInVOPjSJysDGP2YgrGCI3KpNG";
+          };
+          key = "/etc/nixos/secrets/${machineName}.syncthing.secret-key.pem";
+          crt = "/etc/nixos/secrets/${machineName}.syncthing.public-key.pem";
+        };
+      };
     };
 
     systemd.services.mount-sensitive = {
