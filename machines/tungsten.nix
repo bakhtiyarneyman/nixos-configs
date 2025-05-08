@@ -30,10 +30,6 @@
     fsType = "ext4";
   };
 
-  swapDevices = [
-    {device = "/dev/disk/by-uuid/d444f37c-7217-4fe9-a0de-a9135cc5d61a";}
-  ];
-
   networking = {
     # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
     # (the default) this is the recommended approach. When using systemd-networkd it's
@@ -99,7 +95,23 @@
       ];
     };
   };
+
+  swapDevices = [
+    {device = "/dev/disk/by-uuid/d444f37c-7217-4fe9-a0de-a9135cc5d61a";}
+  ];
+
   system.stateVersion = "22.11";
+  systemd.network = {
+    enable = true;
+    networks."10-wan" = {
+      matchConfig.Name = "enp1s0";
+      networkConfig = {
+        DHCP = "ipv4";
+        IPv6AcceptRA = true;
+      };
+      linkConfig.RequiredForOnline = "routable";
+    };
+  };
 
   users.users.root.openssh.authorizedKeys.keys = [
     ''command="zrepl stdinserver iron",restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJEhmdQV/OLmYQFKIMCs17JssVqPlkaQCSTmwyhkhqVo''

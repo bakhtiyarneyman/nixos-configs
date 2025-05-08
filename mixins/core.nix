@@ -121,7 +121,6 @@ in {
 
     networking = {
       hostName = machineName;
-      networkmanager.enable = true;
       firewall = {
         enable = true;
         logRefusedConnections = true;

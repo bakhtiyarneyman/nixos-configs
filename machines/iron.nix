@@ -118,6 +118,7 @@ in {
     ];
 
     networking = {
+      networkmanager.enable = true;
       hostId = "a7a93500";
       wifiInterface = "wlp12s0";
       kernelModules = ["mt7921e" "r8169"];
