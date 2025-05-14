@@ -86,6 +86,21 @@ in {
       fsType = "zfs";
       options = ["zfsutil"];
     };
+    "/etc" = {
+      device = "slow/crypt/etc";
+      fsType = "zfs";
+      options = ["zfsutil"];
+    };
+    "/var/lib" = {
+      device = "slow/crypt/var/lib";
+      fsType = "zfs";
+      options = ["zfsutil"];
+    };
+    "/var/log" = {
+      device = "slow/crypt/var/log";
+      fsType = "zfs";
+      options = ["zfsutil"];
+    };
     "/var/cache/jellyfin/transcodes" = {
       device = "none";
       fsType = "tmpfs";
