@@ -23,6 +23,7 @@ in {
     ../mixins/on-battery.nix
     ../mixins/untrusted.nix
     ../mixins/zfs.nix
+    ../mixins/router.nix
   ];
 
   boot = {
@@ -131,7 +132,6 @@ in {
   };
 
   networking = {
-    networkmanager.enable = true;
     firewall.allowedTCPPorts = [52285];
   };
   nixpkgs.hostPlatform = "x86_64-linux";

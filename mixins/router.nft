@@ -1,0 +1,37 @@
+table inet filter {
+  chain input {
+    type filter hook input priority filter; policy drop;
+
+    iifname "lo" counter accept
+    iifname "lan-tenant" counter accept
+    iifname "tailscale0" counter accept
+    iifname {"enp2s0", "tun0"} ct state established,related counter accept
+    iifname "enp2s0" drop
+  }
+
+  chain forward {
+    type filter hook forward priority 0; policy drop;
+
+    iifname "lan-tenant" oifname "enp2s0" counter accept comment "Allow outgoing LAN to WAN"
+
+    iifname "enp2s0" oifname "lan-tenant" ct state established,related counter accept comment "Allow returning from WAN to LAN"
+  }
+
+  chain output {
+    type filter hook output priority 100; policy accept;
+  }
+
+}
+
+table ip nat {
+  chain prerouting {
+    type nat hook prerouting priority filter; policy accept;
+    tcp flags syn tcp option maxseg size set 1452
+
+  }
+
+  chain postrouting {
+    type nat hook postrouting priority srcnat; policy accept;
+    oifname { "enp2s0", "tun0" } masquerade
+  }
+}
