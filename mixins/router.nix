@@ -30,6 +30,94 @@
       useDHCP = lib.mkForce false;
     };
 
+    services.hostapd = {
+      enable = true;
+      radios.wlp0s13f0u2 = {
+        band = "5g";
+        channel = 36;
+        countryCode = "US";
+        networks.wlp0s13f0u2 = {
+          authentication = {
+            mode = "wpa2-sha256";
+            pairwiseCiphers = [
+              "CCMP"
+              "CCMP-256"
+              "GCMP"
+              "GCMP-256"
+            ];
+            wpaPasswordFile = "/etc/nixos/secrets/yurdoba.password";
+          };
+          ssid = "yurdoba";
+        };
+        settings = {
+          beacon_int = 100;
+          bridge = "lan-tenant";
+          dtim_period = 2;
+          skip_inactivity_poll = 1;
+          max_num_sta = 16;
+          okc = 1;
+          he_bss_color = 38; # Must be unique for each AP.
+          he_mu_edca_qos_info_param_count = 0;
+          he_mu_edca_qos_info_q_ack = 0;
+          he_mu_edca_qos_info_queue_request = 0;
+          he_mu_edca_qos_info_txop_request = 0;
+          he_mu_edca_ac_be_aifsn = 8;
+          he_mu_edca_ac_be_aci = 0;
+          he_mu_edca_ac_be_ecwmin = 9;
+          he_mu_edca_ac_be_ecwmax = 10;
+          he_mu_edca_ac_be_timer = 255;
+          he_mu_edca_ac_bk_aifsn = 15;
+          he_mu_edca_ac_bk_aci = 1;
+          he_mu_edca_ac_bk_ecwmin = 9;
+          vht_oper_centr_freq_seg0_idx = 42;
+          he_mu_edca_ac_bk_ecwmax = 10;
+          he_mu_edca_ac_bk_timer = 255;
+          he_mu_edca_ac_vi_ecwmin = 5;
+          he_mu_edca_ac_vi_ecwmax = 7;
+          he_mu_edca_ac_vi_aifsn = 5;
+          he_mu_edca_ac_vi_aci = 2;
+          he_mu_edca_ac_vi_timer = 255;
+          he_mu_edca_ac_vo_aifsn = 5;
+          he_mu_edca_ac_vo_aci = 3;
+          he_mu_edca_ac_vo_ecwmin = 5;
+          he_mu_edca_ac_vo_ecwmax = 7;
+          he_mu_edca_ac_vo_timer = 255;
+          he_oper_centr_freq_seg0_idx = 42;
+        };
+        wifi4.capabilities = [
+          "LDPC"
+          "HT40+"
+          "HT40-"
+          "GF"
+          "SHORT-GI-20"
+          "SHORT-GI-40"
+          "TX-STBC"
+          "RX-STBC1"
+          "MAX-AMSDU-7935"
+        ];
+        wifi5 = {
+          capabilities = [
+            "MAX-MPDU-11454"
+            "RXLDPC"
+            "SHORT-GI-80"
+            "TX-STBC-2BY1"
+            "SU-BEAMFORMEE"
+            "MU-BEAMFORMEE"
+            "RX-ANTENNA-PATTERN"
+            "TX-ANTENNA-PATTERN"
+            "RX-STBC-1"
+            "BF-ANTENNA-4"
+            "MAX-A-MPDU-LEN-EXP7"
+          ];
+          operatingChannelWidth = "80";
+        };
+        wifi6 = {
+          enable = true;
+          operatingChannelWidth = "80";
+        };
+      };
+    };
+
     systemd.network = {
       enable = true;
 
@@ -80,12 +168,6 @@
 
         "11-lan-ethernet" = {
           matchConfig.Name = "enp3s0";
-          bridge = ["lan-tenant"];
-          linkConfig.RequiredForOnline = "no";
-        };
-
-        "12-lan-wifi" = {
-          matchConfig.Name = "wlp0s13f0u2";
           bridge = ["lan-tenant"];
           linkConfig.RequiredForOnline = "no";
         };
