@@ -41,23 +41,61 @@
 
       hostapd = {
         enable = true;
-        radios = {
-          wlp0s13f0u2 = {
+        radios = let
+          network = {
+            authentication = {
+              wpaPasswordFile = "/etc/nixos/secrets/yurdoba.password";
+              pairwiseCiphers = [
+                "CCMP"
+                "CCMP-256"
+                "GCMP"
+                "GCMP-256"
+              ];
+            };
+            ssid = "yurdoba";
+          };
+        in {
+          wlp0s20f0u1 = {
             band = "5g";
             channel = 36;
             countryCode = "US";
-            networks.wlp0s13f0u2 = {
-              authentication = {
-                mode = "wpa2-sha256";
-                pairwiseCiphers = [
-                  "CCMP"
-                  "CCMP-256"
-                  "GCMP"
-                  "GCMP-256"
-                ];
-                wpaPasswordFile = "/etc/nixos/secrets/yurdoba.password";
-              };
-              ssid = "yurdoba";
+            networks.wlp0s20f0u1 = lib.recursiveUpdate network {
+              authentication.mode = "wpa2-sha256";
+            };
+            settings = {
+              bridge = "lan-tenant";
+            };
+            wifi4.capabilities = [
+              "HT40-"
+              "HT40+"
+              "LDPC"
+              "MAX-AMSDU-7935"
+              "RX-STBC1"
+              "SHORT-GI-20"
+              "SHORT-GI-40"
+            ];
+            wifi5 = {
+              enable = true;
+
+              capabilities = [
+                "MAX-MPDU-11454"
+                "RXLDPC"
+                "SHORT-GI-80"
+                "TX-STBC-2BY1"
+                "SU-BEAMFORMEE"
+                "MU-BEAMFORMEE"
+                "RX-STBC-1"
+                "BF-ANTENNA-4"
+                "MAX-A-MPDU-LEN-EXP7"
+              ];
+            };
+          };
+          wlp0s13f0u2 = {
+            band = "2g"; # "5g" for WiFi 6.
+            channel = 6; # 36 if 5g.
+            countryCode = "US";
+            networks.wlp0s13f0u2 = lib.recursiveUpdate network {
+              authentication.mode = "wpa2-sha1"; # "wpa2-sha256" for WiFi 6.
             };
             settings = {
               beacon_int = 100;
@@ -95,17 +133,18 @@
               he_oper_centr_freq_seg0_idx = 42;
             };
             wifi4.capabilities = [
-              "LDPC"
-              "HT40+"
-              "HT40-"
               "GF"
+              "HT40-"
+              "HT40+"
+              "LDPC"
+              "MAX-AMSDU-7935"
+              "RX-STBC1"
               "SHORT-GI-20"
               "SHORT-GI-40"
               "TX-STBC"
-              "RX-STBC1"
-              "MAX-AMSDU-7935"
             ];
             wifi5 = {
+              enable = false;
               capabilities = [
                 "MAX-MPDU-11454"
                 "RXLDPC"
