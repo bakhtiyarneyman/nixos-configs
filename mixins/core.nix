@@ -200,6 +200,11 @@ in {
         SystemMaxUse=512M
       '';
 
+      ntopng = {
+        enable = true;
+        httpPort = 4256;
+      };
+
       nfs.server.importers = ["iron" "mercury"];
 
       openssh = {
