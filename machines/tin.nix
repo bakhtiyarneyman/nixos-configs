@@ -203,6 +203,7 @@ in {
       interfaces = [
         "tun0"
         "tailscale0"
+        "enp2s0"
       ];
     };
     openvpn.servers.mullvad = {
