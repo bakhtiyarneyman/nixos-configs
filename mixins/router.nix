@@ -128,6 +128,11 @@
           };
         };
       };
+
+      # Alternatively, resolved could have been configured to start after dnsmasq.
+      resolved.extraConfig = ''
+        DNSStubListener=no
+      '';
     };
 
     systemd.network = {
