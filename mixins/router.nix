@@ -42,9 +42,10 @@
       hostapd = {
         enable = true;
         radios = let
+          channel = 149; # The other channel that works is 36. Everything else requires radar detection. 149 also has better dBm.
           network = {
             authentication = {
-              wpaPasswordFile = "/etc/nixos/secrets/yurdoba.password";
+              saePasswordsFile = "/etc/nixos/secrets/yurdoba.password";
               pairwiseCiphers = [
                 "CCMP"
                 "CCMP-256"
@@ -55,96 +56,84 @@
             ssid = "yurdoba";
           };
         in {
-          wlp0s20f0u1 = {
-            band = "5g";
-            channel = 36;
-            countryCode = "US";
-            networks.wlp0s20f0u1 = lib.recursiveUpdate network {
-              authentication.mode = "wpa2-sha256";
-            };
-            settings = {
-              bridge = "lan-tenant";
-            };
-            wifi4.capabilities = [
-              "HT40-"
-              "HT40+"
-              "LDPC"
-              "MAX-AMSDU-7935"
-              "RX-STBC1"
-              "SHORT-GI-20"
-              "SHORT-GI-40"
-            ];
-            wifi5 = {
-              enable = true;
-
-              capabilities = [
-                "MAX-MPDU-11454"
-                "RXLDPC"
-                "SHORT-GI-80"
-                "TX-STBC-2BY1"
-                "SU-BEAMFORMEE"
-                "MU-BEAMFORMEE"
-                "RX-STBC-1"
-                "BF-ANTENNA-4"
-                "MAX-A-MPDU-LEN-EXP7"
-              ];
-            };
-          };
           wlp0s13f0u2 = {
-            band = "2g"; # "5g" for WiFi 6.
-            channel = 6; # 36 if 5g.
+            band = "5g"; # "5g" for WiFi 6.
+            inherit channel;
             countryCode = "US";
             networks.wlp0s13f0u2 = lib.recursiveUpdate network {
-              authentication.mode = "wpa2-sha1"; # "wpa2-sha256" for WiFi 6.
+              authentication = {
+                mode = "wpa3-sae";
+                pairwiseCiphers = [
+                  "CCMP"
+                  "CCMP-256"
+                  "GCMP"
+                  "GCMP-256"
+                ];
+              };
+              settings = {
+                ieee80211w = 2;
+              };
             };
             settings = {
-              beacon_int = 100;
+              # beacon_int = 100;
               bridge = "lan-tenant";
-              dtim_period = 2;
-              skip_inactivity_poll = 1;
-              max_num_sta = 16;
-              okc = 1;
+              bss_load_update_period = 50;
+              # country3 = "0x49";
+              # dtim_period = 2;
+              # he_6ghz_max_mpdu = 2;
+              # he_6ghz_rx_ant_pat = 1;
+              # he_6ghz_tx_ant_pat = 1;
+              # he_6ghz_reg_pwr_type = 0;
               he_bss_color = 38; # Must be unique for each AP.
+              he_mu_edca_ac_be_aci = 0;
+              he_mu_edca_ac_be_aifsn = 8;
+              he_mu_edca_ac_be_ecwmax = 10;
+              he_mu_edca_ac_be_ecwmin = 9;
+              he_mu_edca_ac_be_timer = 255;
+              he_mu_edca_ac_bk_aci = 1;
+              he_mu_edca_ac_bk_aifsn = 15;
+              he_mu_edca_ac_bk_ecwmax = 10;
+              he_mu_edca_ac_bk_ecwmin = 9;
+              he_mu_edca_ac_bk_timer = 255;
+              he_mu_edca_ac_vi_aci = 2;
+              he_mu_edca_ac_vi_aifsn = 5;
+              he_mu_edca_ac_vi_ecwmax = 7;
+              he_mu_edca_ac_vi_ecwmin = 5;
+              he_mu_edca_ac_vi_timer = 255;
+              he_mu_edca_ac_vo_aci = 3;
+              he_mu_edca_ac_vo_aifsn = 5;
+              he_mu_edca_ac_vo_ecwmax = 7;
+              he_mu_edca_ac_vo_ecwmin = 5;
+              he_mu_edca_ac_vo_timer = 255;
               he_mu_edca_qos_info_param_count = 0;
               he_mu_edca_qos_info_q_ack = 0;
               he_mu_edca_qos_info_queue_request = 0;
               he_mu_edca_qos_info_txop_request = 0;
-              he_mu_edca_ac_be_aifsn = 8;
-              he_mu_edca_ac_be_aci = 0;
-              he_mu_edca_ac_be_ecwmin = 9;
-              he_mu_edca_ac_be_ecwmax = 10;
-              he_mu_edca_ac_be_timer = 255;
-              he_mu_edca_ac_bk_aifsn = 15;
-              he_mu_edca_ac_bk_aci = 1;
-              he_mu_edca_ac_bk_ecwmin = 9;
-              vht_oper_centr_freq_seg0_idx = 42;
-              he_mu_edca_ac_bk_ecwmax = 10;
-              he_mu_edca_ac_bk_timer = 255;
-              he_mu_edca_ac_vi_ecwmin = 5;
-              he_mu_edca_ac_vi_ecwmax = 7;
-              he_mu_edca_ac_vi_aifsn = 5;
-              he_mu_edca_ac_vi_aci = 2;
-              he_mu_edca_ac_vi_timer = 255;
-              he_mu_edca_ac_vo_aifsn = 5;
-              he_mu_edca_ac_vo_aci = 3;
-              he_mu_edca_ac_vo_ecwmin = 5;
-              he_mu_edca_ac_vo_ecwmax = 7;
-              he_mu_edca_ac_vo_timer = 255;
-              he_oper_centr_freq_seg0_idx = 42;
+              he_oper_centr_freq_seg0_idx = channel + 6;
+              max_num_sta = 16;
+              okc = 1;
+              # op_class = 133;
+              skip_inactivity_poll = 1;
+              uapsd_advertisement_enabled = 1;
+              vht_oper_centr_freq_seg0_idx = channel + 6;
+              wme_enabled = 1;
             };
-            wifi4.capabilities = [
-              "GF"
-              "HT40-"
-              "HT40+"
-              "LDPC"
-              "MAX-AMSDU-7935"
-              "RX-STBC1"
-              "SHORT-GI-20"
-              "SHORT-GI-40"
-              "TX-STBC"
-            ];
+            wifi4 = {
+              enable = true;
+              capabilities = [
+                "GF"
+                "HT40-"
+                "HT40+"
+                "LDPC"
+                "MAX-AMSDU-7935"
+                "RX-STBC1"
+                "SHORT-GI-20"
+                "SHORT-GI-40"
+                "TX-STBC"
+              ];
+            };
             wifi5 = {
-              enable = false;
+              enable = true;
               capabilities = [
                 "MAX-MPDU-11454"
                 "RXLDPC"
@@ -163,6 +152,9 @@
             wifi6 = {
               enable = true;
               operatingChannelWidth = "80";
+              singleUserBeamformer = true;
+              singleUserBeamformee = true;
+              multiUserBeamformer = true;
             };
           };
         };
