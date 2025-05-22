@@ -40,6 +40,7 @@
     };
 
     environment.systemPackages = with pkgs; [
+      iw
       powertop
       sbctl
       smartmontools
