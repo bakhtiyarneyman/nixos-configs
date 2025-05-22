@@ -204,7 +204,13 @@ in {
         "tun0"
         "tailscale0"
         "enp2s0"
+        "enp3s0"
+        "wlp0s13f0u2"
+        "view:enp3s0,wlp0s13f0u2,tun0,tailscale0"
       ];
+      extraConfig = ''
+        --local-networks=192.168.10.1/24
+      '';
     };
     openvpn.servers.mullvad = {
       config = "config ${../mullvad/mullvad_us_sjc.conf}";

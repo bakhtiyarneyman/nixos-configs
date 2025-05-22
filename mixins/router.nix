@@ -57,7 +57,7 @@
           };
         in {
           wlp0s13f0u2 = {
-            band = "5g"; # "5g" for WiFi 6.
+            band = "5g"; # "6g" for WiFi 6E.
             inherit channel;
             countryCode = "US";
             networks.wlp0s13f0u2 = lib.recursiveUpdate network {
