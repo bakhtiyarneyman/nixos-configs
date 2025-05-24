@@ -234,6 +234,11 @@ in {
     };
 
     programs = {
+      appimage = {
+        enable = true;
+        binfmt = true;
+      };
+
       corectrl.enable = true;
 
       dconf.enable = true; # For gnome-keyring. See: https://github.com/NixOS/nixpkgs/issues/161224
