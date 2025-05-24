@@ -58,14 +58,23 @@
         key = "/etc/nixos/secrets/${machineName}.syncthing.secret-key.pem";
         cert = "/etc/nixos/secrets/${machineName}.syncthing.public-key.pem";
         settings = {
-          devices = {
-            "iron" = {id = "3BDA4VS-QOLWHD3-2IYBEWR-A7KLWHI-AMQWEVP-ASGQSIS-HGGDXBI-T36EXAO";};
-            "mercury" = {id = "U2GZE3M-HHXAVHB-WRB7OIY-GM6W4EJ-PZVRPNA-SIBX4C4-MZ7PRRA-UXMGYQR";};
-          };
+          devices = let
+            mkDevice = name: id: {
+              "${name}" = {
+                id = id;
+                name = name;
+                address = "tcp://${name}:22000";
+              };
+            };
+          in
+            {}
+            // mkDevice "iron" "3BDA4VS-QOLWHD3-2IYBEWR-A7KLWHI-AMQWEVP-ASGQSIS-HGGDXBI-T36EXAO"
+            // mkDevice "mercury" "U2GZE3M-HHXAVHB-WRB7OIY-GM6W4EJ-PZVRPNA-SIBX4C4-MZ7PRRA-UXMGYQR"
+            // mkDevice "lithium" "PVF44S6-X47TD2M-FXJNTXN-DDZBIXW-FQEHVTU-NRJQLKL-IVREOR4-LFMOMAO";
           folders = {
             "sync" = {
               path = "/home/bakhtiyar/sync";
-              devices = ["iron" "mercury"];
+              devices = ["iron" "mercury" "lithium"];
             };
           };
           gui = {
