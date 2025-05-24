@@ -67,6 +67,8 @@ in {
       systemPackages = with pkgs; [
         liquidctl
         amdgpu_top
+        texliveFull
+        tex-fmt
         # Build packages for `tin` to pickup from cache.
         jellyfin-ffmpeg
         unstable.wyoming-faster-whisper
@@ -148,6 +150,7 @@ in {
 
         temperatureChip = "k10temp-*";
       };
+      java.enable = true;
       sway = {
         extraSessionCommands = ''
           export WLR_NO_HARDWARE_CURSORS=1
