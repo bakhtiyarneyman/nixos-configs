@@ -295,7 +295,6 @@ in {
       light.enable = true; # Brightness management.
       nm-applet.enable = true; # Wi-fi management.
       adb.enable = true;
-      droidcam.enable = true;
       seahorse.enable = true;
       gnupg.agent = {
         enable = true;
