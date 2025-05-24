@@ -48,7 +48,6 @@ in {
         brave
         firefoxpwa
         # Communication
-        skypeforlinux
         signal-desktop
         tdesktop # Telegram.
         tutanota-desktop
