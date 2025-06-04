@@ -280,7 +280,9 @@ in {
             type = "snap";
             name = "snap";
             filesystems = {
-              "slow/crypt/var/lib" = true;
+              "slow/crypt/var/lib<" = true;
+              "slow/crypt/var/lib/hass<" = false;
+              "slow/crypt/var/lib/systemd/coredump" = false;
             };
             snapshotting = {
               type = "periodic";
