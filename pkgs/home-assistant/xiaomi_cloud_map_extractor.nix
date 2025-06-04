@@ -1,8 +1,13 @@
 {
-  pkgs,
   fetchFromGitHub,
+  buildHomeAssistantComponent,
+  pillow,
+  pybase64,
+  python-miio,
+  requests,
+  pycryptodome,
 }:
-pkgs.unstable.buildHomeAssistantComponent rec {
+buildHomeAssistantComponent rec {
   owner = "PiotrMachowski";
   domain = "xiaomi_cloud_map_extractor";
   version = "2.2.3";
@@ -14,7 +19,7 @@ pkgs.unstable.buildHomeAssistantComponent rec {
     hash = "sha256-vC3RGavmL0bJFQ5cxPBHuKfKcw34wF4gcZrxA6yVaMY=";
   };
 
-  dependencies = with pkgs.unstable.python313Packages; [
+  dependencies = [
     pillow
     pybase64
     python-miio

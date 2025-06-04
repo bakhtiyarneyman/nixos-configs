@@ -386,10 +386,10 @@ in {
         (self: super: {
           # This is only needed on tin, but we build it on iron, so that it gets picked up from cache.
           jellyfin-ffmpeg = super.callPackage ../pkgs/jellyfin-ffmpeg-with-vpl.nix {};
-          journal-brief = super.callPackage ../pkgs/journal-brief.nix {};
+          journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
           github-cli = super.unstable.pkgs.github-cli;
           home-assistant = super.unstable.home-assistant;
-          namespaced-openvpn = super.python3Packages.callPackage ../pkgs/namespaced-openvpn.nix {};
+          namespaced-openvpn = super.callPackage ../pkgs/namespaced-openvpn.nix {};
           wyoming-openwakeword = self.unstable.wyoming-openwakeword;
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
           wyoming-piper = self.unstable.wyoming-piper;

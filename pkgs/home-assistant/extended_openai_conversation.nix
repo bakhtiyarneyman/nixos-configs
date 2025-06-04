@@ -1,6 +1,7 @@
 {
   pkgs,
   fetchFromGitHub,
+  openai
 }:
 pkgs.unstable.buildHomeAssistantComponent rec {
   owner = "jekalmin";
@@ -14,7 +15,7 @@ pkgs.unstable.buildHomeAssistantComponent rec {
     hash = "sha256-peg3YO1dgpKtmhvH2Kt9AsLXyg0OmJZof0RE03Kpe8E=";
   };
 
-  dependencies = with pkgs.unstable.python313Packages; [
+  dependencies = [
     openai
   ];
 

@@ -41,7 +41,7 @@ in {
         glib # Needed for junction.
         dim-screen
         # Themes.
-        breeze-icons
+        kdePackages.breeze-icons
         adwaita-one-dark
         # Browsers
         (google-chrome.override {commandLineArgs = "--enable-features=VaapiVideoDecoder";})
@@ -70,7 +70,7 @@ in {
         # Productivity
         obsidian
         # Image
-        gimp
+        gimp3
         inkscape
         # Audio
         audacity
@@ -90,7 +90,6 @@ in {
         yubioath-flutter
         # VM
         quickemu
-        waydroid_script
       ];
 
       etc = {
@@ -436,14 +435,13 @@ in {
             inherit config;
             dimSeconds = dimToLockSecs;
           };
-          inactive-windows-transparency = pkgs.callPackage ../pkgs/inactive-windows-transparency.nix {};
+          inactive-windows-transparency = self.python3Packages.callPackage ../pkgs/inactive-windows-transparency.nix {};
           journst = pkgs.callPackage ../pkgs/journst.nix {inherit config;};
           # nixd = super.pkgs.unstable.nixd.override {
           #   # nix = self.pkgs.unstable.nix;
           # };
           prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix {};
           tutanota-desktop = super.pkgs.unstable.tutanota-desktop;
-          waydroid_script = pkgs.callPackage ../pkgs/waydroid_script.nix {};
         })
       ];
     };
@@ -484,7 +482,6 @@ in {
 
     virtualisation = {
       spiceUSBRedirection.enable = true;
-      waydroid.enable = true;
     };
 
     xdg.portal = {

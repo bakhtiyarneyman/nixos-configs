@@ -48,18 +48,11 @@ in {
         "vm.swappiness" = 1;
       };
       kernelParams = ["zfs.zfs_arc_max=17179869184"];
-      loader.grub = {
-        enable = true;
-        efiSupport = true;
-        mirroredBoots = let
-          toBoot = diskId: {
-            devices = [(toDevice diskId)];
-            efiBootloaderId = "NixOS-${diskId}";
-            efiSysMountPoint = "/boot/efis/${toPartitionId diskId 1}";
-            path = "/boot";
-          };
-        in
-          map toBoot coreDiskIds;
+      loader = {
+        efi.efiSysMountPoint = "/boot1";
+        systemd-boot = {
+          enable = true;
+        };
       };
     };
 
@@ -80,10 +73,6 @@ in {
 
     fileSystems = let
       fss = {
-        "/boot" = {
-          device = "boot/nixos/root";
-          fsType = "zfs";
-        };
         "/" = {
           device = "fast/nixos/root";
           fsType = "zfs";
@@ -94,26 +83,19 @@ in {
           neededForBoot = true;
         };
       };
-      insertBootFilesystem = fss: diskId: let
+      insertBootFilesystem = fss: diskPos: let
+        diskId = builtins.elemAt coreDiskIds (diskPos - 1);
         partitionId = toPartitionId diskId 1;
       in
         fss
         // {
-          "/boot/efis/${partitionId}" = {
+          "/boot${builtins.toString diskPos}" = {
             device = toDevice partitionId;
             fsType = "vfat";
-            options = [
-              "x-systemd.idle-timeout=1min"
-              "x-systemd.automount"
-              "noauto"
-              "nofail"
-              "noatime"
-              "X-mount.mkdir"
-            ];
           };
         };
     in
-      foldl' insertBootFilesystem fss coreDiskIds;
+      foldl' insertBootFilesystem fss [1 2];
 
     hardware.graphics.extraPackages = [
       pkgs.rocmPackages.clr

@@ -1,9 +1,10 @@
 {
   sway-unwrapped,
   fetchFromGitHub,
-  python3Packages,
+  buildPythonApplication,
+  i3ipc
 }:
-python3Packages.buildPythonApplication rec {
+buildPythonApplication rec {
   # long name is long
   lname = "inactive-windows-transparency";
   pname = "sway-${lname}";
@@ -20,7 +21,7 @@ python3Packages.buildPythonApplication rec {
   dontBuild = true;
   dontConfigure = true;
 
-  propagatedBuildInputs = [python3Packages.i3ipc];
+  propagatedBuildInputs = [i3ipc];
 
   installPhase = ''
     install -Dm 0755 $src/contrib/${lname}.py $out/bin/${lname}.py

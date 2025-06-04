@@ -1,6 +1,5 @@
 {
   stdenv,
-  flake8,
   python3,
   openvpn,
   iproute2,
@@ -35,6 +34,5 @@ stdenv.mkDerivation rec {
     runHook postInstall
   '';
 
-  checkInputs = [flake8];
   checkPhase = "make test";
 }

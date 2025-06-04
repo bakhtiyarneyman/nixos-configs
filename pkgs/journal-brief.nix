@@ -1,9 +1,14 @@
 # Nix package for twaugh/journal-brief.
 {
   fetchFromGitHub,
-  python3Packages,
+  buildPythonPackage,
+  pytest,
+  flexmock,
+  pytest-mock,
+  systemd,
+  pyyaml
 }:
-python3Packages.buildPythonPackage rec {
+buildPythonPackage rec {
   pname = "journal-brief";
   version = "1.1.8";
   src = fetchFromGitHub {
@@ -13,12 +18,12 @@ python3Packages.buildPythonPackage rec {
     sha256 = "Q0ydbIwn0w5rnZ4o1k9/XZLHHczIxvYIJvUscBAR120=";
   };
 
-  propagatedBuildInputs = with python3Packages; [
+  propagatedBuildInputs = [
     systemd
     pyyaml
   ];
 
-  nativeCheckInputs = with python3Packages; [
+  nativeCheckInputs = [
     pytest
     flexmock
     pytest-mock

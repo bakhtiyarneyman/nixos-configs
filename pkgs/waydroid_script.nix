@@ -1,13 +1,13 @@
 {
   fetchFromGitHub,
   stdenv,
-  python3,
+  python,
 }:
 stdenv.mkDerivation rec {
   name = "waydroid_script";
 
   buildInputs = [
-    (python3.withPackages (ps: with ps; [tqdm requests inquirerpy]))
+    (python.withPackages (ps: with ps; [tqdm requests inquirerpy]))
   ];
 
   src = fetchFromGitHub {
