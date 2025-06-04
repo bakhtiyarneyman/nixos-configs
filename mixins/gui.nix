@@ -21,6 +21,7 @@ in {
       systemPackages = with pkgs; [
         # System
         gparted
+        monitorets # Chart temperature.
         # Utilities
         libsecret # For gnome-keyring.
         xorg.xdpyinfo
