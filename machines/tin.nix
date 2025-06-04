@@ -200,6 +200,8 @@ in {
       };
     };
     ntopng = {
+      enable = true;
+      httpPort = 4256;
       interfaces = [
         "tun0"
         "tailscale0"
