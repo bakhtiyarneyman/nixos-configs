@@ -131,7 +131,10 @@ in {
           }
         ];
 
-        temperatureChip = "k10temp-*";
+        temperature = {
+          chip = "k10temp-*";
+          idle = 50;
+        };
       };
       java.enable = true;
       sway = {

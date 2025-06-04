@@ -10,10 +10,21 @@ with lib; let
 in {
   options.programs.i3status-rust = with types; {
     enable = mkEnableOption "A status bar for i3";
-    temperatureChip = mkOption {
-      type = str;
-      default = "*-isa-*";
-      description = "A chip from /sys/class/hwmon";
+    temperature = mkOption {
+      type = submodule {
+        options = {
+          chip = mkOption {
+            type = str;
+            default = "*-isa-*";
+            description = "A chip from /sys/class/hwmon";
+          };
+          idle = mkOption {
+            type = int;
+            default = 45;
+            description = "Temperature in Celsius when the system is idle";
+          };
+        };
+      };
     };
     batteries = mkOption {
       type = listOf (submodule {
@@ -120,7 +131,8 @@ in {
               block = "temperature";
               interval = 1;
               format = " $icon $max";
-              chip = "${cfg.temperatureChip}";
+              idle = cfg.temperature.idle;
+              chip = "${cfg.temperature.chip}";
             }
             {
               block = "sound";
