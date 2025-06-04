@@ -43,6 +43,7 @@
               androidtvremote2
               brother
               colorlog
+              elgato
               getmac
               govee-ble
               gtts
