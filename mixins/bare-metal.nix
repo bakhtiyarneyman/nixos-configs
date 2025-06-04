@@ -43,6 +43,7 @@
       powertop
       sbctl
       smartmontools
+      stress
     ];
 
     hardware = {
