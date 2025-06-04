@@ -38,6 +38,7 @@ in {
           "usb_storage"
           "usbhid"
           "xhci_pci"
+          "nct6775" # Motherboard sensors.
         ];
         network.access = {
           enable = true;
