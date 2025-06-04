@@ -200,13 +200,6 @@ in {
         SystemMaxUse=512M
       '';
 
-      # TODO: Decide which one to keep.
-      netdata.enable = true;
-      ntopng = {
-        enable = true;
-        httpPort = 4256;
-      };
-
       nfs.server.importers = ["iron" "mercury"];
 
       openssh = {
