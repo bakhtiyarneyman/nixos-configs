@@ -52,8 +52,6 @@ in {
         tailscaleState = "/var/lib/tailscale/tailscaled.state";
       };
     };
-    # For i915 on N150.
-    kernelPackages = pkgs.linuxKernel.packages.linux_6_12;
     kernelParams = [
       "i915.enable_guc=3"
     ];
@@ -138,10 +136,7 @@ in {
 
   services = {
     immich.enable = true;
-    jellyfin = {
-      enable = true;
-      package = pkgs.unstable.jellyfin;
-    };
+    jellyfin.enable = true;
     jellyseerr.enable = true;
     monero = {
       enable = true;

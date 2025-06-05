@@ -1,9 +1,9 @@
 {
-  pkgs,
   fetchFromGitHub,
-  openai
+  buildHomeAssistantComponent,
+  openai,
 }:
-pkgs.unstable.buildHomeAssistantComponent rec {
+buildHomeAssistantComponent rec {
   owner = "jekalmin";
   domain = "extended_openai_conversation";
   version = "1.0.5-beta2";

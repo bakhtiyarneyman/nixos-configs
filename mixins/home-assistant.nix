@@ -9,11 +9,14 @@
     services = {
       home-assistant = {
         enable = true;
-        customComponents = builtins.attrValues {
-          openrgb-ha = pkgs.callPackage ../pkgs/home-assistant/openrgb-ha.nix {};
-          xiaomi_cloud_map_extractor = pkgs.callPackage ../pkgs/home-assistant/xiaomi_cloud_map_extractor.nix {};
-          extended_openai_conversation = pkgs.callPackage ../pkgs/home-assistant/extended_openai_conversation.nix {};
-        };
+        customComponents = let
+          callPackage = config.services.home-assistant.package.python.pkgs.callPackage;
+        in
+          builtins.attrValues {
+            openrgb-ha = callPackage ../pkgs/home-assistant/openrgb-ha.nix {};
+            xiaomi_cloud_map_extractor = callPackage ../pkgs/home-assistant/xiaomi_cloud_map_extractor.nix {};
+            extended_openai_conversation = callPackage ../pkgs/home-assistant/extended_openai_conversation.nix {};
+          };
         customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
           apexcharts-card
           atomic-calendar-revive
