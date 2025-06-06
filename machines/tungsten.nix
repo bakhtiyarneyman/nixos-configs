@@ -78,7 +78,7 @@
           name = "backups";
           serve = {
             type = "stdinserver";
-            client_identities = ["iron"];
+            client_identities = ["iron" "tin"];
           };
           root_fs = "backups";
           recv = {
