@@ -3,7 +3,6 @@ function fish_user_key_bindings
     bind \cr 'peco_select_history (commandline -b)'
 end
 
-
 function print_error -d "Print error message"
     set_color red
     echo $argv
@@ -56,7 +55,6 @@ function delete_old_snapshots
         echo "  FILESYSTEM         The pool or dataset to delete snapshots from"
         return 0
     end
-
 
     if test $_flag_older_than
         set threshold (date -d $_flag_older_than +%s)
@@ -151,54 +149,57 @@ function rename_gopro_files
 end
 
 function recode
-    set --local options (fish_opt --long-only --short h --long help)
-    set options $options (fish_opt --optional-val --long-only --short n --long noise)
-    set options $options (fish_opt --optional-val --long-only --short g --long max-keyframe-gap)
-    set options $options (fish_opt --optional-val --long-only --short s --long speed )
-    set options $options (fish_opt --required-val --long-only --short i --long input-file)
-    set options $options (fish_opt --required-val --long-only --short o --long output-dir)
+    set --function options (fish_opt --short h --long help)
+    set options $options (fish_opt --required-val --short n --long noise)
+    set options $options (fish_opt --required-val --short s --long speed)
+    set options $options (fish_opt --required-val --short i --long input-file)
+    set options $options (fish_opt --required-val --short o --long output-dir)
+    set options $options (fish_opt --required-val --short c --long container)
 
-    set --local crf 32
-    set --local preset 4
-    set --local g 300
+    set --function global_quality 25
+    set --function preset veryfast
 
-    argparse --name="recode" --ignore-unknown $options -- $argv
+    argparse --name="recode" $options -- $argv
     or return
 
-    if test -n "$_flag_help"
-        echo "Recode video files using ffmpeg/libsvtav1"
+    if set --query _flag_help
+        echo "Recode video files using ffmpeg/qsv"
         echo "Usage:"
         echo "  recode --help"
         echo "  recode [--noise <noise>] [--max-keyframe-gap <max-keyframe-gap>] [--speed <speed>] --input-file <input-file> --output-dir <output-dir>"
         echo "Options:"
         echo " -h, --help: show this help"
-        echo " -n, --noise: noise level (-crf in libsvtav1). Default: $crf"
-        echo " -g, --max-keyframe-gap: max keyframe gap (-g in libsvtav1). Default: $g"
-        echo " -s, --speed: speed (-preset in libsvtav1). Default: $preset"
+        echo " -n, --noise: noise level (-global_quality in QSV). Default: $global_quality"
+        echo " -s, --speed: speed of encoding. Default: $preset"
+        echo " -c, --container: Container format. Default: same as input file"
         echo " -i, --input-file: input file"
         echo " -o, --output-dir: output directory"
         return 0
     end
 
-    if test -n "$_flag_noise"
-        set crf $_flag_noise
+    if set --query _flag_noise
+        echo "Using noise level: $_flag_noise"
+        set --function global_quality $_flag_noise
     end
 
-    if test -n "$_flag_max_keyframe_gap"
-        set g $_flag_max_keyframe_gap
+    if set --query _flag_speed
+        echo "Using encoding speed: $_flag_speed"
+        set --function preset $_flag_speed
     end
 
-    if test -n "$_flag_speed"
-        set preset $_flag_speed
+    if set --query _flag_container
+        echo "Using container format: $_flag_container"
+        set --function container $_flag_container
+    else
+        set --function container (path extension $_flag_input_file)
     end
 
+    set --function file $_flag_input_file
+    set --function output_dir $_flag_output_dir
+    set --function base (path basename $file)
 
-    set --local file $_flag_input_file
-    set --local output_dir $_flag_output_dir
-    set --local base (path basename $file)
-
-    set --local temp_target $output_dir/(path change-extension crf=$crf.preset=$preset.g=$g.unfinished.mkv $base)
-    set --local target (path change-extension mkv (path change-extension "" $temp_target))
+    set --function temp_target $output_dir/(path change-extension gq=$global_quality.preset=$preset.unfinished.$container $base)
+    set --function target (path change-extension $container (path change-extension "" $temp_target))
 
     if test -e "$target"
         set_color green
@@ -211,13 +212,15 @@ function recode
     set_color normal
 
     ffmpeg \
+        -hwaccel qsv \
         -i $file \
-        -c:v libsvtav1 \
+        -copy_unknown \
+        -map 0 \
+        -map_metadata 0 \
+        -c copy \
+        -c:v hevc_qsv \
         -preset $preset \
-        -crf $crf \
-        -g $g \
-        -svtav1-params tune=0 \
-        -c:a copy \
+        -global_quality $global_quality \
         -y \
         $argv \
         $temp_target
@@ -264,7 +267,6 @@ function move_to_cache -d "Move to cache"
         print_error "Path `$src` does not exist."
         return 1
     end
-
 
     if test -L $src
         set link_target (readlink $src)
