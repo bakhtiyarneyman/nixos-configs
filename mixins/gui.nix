@@ -257,10 +257,17 @@ in {
         enable = true;
         enableVirtualCamera = true;
         plugins = with pkgs.obs-studio-plugins; [
-          wlrobs
-          obs-pipewire-audio-capture
+          advanced-scene-switcher
           droidcam-obs
+          input-overlay
+          obs-gradient-source
+          obs-move-transition
+          obs-pipewire-audio-capture
+          obs-source-clone
+          obs-source-record
           obs-source-switcher
+          obs-vaapi
+          wlrobs
         ];
       };
       sway = {
