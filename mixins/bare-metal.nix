@@ -41,6 +41,7 @@
 
     environment.systemPackages = with pkgs; [
       iw
+      keylight-cli
       lm_sensors
       powertop
       sbctl
