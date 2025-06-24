@@ -259,7 +259,7 @@ in {
               "slow/crypt/entertainment/video<" = false;
               "slow/crypt/var/lib/hass<" = true;
               "slow/crypt/var/lib/hass/tts" = false;
-              # "slow/crypt${config.services.immich.mediaLocation}" = true;
+              "slow/crypt${config.services.immich.mediaLocation}" = true;
             };
             send = {
               bandwidth_limit.max = "500 KiB";
