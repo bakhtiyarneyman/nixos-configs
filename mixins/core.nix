@@ -383,7 +383,9 @@ in {
           github-cli = super.unstable.pkgs.github-cli;
           home-assistant = super.unstable.home-assistant;
           namespaced-openvpn = super.callPackage ../pkgs/namespaced-openvpn.nix {};
-          wyoming-openwakeword = self.unstable.wyoming-openwakeword;
+          wyoming-openwakeword = self.unstable.wyoming-openwakeword.override {
+            python3Packages = self.python312Packages;
+          };
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
           wyoming-piper = self.unstable.wyoming-piper;
         })
