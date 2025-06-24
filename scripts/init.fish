@@ -150,14 +150,16 @@ end
 
 function recode
     set --function options (fish_opt --short h --long help)
+    set options $options (fish_opt --required-val --short e --long encoder)
     set options $options (fish_opt --required-val --short n --long noise)
     set options $options (fish_opt --required-val --short s --long speed)
     set options $options (fish_opt --required-val --short i --long input-file)
     set options $options (fish_opt --required-val --short o --long output-dir)
     set options $options (fish_opt --required-val --short c --long container)
 
-    set --function global_quality 25
-    set --function preset veryfast
+    set --function encoder qsv
+    set --function noise 25
+    set --function speed veryfast
 
     argparse --name="recode" $options -- $argv
     or return
@@ -168,14 +170,16 @@ function recode
         echo "  recode --help"
         echo "  recode [--noise <noise>] [--max-keyframe-gap <max-keyframe-gap>] [--speed <speed>] --input-file <input-file> --output-dir <output-dir>"
         echo "Options:"
-        echo " -h, --help: show this help"
-        echo " -n, --noise: noise level (-global_quality in QSV). Default: $global_quality"
-        echo " -s, --speed: speed of encoding. Default: $preset"
-        echo " -c, --container: Container format. Default: same as input file"
-        echo " -i, --input-file: input file"
-        echo " -o, --output-dir: output directory"
+        echo " --help: show this help"
+        echo " --noise: noise level. Default: $noise"
+        echo " --speed: speed of encoding. Default: $speed"
+        echo " --container: Container format. Default: same as input file"
+        echo " --input-file: input file"
+        echo " --output-dir: output directory"
         return 0
     end
+
+    mkdir -p $_flag_output_dir; or return 1
 
     if set --query _flag_noise
         echo "Using noise level: $_flag_noise"
@@ -184,21 +188,46 @@ function recode
 
     if set --query _flag_speed
         echo "Using encoding speed: $_flag_speed"
-        set --function preset $_flag_speed
+        set --function speed $_flag_speed
     end
 
     if set --query _flag_container
         echo "Using container format: $_flag_container"
         set --function container $_flag_container
     else
-        set --function container (path extension $_flag_input_file)
+        set raw_ext (path extension $_flag_input_file)
+        set new_ext (string replace -r '^\.' '' $raw_ext)
+        switch $new_ext
+            case mkv mp4 vob mov
+                set --function container $new_ext
+            case '*'
+                echo "Unsupported extension: $new_ext"
+                return 1
+        end
     end
+
+    if set --query _flag_encoder
+        set encoder $_flag_encoder
+        switch $encoder
+            case qsv
+                set codec hevc_qsv -global_quality $noise
+                set job_flags -hwaccel qsv
+            case libsvtav1
+                set codec libsvtav1 -svtav1-params tune=0 -g 300 -crf $noise
+                set job_flags
+            case '*'
+                set codec $encoder -crf $noise
+                set job_flags
+        end
+    end
+
+    echo "Extra args: $argv"
 
     set --function file $_flag_input_file
     set --function output_dir $_flag_output_dir
     set --function base (path basename $file)
 
-    set --function temp_target $output_dir/(path change-extension gq=$global_quality.preset=$preset.unfinished.$container $base)
+    set --function temp_target $output_dir/(path change-extension encoder=$encoder.noise=$noise.speed=$speed.unfinished.$container $base)
     set --function target (path change-extension $container (path change-extension "" $temp_target))
 
     if test -e "$target"
@@ -212,21 +241,21 @@ function recode
     set_color normal
 
     ffmpeg \
-        -hwaccel qsv \
+        $job_flags \
         -i $file \
         -copy_unknown \
         -map 0 \
         -map_metadata 0 \
         -c copy \
-        -c:v hevc_qsv \
-        -preset $preset \
-        -global_quality $global_quality \
-        -y \
+        -c:v $codec \
+        -preset $speed \
         $argv \
+        -y \
         $temp_target
     or return 1
 
     mv $temp_target $target
+    or return 1
 end
 
 function move_to_cache -d "Move to cache"
