@@ -4,6 +4,10 @@
   ...
 }: {
   config = let
+    toMac = last: "a8:b8:e0:04:fa:6${last}";
+    wanMac = toMac "b";
+    lanMac = toMac "c";
+
     mullvad_dns = [
       "194.242.2.2"
       "2a07:e340::2"
@@ -173,6 +177,19 @@
         lan = 100;
       };
 
+      links = let
+        rename = mac: name: {
+          matchConfig = {
+            PermanentMACAddress = mac;
+            Type = "ether";
+          };
+          linkConfig.Name = "eth-${name}";
+        };
+      in {
+        "10-eth-wan" = rename wanMac "wan";
+        "20-eth-lan" = rename lanMac "lan";
+      };
+
       netdevs = {
         "10-lan-tenant".netdevConfig = {
           Name = "lan-tenant";
@@ -219,14 +236,14 @@
         };
 
         "11-lan-ethernet" = {
-          matchConfig.Name = "enp3s0";
+          matchConfig.Name = "eth-lan";
           bridge = ["lan-tenant"];
           linkConfig.RequiredForOnline = "no";
         };
 
         "20-wan" = {
           linkConfig.RequiredForOnline = "routable";
-          matchConfig.Name = "enp2s0";
+          matchConfig.Name = "eth-wan";
           networkConfig = {
             DHCP = "yes";
             IPv6AcceptRA = "yes";
