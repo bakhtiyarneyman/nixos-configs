@@ -41,6 +41,7 @@
 
     environment.systemPackages = with pkgs; [
       iw
+      lm_sensors
       powertop
       sbctl
       smartmontools
