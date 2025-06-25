@@ -262,7 +262,7 @@ in {
               "slow/crypt${config.services.immich.mediaLocation}" = true;
             };
             send = {
-              bandwidth_limit.max = "500 KiB";
+              bandwidth_limit.max = "3 MiB";
               encrypted = true;
             };
             inherit snapshotting;
