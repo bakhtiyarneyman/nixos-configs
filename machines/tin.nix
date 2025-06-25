@@ -149,8 +149,8 @@ in {
 
         prune-blockchain=1
 
-        out-peers=64
-        in-peers=1024
+        out-peers=16
+        in-peers=16
       '';
       limits = {
         upload = 15; # KB/s
