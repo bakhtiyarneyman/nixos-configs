@@ -61,6 +61,12 @@
         after = ["network-online.target"];
         serviceConfig = {
           Type = "oneshot";
+          ExecStartPre =
+            if config.networking.networkmanager.enable
+            then "${pkgs.networkmanager}/bin/nm-online --quiet --timeout=30"
+            else if config.networking.useNetworkd
+            then "${pkgs.systemd}/lib/systemd/systemd-networkd-wait-online --timeout=30"
+            else "true"; # fall-back: do not block"
           ExecStart = let
             yamlConfig =
               lib.generators.toYAML {}
