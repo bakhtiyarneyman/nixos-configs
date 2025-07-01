@@ -31,13 +31,7 @@
   };
 
   networking = {
-    # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
-    # (the default) this is the recommended approach. When using systemd-networkd it's
-    # still possible to use this option, but it's recommended to use it in conjunction
-    # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
-    useDHCP = lib.mkDefault true;
-    # interfaces.enp1s0.useDHCP = lib.mkDefault true;
-
+    useNetworkd = true;
     hostId = "a4d09f93";
   };
 
@@ -107,7 +101,7 @@
     networks."10-wan" = {
       matchConfig.Name = "enp1s0";
       networkConfig = {
-        DHCP = "ipv4";
+        DHCP = "yes";
         IPv6AcceptRA = true;
       };
       linkConfig.RequiredForOnline = "routable";
