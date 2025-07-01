@@ -73,6 +73,7 @@ in {
         # Image
         gimp3
         inkscape
+        swayimg
         # Audio
         audacity
         # Video
