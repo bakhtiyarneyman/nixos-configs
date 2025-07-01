@@ -103,10 +103,14 @@ in {
     ];
 
     networking = {
-      networkmanager.enable = true;
+      firewall = {
+        allowedTCPPorts = [52285];
+        allowedUDPPorts = [52285];
+      };
       hostId = "a7a93500";
-      wifiInterface = "wlp12s0";
       kernelModules = ["mt7921e" "r8169"];
+      networkmanager.enable = true;
+      wifiInterface = "wlp12s0";
     };
 
     programs = {
