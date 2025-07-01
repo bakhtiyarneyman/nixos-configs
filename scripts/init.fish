@@ -171,6 +171,7 @@ function recode
         echo "  recode [--noise <noise>] [--max-keyframe-gap <max-keyframe-gap>] [--speed <speed>] --input-file <input-file> --output-dir <output-dir>"
         echo "Options:"
         echo " --help: show this help"
+        echo " --encoder: encoder to use. Default: $encoder"
         echo " --noise: noise level. Default: $noise"
         echo " --speed: speed of encoding. Default: $speed"
         echo " --container: Container format. Default: same as input file"
