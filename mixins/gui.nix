@@ -4,6 +4,10 @@
   ...
 }: let
   dimToLockSecs = 15;
+  yubioath-flutter-launcher = pkgs.writeShellScriptBin "yubioath-flutter-launcher" ''
+    ${pkgs.sway}/bin/swaymsg '[app_id="yubioath-flutter"]' focus ||
+    ${pkgs.yubioath-flutter}/bin/yubioath-flutter &
+  '';
 in {
   imports = [
     ../modules/i3status-rust.nix
@@ -58,6 +62,7 @@ in {
         rofimoji
         # Development
         (unstable.vscode.override {isInsiders = false;})
+        unstable.claude-code
         cachix
         meld
         python3
@@ -90,6 +95,7 @@ in {
           pulseaudioSupport = true;
         })
         yubioath-flutter
+        yubioath-flutter-launcher
         # VM
         quickemu
       ];
@@ -175,6 +181,14 @@ in {
         enable = true;
         defaultSession = "sway";
       };
+
+      spice-vdagentd.enable = true;
+
+      udev.extraRules = ''
+        # Launch or focus Yubico OATH app when a YubiKey is plugged in.
+        ACTION=="add", SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="1050", ENV{ID_MODEL_ID}=="0407", RUN+="${pkgs.coreutils}/bin/touch /run/user/1000/yubikey-inserted"
+      '';
+
       # Enable the X11 windowing system.
       xserver = {
         displayManager = {
@@ -421,6 +435,25 @@ in {
         # dump_vars = autostart "${pkgs.writeShellScriptBin "dump_vars" ''
         #   env | sort > /tmp/vars.systemd
         # ''}/bin/dump_vars";
+
+        yubikey-watcher = {
+          after = ["sway-session.target"];
+          wantedBy = ["sway-session.target"];
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = "${pkgs.writeShellScript "yubikey-watcher" ''
+              while true; do
+                ${pkgs.inotify-tools}/bin/inotifywait -e create /run/user/1000/ 2>/dev/null | while read dir event file; do
+                  if [[ "$file" == "yubikey-inserted" ]]; then
+                    rm -f /run/user/1000/yubikey-inserted
+                    ${yubioath-flutter-launcher}/bin/yubioath-flutter-launcher
+                  fi
+                done
+              done
+            ''}";
+            Restart = "always";
+          };
+        };
       }
       // mkJournst "boot"
       // mkJournst "run";
