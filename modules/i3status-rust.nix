@@ -83,7 +83,7 @@ in {
       hash = color: "#${config.palette.${color}}";
     in
       settingsFormat.generate "config.toml" {
-        scrolling = "natural";
+        invert_scrolling = true;
         icons.icons = "awesome6";
         theme.overrides = {
           idle_bg = hash "background";
