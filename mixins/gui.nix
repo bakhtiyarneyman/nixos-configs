@@ -5,8 +5,12 @@
 }: let
   dimToLockSecs = 15;
   yubioath-flutter-launcher = pkgs.writeShellScriptBin "yubioath-flutter-launcher" ''
-    ${pkgs.sway}/bin/swaymsg '[app_id="yubioath-flutter"]' focus ||
-    ${pkgs.yubioath-flutter}/bin/yubioath-flutter &
+    if ${pkgs.sway}/bin/swaymsg '[app_id="yubioath-flutter"]' focus 2>/dev/null; then
+      exit 0
+    else
+      ${pkgs.systemd}/bin/systemd-run --user --scope ${pkgs.yubioath-flutter}/bin/yubioath-flutter
+      exit 0
+    fi
   '';
 in {
   imports = [
@@ -186,7 +190,7 @@ in {
 
       udev.extraRules = ''
         # Launch or focus Yubico OATH app when a YubiKey is plugged in.
-        ACTION=="add", SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="1050", ENV{ID_MODEL_ID}=="0407", RUN+="${pkgs.coreutils}/bin/touch /run/user/1000/yubikey-inserted"
+        ACTION=="add", SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="1050", ENV{ID_MODEL_ID}=="0407", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="yubikey-launch.service"
       '';
 
       # Enable the X11 windowing system.
@@ -436,23 +440,22 @@ in {
         #   env | sort > /tmp/vars.systemd
         # ''}/bin/dump_vars";
 
-        yubikey-watcher = {
+        yubikey-launch = {
           after = ["sway-session.target"];
-          wantedBy = ["sway-session.target"];
+          requisite = ["sway-session.target"];
           serviceConfig = {
-            Type = "simple";
-            ExecStart = "${pkgs.writeShellScript "yubikey-watcher" ''
-              while true; do
-                ${pkgs.inotify-tools}/bin/inotifywait -e create /run/user/1000/ 2>/dev/null | while read dir event file; do
-                  if [[ "$file" == "yubikey-inserted" ]]; then
-                    rm -f /run/user/1000/yubikey-inserted
-                    ${yubioath-flutter-launcher}/bin/yubioath-flutter-launcher
-                  fi
-                done
-              done
-            ''}";
-            Restart = "always";
+            Type = "oneshot";
+            RemainAfterExit = false;
+            ExecStart = "${yubioath-flutter-launcher}/bin/yubioath-flutter-launcher";
           };
+          environment = {
+            XDG_SEAT = "seat0";
+            XDG_SESSION_CLASS = "user";
+            XDG_VTNR = "2";
+            I3SOCK = "/run/user/1000/sway-ipc.1000.5973.sock";
+          };
+        };
+
         };
       }
       // mkJournst "boot"
