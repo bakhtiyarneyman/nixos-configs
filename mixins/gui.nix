@@ -456,6 +456,30 @@ in {
           };
         };
 
+        obs-virtual-audio = {
+          description = "Load OBS virtual audio devices";
+          after = ["pipewire.service"];
+          bindsTo = ["pipewire.service"];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = pkgs.writeShellScript "obs-virtual-audio-setup" ''
+              # Wait for PipeWire to be fully ready
+              ${pkgs.coreutils}/bin/sleep 2
+              
+              # Load virtual sink for OBS
+              ${pkgs.pulseaudio}/bin/pactl load-module module-null-sink \
+                sink_name=OBS_VIRTUAL_SINK \
+                sink_properties=device.description="OBS Virtual Sink"
+              
+              # Load virtual microphone (remap source from sink monitor)
+              ${pkgs.pulseaudio}/bin/pactl load-module module-remap-source \
+                source_name=OBS_VIRTUAL_MIC \
+                master=OBS_VIRTUAL_SINK.monitor \
+                source_properties=device.description="OBS Virtual Microphone"
+            '';
+          };
+          wantedBy = ["default.target"];
         };
       }
       // mkJournst "boot"
