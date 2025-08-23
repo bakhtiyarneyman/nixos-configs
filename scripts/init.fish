@@ -1,6 +1,5 @@
 function fish_user_key_bindings
     bind \cs 'exec fish'
-    bind \cr 'peco_select_history (commandline -b)'
 end
 
 function print_error -d "Print error message"
@@ -323,3 +322,5 @@ function move_to_cache -d "Move to cache"
     ln --symbolic $dst $src; or return 1
     print_success "Moved `$src` to cache."
 end
+
+atuin init fish --disable-up-arrow | source

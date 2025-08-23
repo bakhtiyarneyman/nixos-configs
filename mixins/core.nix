@@ -60,6 +60,7 @@ in {
         parted
         smem
         # Utilities
+        atuin
         wget
         lnav
         mkpasswd
@@ -129,6 +130,7 @@ in {
     };
 
     services = {
+      atuin.enable = true;
       avahi = {
         enable = true;
         # Important to resolve .local domains of printers, otherwise you get an error
@@ -222,11 +224,23 @@ in {
         ]);
     };
 
-    # Workaround for nm-online issues.
-    # See: https://github.com/NixOS/nixpkgs/issues/180175
-    systemd.services.NetworkManager-wait-online = {
+    systemd.services = {
+      # Workaround for nm-online issues.
+      # See: https://github.com/NixOS/nixpkgs/issues/180175
+      NetworkManager-wait-online = {
+        serviceConfig = {
+          ExecStart = ["" "${pkgs.networkmanager}/bin/nm-online -q"];
+        };
+      };
+    };
+
+    systemd.user.services.atuin-daemon = {
+      description = "Atuin daemon for shell history sync";
+      wantedBy = ["default.target"];
       serviceConfig = {
-        ExecStart = ["" "${pkgs.networkmanager}/bin/nm-online -q"];
+        ExecStart = "${pkgs.atuin}/bin/atuin daemon";
+        Restart = "always";
+        RestartSec = 5;
       };
     };
 
