@@ -413,5 +413,15 @@ in {
         Group = "qbittorrent";
       };
     };
+    tailscale-funnel-immich = {
+      enable = true;
+      after = ["network.target"];
+      wantedBy = ["multi-user.target"];
+      serviceConfig = {
+        ExecStart = "${pkgs.tailscale}/bin/tailscale funnel http://localhost:${toString config.services.immich.port}";
+        Restart = "always";
+        RestartSec = "5";
+      };
+    };
   };
 }
