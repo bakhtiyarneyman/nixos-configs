@@ -62,6 +62,7 @@
               python-otbr-api
               python-roborock
               radios
+              samsungctl
               tuya-device-sharing-sdk
               vacuum-map-parser-base
               wakeonlan
