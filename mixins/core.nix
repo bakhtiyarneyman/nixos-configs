@@ -395,7 +395,9 @@ in {
           jellyfin-ffmpeg = super.callPackage ../pkgs/jellyfin-ffmpeg-with-vpl.nix {};
           journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
           github-cli = super.unstable.pkgs.github-cli;
-          home-assistant = super.unstable.home-assistant;
+          home-assistant = super.unstable.home-assistant.override {
+            python313 = super.unstable.python313;
+          };
           namespaced-openvpn = super.callPackage ../pkgs/namespaced-openvpn.nix {};
           wyoming-openwakeword = self.unstable.wyoming-openwakeword;
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
