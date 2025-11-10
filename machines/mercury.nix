@@ -47,6 +47,8 @@
       ];
     };
 
+    programs.i3status-rust.temperature = {};
+
     services = {
       rpcbind.enable = true;
       xserver = {
