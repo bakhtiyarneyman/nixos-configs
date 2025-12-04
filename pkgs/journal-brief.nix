@@ -5,12 +5,17 @@
   pytest,
   flexmock,
   pytest-mock,
-  systemd,
-  pyyaml
+  systemd-python,
+  pyyaml,
+  setuptools,
 }:
 buildPythonPackage rec {
   pname = "journal-brief";
   version = "1.1.8";
+  pyproject = true;
+
+  build-system = [ setuptools ];
+
   src = fetchFromGitHub {
     owner = "twaugh";
     repo = "journal-brief";
@@ -19,7 +24,7 @@ buildPythonPackage rec {
   };
 
   propagatedBuildInputs = [
-    systemd
+    systemd-python
     pyyaml
   ];
 

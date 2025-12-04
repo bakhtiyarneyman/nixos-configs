@@ -2,12 +2,12 @@
   canHibernate = builtins.elem "nohibernate" config.boot.kernelParams;
 in {
   services = {
-    logind = {
-      lidSwitch =
+    logind.settings.Login = {
+      HandleLidSwitch =
         if canHibernate
         then "suspend"
         else "suspend-then-hibernate";
-      lidSwitchExternalPower = "suspend";
+      HandleLidSwitchExternalPower = "suspend";
     };
 
     # Powertop disables wired mice.

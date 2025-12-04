@@ -72,7 +72,7 @@ in {
         bottom # Better top.
         htop # Better top.
         fd # Better find.
-        du-dust # Better du.
+        dust # Better du.
         sd # Better sed.
         xcp # Better cp.
         nethogs
@@ -83,7 +83,7 @@ in {
         github-cli
         ngrok
         jq
-        config.boot.kernelPackages.perf
+        perf
         # Nix
         # nixd
         nil
@@ -94,7 +94,7 @@ in {
         # Hardware
         dmidecode
         fio # Disk benchmarking.
-        glxinfo # OpenGL information.
+        mesa-demos # OpenGL information.
         inxi # System information.
         pciutils # lspci
         psmisc
@@ -313,10 +313,7 @@ in {
         };
       };
 
-      nix-ld = {
-        enable = true;
-        package = pkgs.nix-ld-rs;
-      };
+      nix-ld.enable = true;
 
       neovim = {
         enable = true;
@@ -391,8 +388,6 @@ in {
       };
       overlays = [
         (self: super: {
-          # This is only needed on tin, but we build it on iron, so that it gets picked up from cache.
-          jellyfin-ffmpeg = super.callPackage ../pkgs/jellyfin-ffmpeg-with-vpl.nix {};
           journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
           github-cli = super.unstable.pkgs.github-cli;
           home-assistant = super.unstable.home-assistant.override {

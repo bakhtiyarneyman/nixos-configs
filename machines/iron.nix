@@ -266,13 +266,10 @@ in {
           {output = "DP-3";}
         ];
         dpi = 175;
-        displayManager = {
-          gdm.enable = true;
-          setupCommands = ''
-            ${pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource "modesetting" NVIDIA-0
-            ${pkgs.xorg.xrandr}/bin/xrandr --output DP-1 --auto --primary --output DP-3 --auto --right-of DP-1
-          '';
-        };
+        displayManager.setupCommands = ''
+          ${pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource "modesetting" NVIDIA-0
+          ${pkgs.xorg.xrandr}/bin/xrandr --output DP-1 --auto --primary --output DP-3 --auto --right-of DP-1
+        '';
       };
 
       zrepl = {

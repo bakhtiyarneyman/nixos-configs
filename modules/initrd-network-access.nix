@@ -74,7 +74,7 @@ in {
           };
           initrdBin = [
             pkgs.unixtools.ping
-            pkgs.unixtools.nettools
+            pkgs.unixtools.net-tools
           ];
         };
       };

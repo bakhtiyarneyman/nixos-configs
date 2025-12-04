@@ -40,7 +40,7 @@ in {
         alacritty
         swaynotificationcenter
         prettyLock
-        rofi-wayland
+        rofi
         pavucontrol # Pulse audio volume control.
         pulseaudio # For pactl to be used from i3.
         libnotify # Notification service API.
@@ -58,7 +58,7 @@ in {
         firefoxpwa
         # Communication
         signal-desktop
-        tdesktop # Telegram.
+        telegram-desktop
         tutanota-desktop
         zoom-us
         unstable.pkgs.discord
@@ -87,17 +87,14 @@ in {
         audacity
         # Video
         blender
-        ffmpeg_6-full
+        ffmpeg_7-full
         guvcview
         libva-utils
         mpv
         vlc
         # Privacy
         monero-gui
-        (unstable.pkgs.tor-browser-bundle-bin.override {
-          mediaSupport = true;
-          pulseaudioSupport = true;
-        })
+        tor-browser
         yubioath-flutter
         yubioath-flutter-launcher
         # VM
@@ -181,9 +178,19 @@ in {
 
     services = {
       dbus.implementation = "broker";
+      desktopManager.gnome.extraGSettingsOverrides = ''
+        [org.gnome.desktop.interface]
+        gtk-theme='Adwaita-One-Dark'
+        icon-theme='kora'
+        font-name='Fira Sans'
+      '';
       displayManager = {
         enable = true;
         defaultSession = "sway";
+        gdm = {
+          enable = true;
+          autoSuspend = false;
+        };
       };
 
       spice-vdagentd.enable = true;
@@ -193,22 +200,7 @@ in {
         ACTION=="add", SUBSYSTEM=="usb", ENV{ID_VENDOR_ID}=="1050", ENV{ID_MODEL_ID}=="0407", TAG+="systemd", ENV{SYSTEMD_USER_WANTS}+="yubikey-launch.service"
       '';
 
-      # Enable the X11 windowing system.
-      xserver = {
-        displayManager = {
-          gdm = {
-            enable = true;
-            autoSuspend = false;
-          };
-        };
-        desktopManager.gnome.extraGSettingsOverrides = ''
-          [org.gnome.desktop.interface]
-          gtk-theme='Adwaita-One-Dark'
-          icon-theme='kora'
-          font-name='Fira Sans'
-        '';
-        exportConfiguration = true;
-      };
+      xserver.exportConfiguration = true;
 
       pipewire = {
         enable = true;
@@ -271,7 +263,6 @@ in {
       };
 
       i3status-rust.enable = true;
-      file-roller.enable = true;
       obs-studio = {
         enable = true;
         enableVirtualCamera = true;
@@ -393,7 +384,7 @@ in {
 
         signal = autostart "${pkgs.signal-desktop}/bin/signal-desktop";
 
-        telegram = autostart "${pkgs.tdesktop}/bin/telegram-desktop";
+        telegram = autostart "${pkgs.telegram-desktop}/bin/telegram-desktop";
 
         discord = autostart "${pkgs.unstable.discord}/bin/discord";
 
@@ -466,12 +457,12 @@ in {
             ExecStart = pkgs.writeShellScript "obs-virtual-audio-setup" ''
               # Wait for PipeWire to be fully ready
               ${pkgs.coreutils}/bin/sleep 2
-              
+
               # Load virtual sink for OBS
               ${pkgs.pulseaudio}/bin/pactl load-module module-null-sink \
                 sink_name=OBS_VIRTUAL_SINK \
                 sink_properties=device.description="OBS Virtual Sink"
-              
+
               # Load virtual microphone (remap source from sink monitor)
               ${pkgs.pulseaudio}/bin/pactl load-module module-remap-source \
                 source_name=OBS_VIRTUAL_MIC \
@@ -495,9 +486,8 @@ in {
       overlays = [
         (self: super: {
           adwaita-one-dark = pkgs.callPackage ../pkgs/adwaita-one-dark.nix {};
-          android-udev-rules = super.pkgs.unstable.android-udev-rules.override {};
           blender = super.blender.override {
-            ffmpeg = pkgs.ffmpeg_6-full;
+            ffmpeg_7 = pkgs.ffmpeg_7-full;
             hipSupport = true;
           };
           dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix {
@@ -541,11 +531,11 @@ in {
         google-fonts
         inconsolata
         liberation_ttf
-        noto-fonts-emoji
+        noto-fonts-color-emoji
         source-code-pro
         terminus_font
         ttf_bitstream_vera
-        ubuntu_font_family
+        ubuntu-classic
       ];
     };
 

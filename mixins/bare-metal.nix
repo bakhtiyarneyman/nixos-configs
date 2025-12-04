@@ -81,12 +81,12 @@
         ];
       };
 
-      logind = {
-        powerKey =
+      logind.settings.Login = {
+        HandlePowerKey =
           if builtins.elem "nohibernate" config.boot.kernelParams
           then "suspend"
           else "suspend-then-hibernate";
-        powerKeyLongPress = "poweroff";
+        HandlePowerKeyLongPress = "poweroff";
       };
 
       smartd = {
