@@ -94,9 +94,6 @@
             "/etc/nixos/models/openwakeword"
           ];
           threshold = 0.2;
-          preloadModels = [
-            "duh_meenah"
-          ];
           extraArgs = [
             "--debug"
           ];
