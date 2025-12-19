@@ -8,7 +8,7 @@
     };
     nix-colors.url = "github:misterio77/nix-colors";
     lanzaboote = {
-      url = "github:nix-community/lanzaboote/v0.4.2";
+      url = "github:nix-community/lanzaboote/v1.0.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # Reminder: tend to `always-on.nix` when adding new inputs.
