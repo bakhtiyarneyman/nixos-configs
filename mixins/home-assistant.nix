@@ -118,6 +118,8 @@
             extraArgs = [
               "--debug"
             ];
+            # Temporary, until the module is fixed. Right now there's no such flag.
+            streaming = false;
           };
         };
       };
