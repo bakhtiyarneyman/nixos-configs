@@ -117,7 +117,7 @@ in {
       i3status-rust = {
         batteries = [
           {
-            model = "Wireless Mouse MX Master 3";
+            model = "Logitech MX Master 3000";
             icon = "";
           }
           {
