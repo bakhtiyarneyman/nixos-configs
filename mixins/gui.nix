@@ -20,6 +20,7 @@ in {
   config = {
     users.users.bakhtiyar.extraGroups = [
       "adbusers"
+      "kvm"
       "video" # Allow changing brightness via `light`.
     ];
 
