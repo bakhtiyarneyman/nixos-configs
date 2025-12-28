@@ -266,7 +266,8 @@ in {
       obs-studio = {
         enable = true;
         enableVirtualCamera = true;
-        plugins = with pkgs.obs-studio-plugins; [
+        package = pkgs.unstable.obs-studio;
+        plugins = with pkgs.unstable.obs-studio-plugins; [
           advanced-scene-switcher
           droidcam-obs
           input-overlay
