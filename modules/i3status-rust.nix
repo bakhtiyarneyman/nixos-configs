@@ -220,6 +220,15 @@ in {
               driver = "swaync";
               format = " $icon {$notification_count|0} ";
             }
+            {
+              block = "service_status";
+              driver = "systemd";
+              user = true;
+              service = "swayidle";
+              active_format = "  ";
+              inactive_format = "  ";
+              inactive_state = "Warning";
+            }
           ]
           ++ cfg.extraBlocks;
       };
