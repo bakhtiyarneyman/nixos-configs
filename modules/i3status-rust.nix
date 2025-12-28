@@ -228,6 +228,15 @@ in {
               active_format = "  ";
               inactive_format = "  ";
               inactive_state = "Warning";
+              click = [
+                {
+                  button = "left";
+                  cmd = pkgs.writeShellScript "toggle-swayidle.sh" ''
+                    status=$(systemctl --user is-active --quiet swayidle && echo stop || echo start)
+                    systemctl --user $status swayidle
+                  '';
+                }
+              ];
             }
           ]
           ++ cfg.extraBlocks;
