@@ -386,7 +386,7 @@ in {
 
         signal = autostart "${pkgs.signal-desktop}/bin/signal-desktop";
 
-        telegram = autostart "${pkgs.telegram-desktop}/bin/telegram-desktop";
+        telegram = autostart "${pkgs.telegram-desktop}/bin/Telegram";
 
         discord = autostart "${pkgs.unstable.discord}/bin/discord";
 
