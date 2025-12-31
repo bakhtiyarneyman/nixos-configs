@@ -238,6 +238,22 @@ in {
                 }
               ];
             }
+            {
+              block = "privacy";
+              driver = [
+                {
+                  name = "v4l";
+                }
+                {
+                  name = "pipewire";
+                  exclude_input = [
+                    "input.OBS_VIRTUAL_MIC"
+                    "alsa_capture..aplay-wrapped"
+                    "OBS"
+                  ];
+                }
+              ];
+            }
           ]
           ++ cfg.extraBlocks;
       };
