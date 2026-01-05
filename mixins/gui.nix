@@ -50,6 +50,7 @@ in {
         junction
         glib # Needed for junction.
         dim-screen
+        easyeffects
         # Themes.
         kdePackages.breeze-icons
         adwaita-one-dark
@@ -389,6 +390,8 @@ in {
         telegram = autostart "${pkgs.telegram-desktop}/bin/Telegram";
 
         discord = autostart "${pkgs.unstable.discord}/bin/discord";
+
+        easyeffects = autostart "${pkgs.easyeffects}/bin/easyeffects";
 
         slack = autostart "${pkgs.slack}/bin/slack";
 

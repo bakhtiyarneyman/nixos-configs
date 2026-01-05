@@ -249,7 +249,17 @@ in {
                   exclude_input = [
                     "input.OBS_VIRTUAL_MIC"
                     "alsa_capture..aplay-wrapped"
-                    "OBS"
+                    "easy_sie_spectrum"
+                    "easyeffects_source"
+                    "ee_sie_loudness"
+                    "ee_sie_compressor"
+                    "ee_sie_gate"
+                    "ee_sie_limiter"
+                    "ee_sie_spectrum"
+                    "ee_soe_spectrum"
+                    "ee_sie_output_level"
+                    "ee_soe_output_level"
+                    "PulseAudio Volume Control"
                   ];
                 }
               ];
