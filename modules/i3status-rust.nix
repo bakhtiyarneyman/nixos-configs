@@ -273,12 +273,17 @@ in {
       buildInputs = [pkgs.makeWrapper];
       postBuild = ''
         wrapProgram $out/bin/i3status-rs \
-          --add-flags "${configFile}"
+          --add-flags "/etc/i3status-rust.toml"
       '';
     };
   in
     mkIf cfg.enable {
       services.upower.enable = true;
       environment.systemPackages = [i3status-rust];
+      environment.etc."i3status-rust.toml.default".source = configFile;
+      system.activationScripts.setup-i3status-rust-conf = ''
+        cp /etc/i3status-rust.toml.default /etc/i3status-rust.toml
+        chmod u+w /etc/i3status-rust.toml
+      '';
     };
 }
