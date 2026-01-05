@@ -249,7 +249,6 @@ in {
                   exclude_input = [
                     "input.OBS_VIRTUAL_MIC"
                     "alsa_capture..aplay-wrapped"
-                    "easy_sie_spectrum"
                     "easyeffects_source"
                     "ee_sie_loudness"
                     "ee_sie_compressor"
