@@ -557,8 +557,6 @@ in {
             max_fps = 30;
             exec_before = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-add xdg-desktop-portal-wlr";
             exec_after = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-remove xdg-desktop-portal-wlr";
-            chooser_type = "simple";
-            chooser_cmd = "${pkgs.slurp}/bin/slurp -f %o -or";
           };
         };
       };
