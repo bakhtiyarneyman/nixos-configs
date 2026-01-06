@@ -84,6 +84,7 @@ in {
         ngrok
         jq
         perf
+        openssl
         # Nix
         # nixd
         nil
