@@ -131,10 +131,6 @@ in {
     };
 
     services = {
-      atuin = {
-        enable = true;
-        database.createLocally = false;
-      };
       avahi = {
         enable = true;
         # Important to resolve .local domains of printers, otherwise you get an error
