@@ -126,10 +126,6 @@ in {
     enable = true;
   };
 
-  logind.settings.Login = {
-    HandlePowerKey = lib.mkForce "reboot";
-  };
-
   networking = {
     hostId = "3b777fc4";
   };
@@ -162,6 +158,9 @@ in {
     };
     jellyfin.enable = true;
     jellyseerr.enable = true;
+    logind.settings.Login = {
+      HandlePowerKey = lib.mkForce "reboot";
+    };
     monero = {
       enable = true;
       extraConfig = ''
