@@ -125,6 +125,11 @@ in {
   hardware.graphics = {
     enable = true;
   };
+
+  logind.settings.Login = {
+    HandlePowerKey = lib.mkForce "reboot";
+  };
+
   networking = {
     hostId = "3b777fc4";
   };
