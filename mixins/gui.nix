@@ -165,7 +165,7 @@ in {
             Experimental = "true";
           };
           Policy = {
-            AutoEnable = false;
+            AutoEnable = true;
           };
         };
       };
