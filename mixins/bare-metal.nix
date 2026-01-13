@@ -18,7 +18,7 @@
       packages = with pkgs; [
         powerline-fonts
       ];
-      font = "ter-powerline-v32n";
+      font = "${pkgs.powerline-fonts}/share/consolefonts/ter-powerline-v16n.psf.gz";
       colors = with config.palette; [
         background
         red
