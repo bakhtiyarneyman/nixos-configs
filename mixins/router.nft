@@ -12,6 +12,8 @@ table inet filter {
   chain forward {
     type filter hook forward priority 0; policy drop;
 
+    ether saddr { 0c:79:55:ac:ea:67 } oifname "eth-wan" drop comment "Block internet access for camera"
+
     iifname "lan-tenant" oifname "eth-wan" counter accept comment "Allow outgoing LAN to WAN"
 
     iifname "eth-wan" oifname "lan-tenant" ct state established,related counter accept comment "Allow returning from WAN to LAN"
