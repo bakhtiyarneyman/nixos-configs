@@ -20,11 +20,20 @@ in {
     ../mixins/bare-metal.nix
     ../mixins/intel.nix
     ../mixins/home-assistant.nix
+    ../mixins/frigate.nix
     ../mixins/on-battery.nix
     ../mixins/untrusted.nix
     ../mixins/zfs.nix
     ../mixins/router.nix
   ];
+
+  home.devices = {
+    camera_living_room = {
+      mac = "0c:79:55:ac:ea:67";
+      ip = "192.168.10.15";
+      wanBlocked = true;
+    };
+  };
 
   boot = {
     initrd = {

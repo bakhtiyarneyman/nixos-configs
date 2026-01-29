@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  config,
   ...
 }: {
   config = let
@@ -28,8 +29,14 @@
       nameservers = mullvad_dns;
       nftables = {
         enable = true;
-        rulesetFile = ./router.nft;
-        flattenRulesetFile = true;
+        ruleset = let
+          blockedDevices = lib.filterAttrs (_: dev: dev.wanBlocked) config.home.devices;
+          blockedMacs = lib.mapAttrsToList (_: dev: dev.mac) blockedDevices;
+          blockedRule = lib.optionalString (blockedMacs != []) ''
+            ether saddr { ${lib.concatStringsSep ", " blockedMacs} } oifname "eth-wan" drop comment "Block internet access"
+          '';
+        in
+          builtins.replaceStrings ["@BLOCKED_WAN@"] [blockedRule] (builtins.readFile ./router.nft);
       };
       useDHCP = lib.mkForce false;
     };
@@ -217,6 +224,12 @@
               "fd00:10::1"
             ];
           };
+          dhcpServerStaticLeases =
+            lib.mapAttrsToList (name: dev: {
+              MACAddress = dev.mac;
+              Address = dev.ip;
+            })
+            config.home.devices;
           linkConfig.RequiredForOnline = "no";
           routes = [
             {

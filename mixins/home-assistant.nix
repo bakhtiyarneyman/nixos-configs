@@ -16,6 +16,7 @@
             openrgb-ha = callPackage ../pkgs/home-assistant/openrgb-ha.nix {};
             xiaomi_cloud_map_extractor = callPackage ../pkgs/home-assistant/xiaomi_cloud_map_extractor.nix {};
             extended_openai_conversation = callPackage ../pkgs/home-assistant/extended_openai_conversation.nix {};
+            inherit (pkgs.home-assistant-custom-components) frigate;
           };
         customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
           apexcharts-card
