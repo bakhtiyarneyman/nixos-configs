@@ -1,12 +1,14 @@
 {
   machineName,
   machines,
+  nixServePort,
   ...
 }: {
   config = {
     services = {
       nix-serve = {
         enable = true;
+        port = nixServePort;
         secretKeyFile = "/etc/nixos/secrets/${machineName}.nix-serve.secret-key";
       };
     };
@@ -27,7 +29,7 @@
         "lanzaboote"
         "--option"
         "extra-binary-caches"
-        ''"${(builtins.concatStringsSep " " (builtins.attrValues (builtins.mapAttrs (mn: _cfg: "http://${mn}:5000") machines)))}"''
+        ''"${(builtins.concatStringsSep " " (builtins.attrValues (builtins.mapAttrs (mn: _cfg: "http://${mn}:${nixServePort}") machines)))}"''
       ];
 
       flake = "/etc/nixos";

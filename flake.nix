@@ -62,6 +62,7 @@
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICDUZrPTStLzzGeHC+c81L4u1B47CwOW3N3HRfM/2tzvAAAABHNzaDo= green"
           ];
           inherit nix-colors;
+          nixServePort = 5383;
         };
         modules = [
           vscode-server.nixosModules.default
