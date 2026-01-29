@@ -68,7 +68,6 @@ in {
         rofimoji
         # Development
         (unstable.vscode.override {isInsiders = false;})
-        unstable.claude-code
         cachix
         meld
         python3

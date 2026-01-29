@@ -85,6 +85,8 @@ in {
         jq
         perf
         openssl
+        # Development
+        claude-code
         # Nix
         # nixd
         nil
