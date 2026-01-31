@@ -20,39 +20,37 @@
     checkConfig = false;
     hostname = "tin.orkhon-mohs.ts.net";
 
-    # Added this in an attempt to fix CAP_PERFMON issue.
-    # vaapiDriver = "iHD";
     settings = {
-      ffmpeg = {
-        path = "${pkgs.jellyfin-ffmpeg}";
-        hwaccel_args = "preset-intel-qsv-h265";
-      };
-      mqtt = {
-        host = "localhost";
+      cameras = {
+        living_room = {
+          enabled = true;
+          ffmpeg = {
+            inputs = [
+              {
+                path = "rtsp://admin:{FRIGATE_RTSP_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main";
+                roles = ["detect"];
+              }
+            ];
+          };
+          detect = {
+            width = 1280;
+            height = 720;
+          };
+          motion.mask = "0.652,0.116,0.859,0.231,0.83,0.476,0.647,0.337";
+        };
       };
 
       detect.enabled = true;
-      record = {
-        preview.quality = "very_high";
-        enabled = true;
-        # retain = {
-        #   days = 0;
-        #   mode = "all";
-        # };
-        alerts = {
-          pre_capture = 10;
-          post_capture = 10;
-          retain = {
-            days = 14;
-            mode = "motion";
-          };
-        };
-      };
+
       detectors = {
         ov = {
           type = "openvino";
           device = "GPU";
         };
+      };
+      ffmpeg = {
+        path = "${pkgs.jellyfin-ffmpeg}";
+        hwaccel_args = "preset-intel-qsv-h265";
       };
 
       go2rtc = {
@@ -74,22 +72,26 @@
         labelmap_path = "/etc/models/coco_80cl.txt";
       };
 
-      cameras = {
-        living_room = {
-          enabled = true;
-          ffmpeg = {
-            inputs = [
-              {
-                path = "rtsp://admin:{FRIGATE_RTSP_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main";
-                roles = ["detect"];
-              }
-            ];
+      mqtt = {
+        host = "localhost";
+      };
+
+      record = {
+        preview.quality = "very_high";
+        enabled = true;
+        # retain = {
+        #   days = 0;
+        #   mode = "all";
+        # };
+        alerts = {
+          pre_capture = 10;
+          post_capture = 10;
+          retain = {
+            days = 14;
+            mode = "motion";
           };
         };
       };
-
-      # ui = {
-      # };
     };
   };
 
