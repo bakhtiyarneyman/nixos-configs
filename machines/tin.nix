@@ -142,6 +142,27 @@ in {
   nixpkgs.hostPlatform = "x86_64-linux";
 
   services = {
+    influxdb2 = {
+      enable = true;
+      provision = {
+        enable = true;
+        initialSetup = {
+          bucket = "default";
+          organization = "default";
+          passwordFile = "/etc/nixos/secrets/influxdb2.password";
+          tokenFile = "/etc/nixos/secrets/influxdb2.token";
+        };
+        organizations.default = {
+          buckets.ntopng = {};
+          auths.ntopng = {
+            tokenFile = "/etc/nixos/secrets/ntopng_influxdb2.token";
+            readBuckets = ["ntopng"];
+            writeBuckets = ["ntopng"];
+          };
+        };
+        users.ntopng.passwordFile = "/etc/nixos/secrets/ntopng_influxdb2.password";
+      };
+    };
     immich = {
       enable = true;
       environment = {
@@ -434,6 +455,18 @@ in {
         ExecStart = "${pkgs.tailscale}/bin/tailscale funnel http://localhost:${toString config.services.immich.port}";
         Restart = "always";
         RestartSec = "5";
+      };
+    };
+    influxdb2-ntopng-v1-auth = {
+      description = "Set up InfluxDB2 v1 compatibility for ntopng";
+      after = ["influxdb2.service"];
+      requires = ["influxdb2.service"];
+      wantedBy = ["multi-user.target"];
+      path = [pkgs.influxdb2-cli pkgs.jq pkgs.fish];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.fish}/bin/fish /etc/nixos/fix_ntong_auth_with_influxdb2.fish";
       };
     };
   };
