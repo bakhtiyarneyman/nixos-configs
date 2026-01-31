@@ -29,7 +29,7 @@
         "lanzaboote"
         "--option"
         "extra-binary-caches"
-        ''"${(builtins.concatStringsSep " " (builtins.attrValues (builtins.mapAttrs (mn: _cfg: "http://${mn}:${nixServePort}") machines)))}"''
+        ''"${(builtins.concatStringsSep " " (builtins.attrValues (builtins.mapAttrs (mn: _cfg: "http://${mn}:${builtins.toString nixServePort}") machines)))}"''
       ];
 
       flake = "/etc/nixos";
