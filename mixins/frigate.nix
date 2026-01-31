@@ -54,6 +54,9 @@
       ffmpeg = {
         path = "${pkgs.jellyfin-ffmpeg}";
         hwaccel_args = "preset-intel-qsv-h265";
+        output_args = {
+          record = "preset-record-generic-audio-copy";
+        };
       };
 
       go2rtc = {
