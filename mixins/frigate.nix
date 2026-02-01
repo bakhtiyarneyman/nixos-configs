@@ -78,8 +78,9 @@ in {
         };
         webrtc = {
           candidates = [
+            "100.64.0.0/10:8555"
             "192.168.10.1:8555"
-            "100.64.0.0/10"
+            "stun:8555"
           ];
         };
       };
@@ -136,14 +137,16 @@ in {
     };
   };
 
-  services.nginx.virtualHosts.${config.services.frigate.hostname}.listen = lib.mkForce [
-    # { addr = "127.0.0.1"; port = 5000; }
-    {
-      # This is wrong.
-      addr = "100.127.84.38";
-      port = 5000;
-    }
-  ];
+  # Port 8971: external authenticated with TLS (frigate checks X-Server-Port header)
+  # mkForce to override default listen directives; module adds 127.0.0.1:5000 via extraConfig
+  services.nginx.virtualHosts.${config.services.frigate.hostname} = {
+    listen = lib.mkForce [
+      { addr = "100.127.84.38"; port = 8971; ssl = true; }
+    ];
+    onlySSL = true;
+    sslCertificate = "/etc/nixos/secrets/${config.services.frigate.hostname}.crt";
+    sslCertificateKey = "/etc/nixos/secrets/${config.services.frigate.hostname}.key";
+  };
 
   # Creates env file with camera secrets
   systemd.services.cameras-auth.serviceConfig = {
