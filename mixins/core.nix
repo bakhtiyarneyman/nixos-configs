@@ -2,6 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 {
+  atGmail,
   config,
   pkgs,
   lib,
@@ -9,7 +10,6 @@
   machines,
   ...
 }: let
-  atGmail = address: "${address}@gmail.com";
   myEmail = atGmail "bakhtiyarneyman";
   hostEmailFrom = "${machineName} (${myEmail})";
 in {

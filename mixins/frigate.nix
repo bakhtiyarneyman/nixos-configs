@@ -2,6 +2,7 @@
   pkgs,
   lib,
   config,
+  atGmail,
   ...
 }: let
   frigatePackage = config.services.frigate.package;
@@ -109,6 +110,11 @@ in {
 
       mqtt = {
         host = "localhost";
+      };
+
+      notifications = {
+        enabled = true;
+        email = atGmail "bakhtiyarneyman";
       };
 
       record = {

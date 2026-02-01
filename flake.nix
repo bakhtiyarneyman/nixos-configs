@@ -63,6 +63,7 @@
           ];
           inherit nix-colors;
           nixServePort = 5383;
+          atGmail = address: "${address}@gmail.com";
         };
         modules = [
           vscode-server.nixosModules.default
