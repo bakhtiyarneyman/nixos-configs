@@ -109,6 +109,7 @@ in {
       };
 
       mqtt = {
+        enabled = true;
         host = "localhost";
       };
 
