@@ -3,7 +3,12 @@
   lib,
   config,
   ...
-}: {
+}: let
+  frigatePackage = config.services.frigate.package;
+  createGo2rtcConfig = "${frigatePackage.src}/docker/main/rootfs/usr/local/go2rtc/create_config.py";
+in {
+  services.go2rtc.enable = true;
+
   services.mosquitto = {
     enable = true;
     listeners = [
@@ -27,7 +32,7 @@
           ffmpeg = {
             inputs = [
               {
-                path = "rtsp://admin:{FRIGATE_RTSP_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main";
+                path = "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main";
                 roles = ["detect"];
               }
             ];
@@ -66,6 +71,17 @@
       };
 
       go2rtc = {
+        streams = {
+          living_room = [
+            "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main"
+          ];
+        };
+        webrtc = {
+          candidates = [
+            "192.168.10.1:8555"
+            "100.64.0.0/10"
+          ];
+        };
       };
 
       live = {
@@ -104,12 +120,20 @@
           };
         };
       };
+
+      tls.enabled = true;
     };
   };
 
-  systemd.services.frigate.serviceConfig = {
-    AmbientCapabilities = ["iHD" "CAP_PERFMON"];
-    EnvironmentFile = ["/run/frigate-auth/env"];
+  systemd.services.frigate = {
+    # Override the module's after=go2rtc.service since we need frigate to start first
+    # to generate its config, which go2rtc-config then reads to create go2rtc's config.
+    after = lib.mkForce ["cameras-auth.service" "network.target"];
+    requires = ["cameras-auth.service"];
+    serviceConfig = {
+      AmbientCapabilities = ["iHD" "CAP_PERFMON"];
+      EnvironmentFile = ["/run/cameras-auth/env"];
+    };
   };
 
   services.nginx.virtualHosts.${config.services.frigate.hostname}.listen = lib.mkForce [
@@ -121,18 +145,45 @@
     }
   ];
 
-  systemd.services.frigate-auth = {
-    before = ["frigate.service"];
-    requiredBy = ["frigate.service"];
+  # Creates env file with camera secrets
+  systemd.services.cameras-auth.serviceConfig = {
+    Type = "oneshot";
+    RuntimeDirectory = "cameras-auth";
+    RuntimeDirectoryPreserve = "yes";
+    # Environment variables must be prefixed with FRIGATE_ for Frigate to substitute them.
+    ExecStart = pkgs.writeShellScript "cameras-auth" ''
+      printf "FRIGATE_CAMERAS_PASSWORD=%s\n" "$(cat /etc/nixos/secrets/cameras.password)" > /run/cameras-auth/env
+      chmod 600 /run/cameras-auth/env
+      ${pkgs.acl}/bin/setfacl -m g:camera:r /run/cameras-auth/env
+    '';
+  };
+
+  # Generates go2rtc config from frigate config with secrets substituted
+  systemd.services.go2rtc-config = {
+    after = ["frigate.service" "cameras-auth.service"];
+    requires = ["cameras-auth.service"];
+    before = ["go2rtc.service"];
+    requiredBy = ["go2rtc.service"];
     serviceConfig = {
       Type = "oneshot";
-      RuntimeDirectory = "frigate-auth";
-      RuntimeDirectoryPreserve = "yes";
-      ExecStart = pkgs.writeShellScript "frigate-auth" ''
-        printf "FRIGATE_RTSP_PASSWORD=%s\n" "$(cat /etc/nixos/secrets/camera_living_room.password)" > /run/frigate-auth/env
-        chmod 600 /run/frigate-auth/env
-        ${pkgs.acl}/bin/setfacl -m u:frigate:r /run/frigate-auth/env
+      ExecStart = pkgs.writeShellScript "go2rtc-config" ''
+        set -euo pipefail
+        export PYTHONPATH="${frigatePackage.pythonPath}"
+        export CONFIG_FILE="/run/frigate/frigate.yml"
+        set -a
+        source /run/cameras-auth/env
+        set +a
+        ${frigatePackage.python}/bin/python3 ${createGo2rtcConfig}
       '';
     };
   };
+
+  systemd.services.go2rtc.serviceConfig = {
+    SupplementaryGroups = ["camera"];
+    ExecStart = lib.mkForce "${pkgs.go2rtc}/bin/go2rtc -config /dev/shm/go2rtc.yaml";
+  };
+
+  users.groups.camera = {};
+
+  users.users.frigate.extraGroups = ["camera"];
 }
