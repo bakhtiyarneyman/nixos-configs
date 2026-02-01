@@ -78,8 +78,8 @@ in {
         };
         webrtc = {
           candidates = [
-            "100.64.0.0/10:8555"
-            "192.168.10.1:8555"
+            "100.64.0.0/10:8555" # Tailscale IP
+            "192.168.10.1:8555" # LAN IP
             "stun:8555"
           ];
         };
@@ -127,8 +127,8 @@ in {
   };
 
   systemd.services.frigate = {
-    # Override the module's after=go2rtc.service since we need frigate to start first
-    # to generate its config, which go2rtc-config then reads to create go2rtc's config.
+    # Override the module's after=go2rtc.service since frigate must start first
+    # to generate its config, which go2rtc's ExecStartPre reads to create go2rtc's config.
     after = lib.mkForce ["cameras-auth.service" "network.target"];
     requires = ["cameras-auth.service"];
     serviceConfig = {
@@ -141,7 +141,11 @@ in {
   # mkForce to override default listen directives; module adds 127.0.0.1:5000 via extraConfig
   services.nginx.virtualHosts.${config.services.frigate.hostname} = {
     listen = lib.mkForce [
-      { addr = "100.127.84.38"; port = 8971; ssl = true; }
+      {
+        addr = "100.127.84.38";
+        port = 8971;
+        ssl = true;
+      }
     ];
     onlySSL = true;
     sslCertificate = "/etc/nixos/secrets/${config.services.frigate.hostname}.crt";
@@ -161,29 +165,27 @@ in {
     '';
   };
 
-  # Generates go2rtc config from frigate config with secrets substituted
-  systemd.services.go2rtc-config = {
+  systemd.services.go2rtc = {
     after = ["frigate.service" "cameras-auth.service"];
     requires = ["cameras-auth.service"];
-    before = ["go2rtc.service"];
-    requiredBy = ["go2rtc.service"];
+    partOf = ["frigate.service"];
     serviceConfig = {
-      Type = "oneshot";
-      ExecStart = pkgs.writeShellScript "go2rtc-config" ''
-        set -euo pipefail
-        export PYTHONPATH="${frigatePackage.pythonPath}"
-        export CONFIG_FILE="/run/frigate/frigate.yml"
-        set -a
-        source /run/cameras-auth/env
-        set +a
-        ${frigatePackage.python}/bin/python3 ${createGo2rtcConfig}
-      '';
+      SupplementaryGroups = ["camera"];
+      # Generate config from frigate's config with secrets substituted
+      # + prefix runs as root (needed to read /run/frigate/frigate.yml)
+      ExecStartPre =
+        "+"
+        + pkgs.writeShellScript "go2rtc-config" ''
+          set -euo pipefail
+          export PYTHONPATH="${frigatePackage.pythonPath}"
+          export CONFIG_FILE="/run/frigate/frigate.yml"
+          set -a
+          source /run/cameras-auth/env
+          set +a
+          ${frigatePackage.python}/bin/python3 ${createGo2rtcConfig}
+        '';
+      ExecStart = lib.mkForce "${pkgs.go2rtc}/bin/go2rtc -config /dev/shm/go2rtc.yaml";
     };
-  };
-
-  systemd.services.go2rtc.serviceConfig = {
-    SupplementaryGroups = ["camera"];
-    ExecStart = lib.mkForce "${pkgs.go2rtc}/bin/go2rtc -config /dev/shm/go2rtc.yaml";
   };
 
   users.groups.camera = {};
