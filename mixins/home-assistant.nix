@@ -64,6 +64,7 @@
               python-roborock
               radios
               samsungctl
+              samsungtvws
               tuya-device-sharing-sdk
               vacuum-map-parser-base
               wakeonlan
