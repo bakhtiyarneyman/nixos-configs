@@ -87,7 +87,7 @@ in {
         perf
         openssl
         # Development
-        claude-code
+        unstable.claude-code
         # Nix
         # nixd
         nil
