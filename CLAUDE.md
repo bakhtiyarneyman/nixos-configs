@@ -106,3 +106,6 @@ nix-instantiate --parse-only file.nix
 - Never use sudo or doas, always use pkexec.
 - Use exec to record debug messages in bash scripts.
 - Never invoke `nixos-rebuild (boot|switch)` before testing the configuration with `nixos-rebuild test`.
+- Never read files with passwords, stat them
+- When claude is used via ssh, `sudo` must be used instead of `pkexec`.
+- Don't build if you can just test
