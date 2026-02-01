@@ -45,6 +45,12 @@ in {
             "0.652,0.116,0.859,0.231,0.83,0.476,0.647,0.337" # TV
             "0.375,0.935,0.375,1,0,1,0,0.935" # Timestamp
           ];
+          onvif = {
+            host = config.home.devices.camera_living_room.ip;
+            port = 8000;
+            user = "admin";
+            password = "{FRIGATE_CAMERAS_PASSWORD}";
+          };
         };
       };
 
