@@ -142,8 +142,8 @@ in {
   systemd.services.frigate = {
     # Override the module's after=go2rtc.service since frigate must start first
     # to generate its config, which go2rtc's ExecStartPre reads to create go2rtc's config.
-    after = lib.mkForce ["cameras-auth.service" "network.target"];
-    requires = ["cameras-auth.service"];
+    after = lib.mkForce ["cameras-auth.service" "network.target" "mosquitto.service"];
+    requires = ["cameras-auth.service" "mosquitto.service"];
     serviceConfig = {
       AmbientCapabilities = ["iHD" "CAP_PERFMON"];
       EnvironmentFile = ["/run/cameras-auth/env"];
