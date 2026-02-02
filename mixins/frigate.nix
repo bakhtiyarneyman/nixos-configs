@@ -27,6 +27,15 @@ in {
     hostname = "tin.orkhon-mohs.ts.net";
 
     settings = {
+      audio = {
+        enabled = true;
+        listen = [
+          "fire_alarm"
+          "scream"
+          "speech"
+          "yell"
+        ];
+      };
       cameras = {
         human_camera = {
           enabled = true;
@@ -34,7 +43,7 @@ in {
             inputs = [
               {
                 path = "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main";
-                roles = ["detect"];
+                roles = ["audio" "detect"];
               }
             ];
           };
