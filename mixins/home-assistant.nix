@@ -82,6 +82,9 @@
             ssl_certificate = "/etc/nixos/secrets/${machineName}.orkhon-mohs.ts.net.crt";
             ssl_key = "/etc/nixos/secrets/${machineName}.orkhon-mohs.ts.net.key";
           };
+          homeassistant.media_dirs = {
+            local = "/var/lib/hass/media";
+          };
           logger.logs = {
             "custom_components.extended_openai_conversation" = "info";
             "homeassistant.components.openai_conversation" = "info";
