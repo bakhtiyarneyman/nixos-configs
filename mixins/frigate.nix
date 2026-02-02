@@ -73,11 +73,6 @@ in {
         };
       };
 
-      face_recognition = {
-        enabled = true;
-        model_size = "large";
-      };
-
       ffmpeg = {
         path = "${pkgs.jellyfin-ffmpeg}";
         hwaccel_args = "preset-intel-qsv-h265";
