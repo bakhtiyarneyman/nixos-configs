@@ -19,6 +19,7 @@
             inherit (pkgs.home-assistant-custom-components) frigate;
           };
         customLovelaceModules = with pkgs.home-assistant-custom-lovelace-modules; [
+          advanced-camera-card
           apexcharts-card
           atomic-calendar-revive
           bubble-card
