@@ -433,7 +433,7 @@ in {
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = "${pkgs.fish}/bin/fish /etc/nixos/fix_ntong_auth_with_influxdb2.fish";
+        ExecStart = "${pkgs.fish}/bin/fish ${../fix_ntong_auth_with_influxdb2.fish}";
       };
     };
   };
