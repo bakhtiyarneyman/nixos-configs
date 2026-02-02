@@ -214,39 +214,6 @@ in {
     nfs.server.boundExports = {
       memories = "/home/bakhtiyar/memories";
     };
-    nginx = {
-      enable = true;
-      recommendedBrotliSettings = true;
-      virtualHosts = let
-        immichPort = config.services.immich.port;
-        sslCertificate = "/etc/nixos/secrets/tin.orkhon-mohs.ts.net.crt";
-        sslCertificateKey = "/etc/nixos/secrets/tin.orkhon-mohs.ts.net.key";
-      in {
-        "tin.orkhon-mohs.ts.net" = {
-          inherit sslCertificate;
-          inherit sslCertificateKey;
-          forceSSL = true;
-          listen = [
-            {
-              ssl = true;
-              addr = "0.0.0.0";
-              port = immichPort;
-            }
-          ];
-          locations."/" = {
-            proxyPass = "http://[::1]:${toString immichPort}";
-            proxyWebsockets = true;
-            recommendedProxySettings = true;
-            extraConfig = ''
-              client_max_body_size 50000M;
-              proxy_read_timeout   600s;
-              proxy_send_timeout   600s;
-              send_timeout         600s;
-            '';
-          };
-        };
-      };
-    };
     ntopng = {
       enable = true;
       httpPort = 4256;
