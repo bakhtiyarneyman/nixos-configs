@@ -86,6 +86,16 @@
             "custom_components.extended_openai_conversation" = "info";
             "homeassistant.components.openai_conversation" = "info";
           };
+          notify = [
+            {
+              platform = "group";
+              name = "everyone";
+              services = [
+                {action = "mobile_app_bakhtiyar_z_fold_5";} # The rename doesn't propagate through the Companion app for some reason.
+                {action = "mobile_app_elf_phone";}
+              ];
+            }
+          ];
         };
       };
 
