@@ -28,7 +28,7 @@ in {
 
     settings = {
       cameras = {
-        living_room = {
+        human_camera = {
           enabled = true;
           ffmpeg = {
             inputs = [
@@ -79,8 +79,11 @@ in {
 
       go2rtc = {
         streams = {
-          living_room = [
+          human_camera = [
             "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main"
+            # Unfortunately, H.265 video doesn't work in Firefox's WebRTC implementation as of 2024,
+            # so we need to transcode to H.264. go2rtc can do this on-the-fly.
+            "ffmpeg:human_camera#video=h264#audio=aac#hardware"
           ];
         };
         webrtc = {
@@ -134,6 +137,8 @@ in {
           };
         };
       };
+
+      review.alerts.labels = [];
 
       tls.enabled = true;
     };
