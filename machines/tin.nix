@@ -430,10 +430,10 @@ in {
       requires = ["influxdb2.service"];
       wantedBy = ["multi-user.target"];
       path = [pkgs.influxdb2-cli pkgs.jq pkgs.fish];
+      script = ''${pkgs.fish}/bin/fish --no-config ${../fix_ntong_auth_with_influxdb2.fish}'';
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        ExecStart = "${pkgs.fish}/bin/fish ${../fix_ntong_auth_with_influxdb2.fish}";
       };
     };
   };
