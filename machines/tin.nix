@@ -7,8 +7,8 @@
 }: let
   qbittorrent = pkgs.qbittorrent.override {guiSupport = false;};
   sataDiskIds = [
-    "ata-SanDisk_Ultra_II_960GB_160401800296"
     "ata-SanDisk_Ultra_II_960GB_160401800948"
+    "nvme-WD_BLACK_SN770_2TB_24471W800024"
   ];
   toDevice = id: "/dev/disk/by-id/${id}";
   toPartitionId = diskId: partition: "${diskId}-part${toString partition}";
@@ -327,7 +327,7 @@ in {
   };
 
   swapDevices = [
-    {device = "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part2";}
+    {device = "/dev/disk/by-id/nvme-WD_BLACK_SN770_2TB_24471W800024-part3";}
   ];
 
   users = {
