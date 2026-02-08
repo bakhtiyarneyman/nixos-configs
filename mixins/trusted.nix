@@ -3,10 +3,6 @@
   machineName,
   ...
 }: {
-  imports = [
-    ../modules/namespaced-openvpn.nix
-  ];
-
   config = {
     boot.initrd.network.access.unlockOnly = true;
 
@@ -30,6 +26,32 @@
         "100.65.77.115" = ["iron-tailscale" "iron-initrd"];
         "100.126.205.61" = ["mercury-tailscale"];
       };
+      wireguard.interfaces = {
+        mullvad = {
+          ips = ["10.67.21.121/32" "fc00:bbbb:bbbb:bb01::4:1578/128"];
+
+          privateKeyFile = "/etc/nixos/secrets/mullvad_wireguard.private_key";
+
+          interfaceNamespace = "protected";
+
+          peers = [
+            {
+              publicKey = "sjWKL/W2+21cyjEBjtMd4TQQlWTsLTUN4skYOF7YgnU=";
+              endpoint = "23.234.94.127:51820";
+              allowedIPs = ["0.0.0.0/0" "::/0"];
+            }
+          ];
+
+          preSetup = ''
+            ip netns add protected || true
+            mkdir -p /etc/netns/protected
+            echo "nameserver 10.64.0.1" > /etc/netns/protected/resolv.conf
+
+            # Allow unprivileged ping (and other tools) in this namespace
+            ip netns exec protected ${pkgs.procps}/bin/sysctl -w net.ipv4.ping_group_range="0 2147483647"
+          '';
+        };
+      };
     };
 
     programs = {
@@ -52,7 +74,6 @@
     services = {
       tailscale.enable = true;
       i2p.enable = true;
-      namespaced-openvpn.enable = true;
       syncthing = {
         enable = true;
         key = "/etc/nixos/secrets/${machineName}.syncthing.secret-key.pem";

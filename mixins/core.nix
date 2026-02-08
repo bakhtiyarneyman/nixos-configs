@@ -104,7 +104,6 @@ in {
         psmisc
         usbutils # lsusb
         # Privacy
-        namespaced-openvpn
         cryfs
       ];
 
@@ -396,7 +395,6 @@ in {
           home-assistant = super.unstable.home-assistant.override {
             python313 = super.unstable.python313;
           };
-          namespaced-openvpn = super.callPackage ../pkgs/namespaced-openvpn.nix {};
           wyoming-openwakeword = self.unstable.wyoming-openwakeword;
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
           wyoming-piper = self.unstable.wyoming-piper;
