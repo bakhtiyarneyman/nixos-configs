@@ -5,7 +5,7 @@ table inet filter {
     iifname "lo" counter accept
     iifname "lan-tenant" counter accept
     iifname "tailscale0" counter accept
-    iifname {"eth-wan", "tun0"} ct state established,related counter accept
+    iifname {"eth-wan", "mullvad"} ct state established,related counter accept
     iifname "eth-wan" drop
   }
 
@@ -34,6 +34,6 @@ table ip nat {
 
   chain postrouting {
     type nat hook postrouting priority srcnat; policy accept;
-    oifname { "eth-wan", "tun0" } masquerade
+    oifname { "eth-wan", "mullvad" } masquerade
   }
 }

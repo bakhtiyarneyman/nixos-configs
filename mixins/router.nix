@@ -182,6 +182,7 @@
 
       config.routeTables = {
         lan = 100;
+        wireguard_bypass = 200; # For WireGuard tunnel packets to bypass the VPN default route.
       };
 
       links = let
@@ -273,6 +274,17 @@
               Source = "192.168.0.0/16";
               Gateway = "_dhcp4";
               Table = "lan";
+            }
+            {
+              Gateway = "_dhcp4";
+              Table = "wireguard_bypass";
+            }
+          ];
+          routingPolicyRules = [
+            {
+              FirewallMark = 51820; # route WireGuard tunnel packets via WAN
+              Table = "wireguard_bypass";
+              Priority = 100;
             }
           ];
         };

@@ -21,6 +21,7 @@ in {
     ../mixins/intel.nix
     ../mixins/home-assistant.nix
     ../mixins/frigate.nix
+    ../mixins/mullvad.nix
     ../mixins/on-battery.nix
     ../mixins/untrusted.nix
     ../mixins/zfs.nix
@@ -137,6 +138,7 @@ in {
 
   networking = {
     hostId = "3b777fc4";
+    wireguard.interfaces.mullvad.fwMark = "51820";
   };
 
   nixpkgs.hostPlatform = "x86_64-linux";
@@ -218,20 +220,16 @@ in {
       enable = true;
       httpPort = 4256;
       interfaces = [
-        "tun0"
+        "mullvad"
         "tailscale0"
         "eth-lan"
         "eth-wan"
         "wlp0s13f0u2"
-        "view:eth-lan,wlp0s13f0u2,tun0,tailscale0"
+        "view:eth-lan,wlp0s13f0u2,mullvad,tailscale0"
       ];
       extraConfig = ''
         --local-networks=192.168.10.1/24
       '';
-    };
-    openvpn.servers.mullvad = {
-      config = "config ${../mullvad/mullvad_us_sjc.conf}";
-      updateResolvConf = true;
     };
     prowlarr.enable = true;
     radarr.enable = true;
