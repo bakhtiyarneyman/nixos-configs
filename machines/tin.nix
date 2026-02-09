@@ -138,7 +138,10 @@ in {
 
   networking = {
     hostId = "3b777fc4";
-    wireguard.interfaces.mullvad.fwMark = "51820";
+    wireguard.interfaces.mullvad = {
+      fwMark = "51820";
+      ips = ["10.67.21.121/32" "fc00:bbbb:bbbb:bb01::4:1578/128"];
+    };
   };
 
   nixpkgs.hostPlatform = "x86_64-linux";

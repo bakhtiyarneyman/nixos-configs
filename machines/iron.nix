@@ -111,6 +111,10 @@ in {
       kernelModules = ["mt7921e" "r8169"];
       networkmanager.enable = true;
       wifiInterface = "wlp12s0";
+      wireguard.interfaces.mullvad.ips = [
+        "10.64.137.141/32"
+        "fc00:bbbb:bbbb:bb01::1:898c/128"
+      ];
     };
 
     programs = {
