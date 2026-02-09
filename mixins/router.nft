@@ -27,6 +27,7 @@ table inet filter {
     oifname {"lan-tenant", "tailscale0"} accept
     oifname "mullvad" accept
     oifname "eth-wan" mark 51820 accept comment "Allow WireGuard tunnel packets"
+    oifname "eth-wan" mark 0x80000 accept comment "Allow Tailscale tunnel packets"
     oifname "eth-wan" drop comment "Block non-VPN traffic to internet"
   }
 

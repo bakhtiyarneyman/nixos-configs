@@ -286,6 +286,11 @@
               Table = "wireguard_bypass";
               Priority = 100;
             }
+            {
+              FirewallMark = 524288; # 0x80000 - Tailscale's internal bypass mark
+              Table = "wireguard_bypass";
+              Priority = 102;
+            }
           ];
         };
       };
