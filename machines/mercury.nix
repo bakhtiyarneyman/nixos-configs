@@ -35,10 +35,6 @@
       };
     };
 
-    hardware = {
-      firmware = [pkgs.unstable.firmwareLinuxNonfree];
-    };
-
     networking.networkmanager.enable = true;
 
     nix.settings = {
