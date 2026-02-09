@@ -32,9 +32,14 @@
         interfaceNamespace = "protected";
 
         preSetup = ''
-          ip netns add protected || true
+          if [ ! -e /var/run/netns/protected ]; then
+            ip netns add protected
+          fi
           mkdir -p /etc/netns/protected
           echo "nameserver 10.64.0.1" > /etc/netns/protected/resolv.conf
+
+          # Bring up loopback interface
+          ip netns exec protected ip link set lo up
 
           # Allow unprivileged ping (and other tools) in this namespace
           ip netns exec protected ${pkgs.procps}/bin/sysctl -w net.ipv4.ping_group_range="0 2147483647"
