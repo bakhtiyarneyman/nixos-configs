@@ -21,6 +21,13 @@ table inet filter {
 
   chain output {
     type filter hook output priority 100; policy accept;
+
+    # Kill switch: block local traffic to internet if VPN is down
+    oifname "lo" accept
+    oifname {"lan-tenant", "tailscale0"} accept
+    oifname "mullvad" accept
+    oifname "eth-wan" mark 51820 accept comment "Allow WireGuard tunnel packets"
+    oifname "eth-wan" drop comment "Block non-VPN traffic to internet"
   }
 
 }
