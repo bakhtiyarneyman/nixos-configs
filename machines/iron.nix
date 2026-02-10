@@ -27,6 +27,11 @@ in {
   ];
 
   config = {
+    hardware.brightness = {
+      upCommand = "${pkgs.python3}/bin/python3 /etc/nixos/elgato-keylight.py --ip 192.168.10.22 --change-brightness-by 5";
+      downCommand = "${pkgs.python3}/bin/python3 /etc/nixos/elgato-keylight.py --ip 192.168.10.22 --change-brightness-by -5";
+    };
+
     boot = {
       initrd = {
         availableKernelModules = [

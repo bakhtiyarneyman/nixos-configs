@@ -15,9 +15,11 @@
 in {
   imports = [
     ../modules/i3status-rust.nix
+    ../modules/brightness.nix
   ];
 
   config = {
+    hardware.brightness.enable = true;
     users.users.bakhtiyar.extraGroups = [
       "adbusers"
       "kvm"
@@ -216,16 +218,6 @@ in {
       };
 
       # localtime.enable = true; // This doesn't work and only generates errors.
-      actkbd = {
-        enable = true;
-        bindings = let
-          light = "${pkgs.light}/bin/light";
-          mkBinding = keys: events: command: {inherit keys events command;};
-        in [
-          (mkBinding [224] ["key" "rep"] "${light} -T 0.707")
-          (mkBinding [225] ["key" "rep"] "${light} -T 1.414")
-        ];
-      };
 
       blueman.enable = true; # Bluetooth applet.
       pcscd.enable = true;
