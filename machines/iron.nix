@@ -88,6 +88,26 @@ in {
           fsType = "zfs";
           neededForBoot = true;
         };
+        "/var" = {
+          device = "fast/nixos/var";
+          fsType = "zfs";
+        };
+        "/var/cache" = {
+          device = "fast/nixos/var/cache";
+          fsType = "zfs";
+        };
+        "/var/lib" = {
+          device = "fast/nixos/var/lib";
+          fsType = "zfs";
+        };
+        "/var/log" = {
+          device = "fast/nixos/var/log";
+          fsType = "zfs";
+        };
+        "/var/tmp" = {
+          device = "fast/nixos/var/tmp";
+          fsType = "zfs";
+        };
       };
       insertBootFilesystem = fss: diskPos: let
         diskId = builtins.elemAt coreDiskIds (diskPos - 1);
@@ -121,6 +141,7 @@ in {
         "fc00:bbbb:bbbb:bb01::1:898c/128"
       ];
     };
+    nix.gc.automatic = lib.mkForce false;
 
     programs = {
       i3status-rust = {
