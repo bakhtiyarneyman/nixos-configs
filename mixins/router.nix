@@ -8,11 +8,6 @@
     toMac = last: "a8:b8:e0:04:fa:6${last}";
     wanMac = toMac "b";
     lanMac = toMac "c";
-
-    mullvad_dns = [
-      "194.242.2.2"
-      "2a07:e340::2"
-    ];
   in {
     boot.kernel.sysctl = {
       "net.ipv6.conf.all.forwarding" = 1;
@@ -26,7 +21,7 @@
     networking = {
       firewall.enable = lib.mkForce false;
       iproute2.enable = true;
-      nameservers = mullvad_dns;
+      nameservers = ["127.0.0.1"];
       nftables = {
         enable = true;
         ruleset = let
@@ -42,11 +37,14 @@
     };
 
     services = {
-      dnsmasq = {
+      dnscrypt-proxy = {
         enable = true;
-        alwaysKeepRunning = true;
         settings = {
-          server = mullvad_dns;
+          listen_addresses = ["127.0.0.1:53" "192.168.10.1:53"];
+          server_names = ["mullvad-doh"];
+          # DNS stamp for Mullvad DoH (194.242.2.2). Regenerate with:
+          # python3 -c "import base64,struct; d=bytes([0x02])+struct.pack('<Q',0x06)+bytes([11])+b'194.242.2.2'+bytes([0,15])+b'dns.mullvad.net'+bytes([10])+b'/dns-query'; print('sdns://'+base64.urlsafe_b64encode(d).decode().rstrip('='))"
+          static.mullvad-doh.stamp = "sdns://AgYAAAAAAAAACzE5NC4yNDIuMi4yAA9kbnMubXVsbHZhZC5uZXQKL2Rucy1xdWVyeQ";
         };
       };
 
@@ -264,20 +262,28 @@
             DHCPPrefixDelegation = "yes";
           };
           routes = [
+            # Reject localhost-destined traffic in lan table so it's handled locally
             {
               Source = "192.168.0.0/16";
               Destination = "127.0.0.1";
               Table = "lan";
               Type = "throw";
             }
+            # Give LAN clients internet access via ISP, independent of VPN state
             {
               Source = "192.168.0.0/16";
               Gateway = "_dhcp4";
               Table = "lan";
             }
+            # Provide a VPN-free path for marked packets (WireGuard/Tailscale tunnel establishment)
             {
               Gateway = "_dhcp4";
               Table = "wireguard_bypass";
+            }
+            # Allow DNS-over-HTTPS to Mullvad even when VPN is down (killswitch bypass)
+            {
+              Destination = "194.242.2.2";
+              Gateway = "_dhcp4";
             }
           ];
           routingPolicyRules = [
@@ -285,6 +291,11 @@
               FirewallMark = 51820; # route WireGuard tunnel packets via WAN
               Table = "wireguard_bypass";
               Priority = 100;
+            }
+            {
+              FirewallMark = 524288; # 0x80000 - Tailscale's internal bypass mark
+              Table = "wireguard_bypass";
+              Priority = 102;
             }
           ];
         };
