@@ -50,6 +50,10 @@
       "tin"
       "tungsten"
     ];
+    hostKeys = {
+      mercury = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKSyMQogWih9Tk8cpckwxP6CLzJxZqtg+qdFbXYbF9Sc";
+      tin = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHYdHpGj0w2iRMKgyDSmJuk7oEJHQHWMOavKMyrB/uQB";
+    };
     mkSystem = machineName: {
       name = machineName;
       value = nixpkgs.lib.nixosSystem {
@@ -57,6 +61,7 @@
         specialArgs = {
           inherit machineName;
           inherit machines;
+          inherit hostKeys;
           yubikeys = [
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIG1XG551t2Yb8ryQ/lGRJXhfnWwz3B/MmOjMoz7x3G9iAAAABHNzaDo= blue"
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICDUZrPTStLzzGeHC+c81L4u1B47CwOW3N3HRfM/2tzvAAAABHNzaDo= green"

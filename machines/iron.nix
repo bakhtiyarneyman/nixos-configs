@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  hostKeys,
   ...
 }: let
   coreDiskIds = [
@@ -481,5 +482,14 @@ in {
     };
 
     users.users.bakhtiyar.uid = 1000;
+
+    users.users.nix-remote-builder = {
+      isNormalUser = true;
+      openssh.authorizedKeys.keys = [
+        hostKeys.tin
+        hostKeys.mercury
+      ];
+    };
+    nix.settings.trusted-users = ["nix-remote-builder"];
   };
 }

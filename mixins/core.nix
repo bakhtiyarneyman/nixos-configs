@@ -4,10 +4,11 @@
 {
   atGmail,
   config,
-  pkgs,
+  hostKeys,
   lib,
   machineName,
   machines,
+  pkgs,
   ...
 }: let
   myEmail = atGmail "bakhtiyarneyman";
@@ -335,9 +336,9 @@ in {
           };
           mercury = {
             hostNames = ["mercury-tailscale"];
-            publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKSyMQogWih9Tk8cpckwxP6CLzJxZqtg+qdFbXYbF9Sc";
+            publicKey = hostKeys.mercury;
           };
-          tin.publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHYdHpGj0w2iRMKgyDSmJuk7oEJHQHWMOavKMyrB/uQB";
+          tin.publicKey = hostKeys.tin;
           tungsten = {
             hostNames = ["bakhtiyar.zfs.rent"];
             publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFWtgyWNQ//nFGPEwdsUizf08UOL+EtFnergd2HgAkqy";
