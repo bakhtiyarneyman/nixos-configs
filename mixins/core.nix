@@ -398,6 +398,7 @@ in {
           wyoming-openwakeword = self.unstable.wyoming-openwakeword;
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
           wyoming-piper = self.unstable.wyoming-piper;
+          ntopng = self.callPackage ../pkgs/ntopng.nix {};
         })
       ];
     };
