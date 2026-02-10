@@ -35,10 +35,6 @@
       };
     };
 
-    hardware = {
-      firmware = [pkgs.unstable.firmwareLinuxNonfree];
-    };
-
     networking.networkmanager.enable = true;
 
     nix.settings = {
@@ -46,6 +42,8 @@
         # "http://iron-tailscale:5000"
       ];
     };
+
+    programs.i3status-rust.temperature = {};
 
     services = {
       rpcbind.enable = true;
