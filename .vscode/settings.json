@@ -1,0 +1,6 @@
+{
+  "github.copilot.chat.reviewSelection.instructions": [
+    { "text": "Search online for nixos configuration" },
+    { "text": "Don't open the firewall, machines are on tailnet" }
+  ]
+}
