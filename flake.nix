@@ -34,7 +34,7 @@
           (self: super: {
             ctranslate2 = super.ctranslate2.override {
               withMkl = true;
-              withOneDNN = false;
+              withOneDNN = true;
               withOpenblas = false;
               mkl = super.mkl.override {
                 enableStatic = true;
