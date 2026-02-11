@@ -211,6 +211,7 @@ in {
         enable = true;
         settings = {
           AllowAgentForwarding = true;
+          AcceptEnv = "COLORTERM";
         };
       };
 
@@ -349,6 +350,7 @@ in {
             Host ${host} ${host}.orkhon-mohs.ts.net
               HostName ${host}
               ForwardAgent yes
+              SendEnv COLORTERM
           '';
         in
           builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines));
