@@ -450,6 +450,12 @@ in {
         RestartSec = "5";
       };
     };
+    ntopng.serviceConfig = {
+      User = "ntopng";
+      Group = "ntopng";
+      AmbientCapabilities = "CAP_NET_RAW CAP_NET_ADMIN";
+      CapabilityBoundingSet = "CAP_NET_RAW CAP_NET_ADMIN";
+    };
     influxdb2-ntopng-v1-auth = {
       description = "Set up InfluxDB2 v1 compatibility for ntopng";
       after = ["influxdb2.service"];
