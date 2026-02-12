@@ -1,6 +1,9 @@
 {
   "github.copilot.chat.reviewSelection.instructions": [
     { "text": "Search online for nixos configuration" },
-    { "text": "Don't open the firewall, machines are on tailnet" }
+    { "text": "Don't open the firewall, machines are on tailnet" },
+    { "text": "Run `nixos-rebuild test` and verify whatever you were tasked to fix, before you run `nixos-rebuild switch`." },
+    { "text": "Start a session by understanding which machine you are working on. If you are on `tin`, you are connected via ssh and need to use `sudo` for elevating privileges. If you are on `iron` or `mercury` or other machine with GUI, use `pkexec` instead."}
+    { "text": "When executing systemctl commands use --no-pager where necessary"}
   ]
 }
