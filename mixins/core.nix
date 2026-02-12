@@ -11,8 +11,11 @@
   pkgs,
   ...
 }: let
-  myEmail = atGmail "bakhtiyarneyman";
-  hostEmailFrom = "${machineName} (${myEmail})";
+  robotGoogleAccount = "n10614m";
+  personalGoogleAccount = "bakhtiyarneyman";
+  myEmail = atGmail personalGoogleAccount;
+  robotEmail = atGmail robotGoogleAccount;
+  hostEmailFrom = "${machineName} (${robotEmail})";
 in {
   imports = [
     ../modules/auto-unlock.nix
@@ -152,7 +155,7 @@ in {
           priority = "err";
           email = {
             from = hostEmailFrom;
-            to = atGmail "bakhtiyarneyman+journal-brief";
+            to = atGmail "${personalGoogleAccount}+journal-brief";
             command = ''
               (cat <(echo "Subject: Journal brief") -) | ${pkgs.msmtp}/bin/msmtp -t
             '';
@@ -310,7 +313,7 @@ in {
         accounts = {
           default = {
             host = "smtp.gmail.com";
-            user = "bakhtiyarneyman";
+            user = robotGoogleAccount;
             passwordeval = "${pkgs.coreutils-full}/bin/cat /etc/nixos/secrets/smtp.passphrase";
             from = hostEmailFrom;
           };
