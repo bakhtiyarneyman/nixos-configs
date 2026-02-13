@@ -89,6 +89,7 @@
             "sync" = {
               path = "/home/bakhtiyar/sync";
               devices = ["iron" "mercury" "lithium"];
+              ignorePerms = true;
             };
           };
           gui = {
