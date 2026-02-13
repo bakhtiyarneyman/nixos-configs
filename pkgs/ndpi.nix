@@ -11,13 +11,13 @@
 }:
 stdenv.mkDerivation rec {
   pname = "ndpi";
-  version = "5.0";
+  version = "5.0-dev";
 
   src = fetchFromGitHub {
     owner = "ntop";
     repo = "nDPI";
-    rev = version;
-    hash = "sha256-Elnj6qDuT8UWDxmasiHOt5DxC7GcH5zgrp3J3LYcl0c=";
+    rev = "411b3ad202b15e6780a11d18c44cc3008104ad6f";
+    hash = "sha256-mAXAO+Yg69yXdoJ/NuwVlIZbFG5zaj2GdOuQ6LyyWII=";
   };
 
   nativeBuildInputs = [
@@ -33,6 +33,8 @@ stdenv.mkDerivation rec {
     patchShebangs autogen.sh
     ./autogen.sh
   '';
+
+  configureFlags = ["--enable-static"];
 
   enableParallelBuilding = true;
 }
