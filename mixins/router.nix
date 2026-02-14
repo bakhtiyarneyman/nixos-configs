@@ -237,6 +237,12 @@
               Table = "lan";
               Type = "throw";
             }
+            # Allow Tailscale (fwmark 0x80000) to reach LAN peers directly
+            # instead of routing via eth-wan through the wireguard_bypass table.
+            {
+              Destination = "192.168.10.0/24";
+              Table = "wireguard_bypass";
+            }
           ];
           routingPolicyRules = [
             {
