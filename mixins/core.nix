@@ -156,7 +156,7 @@ in {
           email = {
             from = hostEmailFrom;
             to = atGmail "${personalGoogleAccount}+journal-brief";
-            command = ''(cat <(echo " Subject: Journal brief ") -) | ${pkgs.msmtp}/bin/msmtp -t'';
+            command = ''(cat <(echo "Subject: Journal brief") -) | ${pkgs.msmtp}/bin/msmtp -t'';
           };
           exclusions = [
             {
