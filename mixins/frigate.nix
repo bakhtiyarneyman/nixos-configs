@@ -36,6 +36,7 @@ in {
           "yell"
         ];
       };
+      auth.session_length = 365 * 24 * 60 * 60;
       cameras = {
         human_camera = {
           enabled = true;
