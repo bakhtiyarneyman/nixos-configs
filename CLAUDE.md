@@ -109,3 +109,7 @@ nix-instantiate --parse-only file.nix
 - Never read files with passwords, stat them
 - When claude is used via ssh, `sudo` must be used instead of `pkexec`.
 - Don't build if you can just test
+
+## Communication
+
+- If I'm asking a question, answer it instead of interpreting it as a request. I will use imperative mood for requests.
