@@ -27,8 +27,10 @@
         ruleset = let
           blockedDevices = lib.filterAttrs (_: dev: dev.wanBlocked) config.home.devices;
           blockedMacs = lib.mapAttrsToList (_: dev: dev.mac) blockedDevices;
+          blockedMacSet = "{ ${lib.concatStringsSep ", " blockedMacs} }";
           blockedRule = lib.optionalString (blockedMacs != []) ''
-            ether saddr { ${lib.concatStringsSep ", " blockedMacs} } oifname "eth-wan" drop comment "Block internet access"
+            ether saddr ${blockedMacSet} oifname "eth-wan" udp dport 123 counter accept comment "Allow NTP for blocked devices"
+            ether saddr ${blockedMacSet} oifname "eth-wan" drop comment "Block internet access"
           '';
         in
           builtins.replaceStrings ["@BLOCKED_WAN@"] [blockedRule] (builtins.readFile ./router.nft);
