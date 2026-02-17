@@ -44,7 +44,11 @@ in {
             inputs = [
               {
                 path = "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main";
-                roles = ["audio" "detect"];
+                roles = [
+                  "audio"
+                  "detect"
+                  "record"
+                ];
               }
             ];
           };
