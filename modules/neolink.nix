@@ -12,7 +12,7 @@
     lib.mapAttrsToList (name: cam:
       {
         inherit name;
-        inherit (cam) username address;
+        inherit (cam) username address push_notifications;
         password = "@PASSWORD@";
       }
       // lib.optionalAttrs (cam.uid != null) {inherit (cam) uid;})
@@ -64,6 +64,11 @@ in {
             type = nullOr str;
             default = null;
             description = "UID of the camera for discovery.";
+          };
+          push_notifications = mkOption {
+            type = bool;
+            default = false;
+            description = "Enable Reolink cloud push notifications.";
           };
         };
       });
