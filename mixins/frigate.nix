@@ -78,7 +78,8 @@ in {
         path = "${pkgs.jellyfin-ffmpeg}";
         hwaccel_args = "preset-intel-qsv-h265";
         output_args = {
-          record = "preset-record-generic-audio-copy";
+          # With `preset-record-generic-audio-copy` the audio is not available in recorded streams.
+          record = "preset-record-generic-audio-aac";
         };
       };
 
@@ -97,11 +98,6 @@ in {
             "stun:8555"
           ];
         };
-      };
-
-      live = {
-        height = 2160;
-        quality = 1;
       };
 
       model = {
