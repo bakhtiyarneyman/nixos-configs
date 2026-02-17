@@ -13,6 +13,8 @@
       };
     };
 
+    systemd.services.nixos-upgrade.serviceConfig.CPUWeight = 75;
+
     system.autoUpgrade = {
       enable = true;
       dates = "Mon *-*-* 04:40";
