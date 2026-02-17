@@ -38,7 +38,7 @@ in {
 
     bind = mkOption {
       type = str;
-      default = "0.0.0.0";
+      default = "::";
       description = "Address to bind the RTSP server to.";
     };
 
