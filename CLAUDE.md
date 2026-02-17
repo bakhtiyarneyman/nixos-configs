@@ -103,7 +103,6 @@ nix-instantiate --parse-only file.nix
 - Use pkexec to execute privileged commands.
 - When authentication prompts (pkexec, sudo) fail or get cancelled, ask the user before trying alternative commands.
 - When pkexec fails restart soteria user service with `systemctl --user restart polkit-soteria.service`.
-- Never use sudo or doas, always use pkexec.
 - Use exec to record debug messages in bash scripts.
 - Never invoke `nixos-rebuild (boot|switch)` before testing the configuration with `nixos-rebuild test`.
 - Never read files with passwords, stat them
