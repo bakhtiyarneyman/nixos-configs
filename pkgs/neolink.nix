@@ -6,6 +6,7 @@
   protobuf,
   gst_all_1,
   openssl,
+  makeWrapper,
 }:
 rustPlatform.buildRustPackage {
   pname = "neolink";
@@ -23,6 +24,7 @@ rustPlatform.buildRustPackage {
   nativeBuildInputs = [
     pkg-config
     protobuf
+    makeWrapper
     gst_all_1.gstreamer
   ];
 
@@ -34,6 +36,11 @@ rustPlatform.buildRustPackage {
     gst_all_1.gst-rtsp-server
     openssl
   ];
+
+  postInstall = ''
+    wrapProgram $out/bin/neolink \
+      --prefix GST_PLUGIN_SYSTEM_PATH_1_0 : "$GST_PLUGIN_SYSTEM_PATH_1_0"
+  '';
 
   meta = with lib; {
     description = "An RTSP bridge to Reolink IP cameras";
