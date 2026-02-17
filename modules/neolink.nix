@@ -8,29 +8,21 @@
   neolink = pkgs.callPackage ../pkgs/neolink.nix {};
   tomlFormat = pkgs.formats.toml {};
 
-  cameraList =
-    lib.mapAttrsToList (name: cam:
-      {
-        inherit name;
-        inherit (cam) username address push_notifications;
-        password = "@PASSWORD@";
-      }
-      // lib.optionalAttrs (cam.uid != null) {inherit (cam) uid;})
-    cfg.cameras;
+  cameraToToml = name: cam:
+    lib.filterAttrs (_: v: v != null) cam
+    // {
+      inherit name;
+      password = "@PASSWORD@";
+    };
 
-  configFile = tomlFormat.generate "neolink.toml" (
-    {
-      bind = cfg.bind;
-      bind_port = cfg.port;
-      cameras = cameraList;
-    }
+  configToToml =
+    removeAttrs cfg ["enable" "cameras" "mqtt"]
+    // {cameras = lib.mapAttrsToList cameraToToml cfg.cameras;}
     // lib.optionalAttrs cfg.mqtt.enable {
-      mqtt = {
-        broker_addr = cfg.mqtt.broker_addr;
-        port = cfg.mqtt.port;
-      };
-    }
-  );
+      mqtt = removeAttrs cfg.mqtt ["enable"];
+    };
+
+  configFile = tomlFormat.generate "neolink.toml" configToToml;
 in {
   options.services.neolink = with lib;
   with types; {
@@ -42,7 +34,7 @@ in {
       description = "Address to bind the RTSP server to.";
     };
 
-    port = mkOption {
+    bind_port = mkOption {
       type = port;
       default = 1554;
       description = "Port for the RTSP server.";
@@ -69,6 +61,33 @@ in {
             type = bool;
             default = false;
             description = "Enable Reolink cloud push notifications.";
+          };
+          buffer_duration = mkOption {
+            type = ints.between 1 15000;
+            default = 100;
+            description = "Buffer duration in milliseconds (1-15000).";
+          };
+          pause = {
+            on_disconnect = mkOption {
+              type = bool;
+              default = true;
+              description = "Pause camera stream when no clients are connected.";
+            };
+            on_motion = mkOption {
+              type = bool;
+              default = false;
+              description = "Pause camera stream on motion detection.";
+            };
+            motion_timeout = mkOption {
+              type = numbers.nonnegative;
+              default = 1.0;
+              description = "Motion detection timeout in seconds.";
+            };
+            mode = mkOption {
+              type = enum ["none" "black" "still" "test"];
+              default = "none";
+              description = "What to show when the stream is paused.";
+            };
           };
         };
       });
