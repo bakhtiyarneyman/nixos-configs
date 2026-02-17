@@ -74,6 +74,7 @@
           vscode-server.nixosModules.default
           lanzaboote.nixosModules.lanzaboote
           ./modules/initrd-network-access.nix
+          ./modules/neolink.nix
           ./modules/nfs-exports.nix
           ./modules/palette.nix
           ./modules/wifi-interface.nix
