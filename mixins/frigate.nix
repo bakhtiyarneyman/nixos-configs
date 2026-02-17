@@ -21,6 +21,11 @@ in {
     ];
   };
 
+  services.neolink = {
+    enable = true;
+    mqtt.enable = true;
+  };
+
   services.frigate = {
     enable = true;
     checkConfig = false;
@@ -43,7 +48,7 @@ in {
           ffmpeg = {
             inputs = [
               {
-                path = "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main";
+                path = "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.services.neolink.cameras.human_camera.ip}:554/Preview_01_main";
                 roles = [
                   "audio"
                   "detect"
@@ -61,7 +66,7 @@ in {
             "0.375,0.935,0.375,1,0,1,0,0.935" # Timestamp
           ];
           onvif = {
-            host = config.home.devices.camera_living_room.ip;
+            host = config.services.neolink.cameras.human_camera.ip;
             port = 8000;
             user = "admin";
             password = "{FRIGATE_CAMERAS_PASSWORD}";
@@ -90,7 +95,7 @@ in {
       go2rtc = {
         streams = {
           human_camera = [
-            "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.home.devices.camera_living_room.ip}:554/Preview_01_main"
+            "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.services.neolink.cameras.human_camera.ip}:554/Preview_01_main"
             # Uncomment if h265 can't be played.
             # "ffmpeg:human_camera #video=h264#audio=aac#hardware"
           ];

@@ -9,9 +9,10 @@
   tomlFormat = pkgs.formats.toml {};
 
   cameraToToml = name: cam:
-    lib.filterAttrs (_: v: v != null) cam
+    lib.filterAttrs (_: v: v != null) (removeAttrs cam ["mac" "ip"])
     // {
       inherit name;
+      address = cam.ip;
       password = "@PASSWORD@";
     };
 
@@ -43,7 +44,11 @@ in {
     cameras = mkOption {
       type = attrsOf (submodule {
         options = {
-          address = mkOption {
+          mac = mkOption {
+            type = str;
+            description = "MAC address of the camera.";
+          };
+          ip = mkOption {
             type = str;
             description = "IP address of the camera.";
           };

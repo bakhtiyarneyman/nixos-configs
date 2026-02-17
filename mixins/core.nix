@@ -19,7 +19,6 @@
 in {
   imports = [
     ../modules/auto-unlock.nix
-    ../modules/home.nix
     ../modules/journal-brief.nix
   ];
 

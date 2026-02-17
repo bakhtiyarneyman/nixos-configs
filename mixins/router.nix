@@ -25,8 +25,7 @@
       nftables = {
         enable = true;
         ruleset = let
-          blockedDevices = lib.filterAttrs (_: dev: dev.wanBlocked) config.home.devices;
-          blockedMacs = lib.mapAttrsToList (_: dev: dev.mac) blockedDevices;
+          blockedMacs = lib.mapAttrsToList (_: cam: cam.mac) config.services.neolink.cameras;
           blockedMacSet = "{ ${lib.concatStringsSep ", " blockedMacs} }";
           blockedRule = lib.optionalString (blockedMacs != []) ''
             ether saddr ${blockedMacSet} oifname "eth-wan" udp dport 123 counter accept comment "Allow NTP for blocked devices"
@@ -226,11 +225,11 @@
             ];
           };
           dhcpServerStaticLeases =
-            lib.mapAttrsToList (name: dev: {
-              MACAddress = dev.mac;
-              Address = dev.ip;
+            lib.mapAttrsToList (_: cam: {
+              MACAddress = cam.mac;
+              Address = cam.ip;
             })
-            config.home.devices;
+            config.services.neolink.cameras;
           linkConfig.RequiredForOnline = "no";
           routes = [
             {

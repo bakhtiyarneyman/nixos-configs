@@ -28,12 +28,9 @@ in {
     ../mixins/router.nix
   ];
 
-  home.devices = {
-    camera_living_room = {
-      mac = "0c:79:55:ac:ea:67";
-      ip = "192.168.10.15";
-      wanBlocked = true;
-    };
+  services.neolink.cameras.human_camera = {
+    mac = "0c:79:55:ac:ea:67";
+    ip = "192.168.10.15";
   };
 
   boot = {
