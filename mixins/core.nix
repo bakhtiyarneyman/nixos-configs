@@ -184,6 +184,12 @@ in {
                 "/Ignoring duplicate name/"
               ];
             }
+            {
+              SYSLOG_IDENTIFIER = ["zrepl"];
+              MESSAGE = [
+                "/context canceled/"
+              ];
+            }
           ];
           inclusions = [
             {
