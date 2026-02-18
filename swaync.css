@@ -15,6 +15,8 @@
 @define-color cyan #56b6c2;
 @define-color white #abb2bf;
 
+@define-color accent @blue;
+
 .control-center .notification-row:focus,
 .control-center .notification-row:hover {
   opacity: 1;
@@ -23,8 +25,8 @@
 
 .notification-row:focus .notification,
 .notification-row:hover .notification {
-  box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.5);
-  border: 0px solid @accent;
+  /* box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.5); */
+  /* border: 0px solid @accent; */
   /* background: @current-line; */
 }
 
@@ -43,6 +45,7 @@
   margin: 0;
   box-shadow: 0 1px 3px 1px rgba(0, 0, 0, 0.5);
   padding: 0;
+  border: none;
 }
 
 .notification-row {
@@ -54,13 +57,12 @@
   /* border-radius: 80px; */
 }
 
-.low .notification-content {
+.low .notification-default-action,
+.low .notification-alt-actions {
   background: @black;
-  border-color: @blue;
-  /* padding: 6px; */
-  /* border-radius: 3px; */
 }
-.normal .notification-content {
+.normal .notification-default-action,
+.normal .notification-alt-actions {
   background: @blue;
   /* padding: 6px; */
   /* border-radius: 3px; */
@@ -78,14 +80,15 @@
   color: @black;
 }
 
-.critical .notification-content {
+.critical .notification-default-action,
+.critical .notification-alt-actions {
   background: red;
   /* padding: 6px; */
   /* border-radius: 3px; */
 }
 
 .notification-content {
-  background: green;
+  background: transparent;
   padding: 6px;
   border-radius: 8px;
 }
@@ -117,8 +120,12 @@
   margin: 0;
   box-shadow: none;
   /* background: @current-line; */
-  border: 2px solid @accent;
+  /* border: 2px solid @accent; */
   /* color: @foreground; */
+}
+
+.notification-action > button {
+  background: @black;
 }
 
 .notification-default-action:hover,
@@ -150,7 +157,6 @@
 
 .notification-action:last-child {
   border-bottom-right-radius: 8px;
-  border-right: 1px solid @accent;
 }
 
 .image {
@@ -197,7 +203,7 @@
   /* color: @foreground; */
   text-shadow: none;
   /* background: @background; */
-  border: 2px solid @accent;
+  /* border: 2px solid @accent; */
   box-shadow: none;
   border-radius: 8px;
 }
@@ -209,7 +215,7 @@
 .control-center-dnd {
   border-radius: 8px;
   /* background: @background; */
-  border: 1px solid @accent;
+  /* border: 1px solid @accent; */
   box-shadow: none;
 }
 
@@ -223,12 +229,14 @@
 }
 
 .control-center {
-  /* background: @background-alpha; */
+  background: @black;
   border-radius: 10px;
   background-clip: border-box;
   padding: 4px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3), 0 1px 3px 1px rgba(0, 0, 0, 0.7),
-    0 2px 6px 2px rgba(0, 0, 0, 0.3);
+  /* box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.3),
+    0 1px 3px 1px rgba(0, 0, 0, 0.7),
+    0 2px 6px 2px rgba(0, 0, 0, 0.3); */
   /* color: @foreground; */
   border: 2px solid @accent;
 }
@@ -259,7 +267,7 @@
   /* color: @foreground; */
   text-shadow: none;
   /* background: @background; */
-  border: 2px solid @accent;
+  /* border: 2px solid @accent; */
   box-shadow: none;
   border-radius: 8px;
 }
@@ -276,7 +284,7 @@
   font-size: initial;
   border-radius: 8px;
   /* background: @background; */
-  border: 1px solid @accent;
+  /* border: 1px solid @accent; */
   box-shadow: none;
 }
 .widget-dnd > switch:checked {
@@ -305,7 +313,7 @@
   margin: 8px;
   /* background-color: @background; */
   border-radius: 8px;
-  border: 2px solid @accent;
+  /* border: 2px solid @accent; */
   /* color: @foreground; */
 }
 .widget-mpris-title {
