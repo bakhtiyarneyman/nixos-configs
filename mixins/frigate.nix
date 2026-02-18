@@ -48,7 +48,8 @@ in {
           ffmpeg = {
             inputs = [
               {
-                path = "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.services.neolink.cameras.human_camera.ip}:554/Preview_01_main";
+                path = "rtsp://127.0.0.1:8554/human_camera";
+                input_args = "preset-rtsp-restream";
                 roles = [
                   "audio"
                   "detect"
@@ -97,7 +98,7 @@ in {
       go2rtc = {
         streams = {
           human_camera = [
-            "rtsp://admin:{FRIGATE_CAMERAS_PASSWORD}@${config.services.neolink.cameras.human_camera.ip}:554/Preview_01_main"
+            "ffmpeg:http://${config.services.neolink.cameras.human_camera.ip}/flv?port=1935&app=bcs&stream=channel0_main.bcs&user=admin&password={FRIGATE_CAMERAS_PASSWORD}#video=copy#audio=aac#hardware"
             # Uncomment if h265 can't be played.
             # "ffmpeg:human_camera #video=h264#audio=aac#hardware"
           ];
