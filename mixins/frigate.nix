@@ -199,6 +199,7 @@ in {
     after = ["frigate.service" "cameras-auth.service"];
     requires = ["cameras-auth.service"];
     partOf = ["frigate.service"];
+    wantedBy = ["frigate.service"];
     serviceConfig = {
       SupplementaryGroups = ["camera"];
       # Generate config from frigate's config with secrets substituted
