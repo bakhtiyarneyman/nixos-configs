@@ -126,12 +126,18 @@
 
 .notification-action > button {
   background: @black;
+  padding: 7px 10px;
+  min-height: 0;
 }
 
 .notification-default-action:hover,
 .notification-action:hover {
   -gtk-icon-effect: none;
   /* background: @current-line; */
+}
+
+.notification-action > button:hover {
+  background: shade(@black, 1.3);
 }
 
 .notification-default-action {
