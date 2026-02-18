@@ -324,7 +324,9 @@ in {
               "slow/crypt/var/lib<" = true;
               "slow/crypt/var/lib/hass<" = false;
               "slow/crypt/var/lib/monero<" = false;
+              "slow/crypt/var/lib/redis-immich" = false;
               "slow/crypt/var/lib/systemd/coredump" = false;
+              "slow/crypt${config.services.immich.mediaLocation}<" = false;
             };
             snapshotting = {
               type = "periodic";
