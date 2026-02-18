@@ -84,7 +84,9 @@ in {
       };
 
       ffmpeg = {
-        path = "${pkgs.jellyfin-ffmpeg}";
+        path = "${pkgs.ffmpeg_8-full.override {
+          withVpl = true;
+        }}";
         hwaccel_args = "preset-intel-qsv-h265";
         output_args = {
           # With `preset-record-generic-audio-copy` the audio is not available in recorded streams.
