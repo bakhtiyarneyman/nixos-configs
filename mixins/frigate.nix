@@ -162,7 +162,7 @@ in {
     after = lib.mkForce ["cameras-auth.service" "network.target" "mosquitto.service"];
     requires = ["cameras-auth.service" "mosquitto.service"];
     serviceConfig = {
-      AmbientCapabilities = ["iHD" "CAP_PERFMON"];
+      AmbientCapabilities = ["CAP_PERFMON"];
       EnvironmentFile = ["/run/cameras-auth/env"];
     };
   };
