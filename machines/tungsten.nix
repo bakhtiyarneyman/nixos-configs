@@ -59,7 +59,7 @@
     journal-brief.settings = {
       exclusions = [
         {
-          SYSLOG_IDENTIFIER = ["sshd"];
+          SYSLOG_IDENTIFIER = ["sshd" "sshd-session"];
           MESSAGE = [
             "/fatal: Timeout before authentication/"
             "/error: PAM: Authentication failure for illegal user/"
@@ -67,6 +67,7 @@
             "/error: kex_exchange_identification: Connection closed by remote host/"
             "/error: kex_exchange_identification: banner line contains invalid characters/"
             "/error: kex_exchange_identification: read: Connection reset by peer/"
+            "/error: kex_protocol_error: /"
           ];
         }
       ];
