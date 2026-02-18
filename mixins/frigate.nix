@@ -98,7 +98,7 @@ in {
       go2rtc = {
         streams = {
           human_camera = [
-            "ffmpeg:http://${config.services.neolink.cameras.human_camera.ip}/flv?port=1935&app=bcs&stream=channel0_main.bcs&user=admin&password={FRIGATE_CAMERAS_PASSWORD}#video=copy#audio=aac#hardware"
+            "ffmpeg:http://${config.services.neolink.cameras.human_camera.ip}/flv?port=1935&app=bcs&stream=channel0_main.bcs&user=admin&password={FRIGATE_CAMERAS_PASSWORD}#video=copy#audio=copy#hardware"
             # Uncomment if h265 can't be played.
             # "ffmpeg:human_camera #video=h264#audio=aac#hardware"
           ];
