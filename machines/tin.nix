@@ -302,6 +302,7 @@ in {
               "slow/crypt/entertainment/video<" = false;
               "slow/crypt/var/lib/hass<" = true;
               "slow/crypt/var/lib/hass/tts" = false;
+              "slow/crypt/var/lib/redis-immich" = true;
               "slow/crypt${config.services.immich.mediaLocation}" = true;
             };
             send = {
