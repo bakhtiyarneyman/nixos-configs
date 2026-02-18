@@ -7,6 +7,10 @@
 }: let
   frigatePackage = config.services.frigate.package;
   createGo2rtcConfig = "${frigatePackage.src}/docker/main/rootfs/usr/local/go2rtc/create_config.py";
+  ffmpegPackage = pkgs.ffmpeg_8-full.override {withVpl = true;};
+  libavformatMajor = lib.strings.trim (builtins.readFile (pkgs.runCommandLocal "libavformat-major-version" {} ''
+    ${ffmpegPackage}/bin/ffmpeg -version 2>&1 | sed -n 's/.*libavformat[[:space:]]*\([0-9]*\).*/\1/p' | head -1 > $out
+  ''));
 in {
   services.go2rtc.enable = true;
 
@@ -85,9 +89,7 @@ in {
       };
 
       ffmpeg = {
-        path = "${pkgs.ffmpeg_8-full.override {
-          withVpl = true;
-        }}";
+        path = ffmpegPackage;
         hwaccel_args = "preset-intel-qsv-h265";
         output_args = {
           # With `preset-record-generic-audio-copy` the audio is not available in recorded streams.
@@ -165,6 +167,7 @@ in {
       AmbientCapabilities = ["CAP_PERFMON"];
       EnvironmentFile = ["/run/cameras-auth/env"];
     };
+    environment.LIBAVFORMAT_VERSION_MAJOR = libavformatMajor;
   };
 
   # Port 8971: external authenticated with TLS (frigate checks X-Server-Port header)
