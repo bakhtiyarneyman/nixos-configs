@@ -357,10 +357,13 @@ in {
             Host ${host} ${host}.orkhon-mohs.ts.net
               HostName ${host}
               ForwardAgent yes
-              SendEnv COLORTERM
           '';
         in
-          builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines));
+          builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines))
+          + ''
+            Host *
+              SendEnv COLORTERM
+          '';
       };
 
       wireshark.enable = true;
