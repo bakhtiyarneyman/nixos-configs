@@ -64,6 +64,16 @@
             "/error: kex_protocol_error: /"
           ];
         }
+        # VSOCK is not available on this cloud VM; systemd-ssh-generator
+        # unconditionally tries to set up SSH over VSOCK and fails.
+        {
+          SYSLOG_IDENTIFIER = ["systemd-ssh-generator"];
+          MESSAGE = ["/Failed to query local AF_VSOCK CID/"];
+        }
+        {
+          SYSLOG_IDENTIFIER = ["systemd"];
+          MESSAGE = ["/systemd-ssh-generator failed with exit status/"];
+        }
       ];
     };
     zrepl.settings = {
