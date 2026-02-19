@@ -35,7 +35,14 @@
       };
     };
 
-    networking.networkmanager.enable = true;
+    networking = {
+      networkmanager.enable = true;
+
+      wireguard.interfaces.mullvad.ips = [
+        "10.64.32.161/32"
+        "fc00:bbbb:bbbb:bb01::1:20a0/128"
+      ];
+    };
 
     nix.settings = {
       substituters = [
