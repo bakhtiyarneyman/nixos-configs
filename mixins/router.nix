@@ -14,6 +14,11 @@
       "net.ipv4.ip_forward" = 1;
     };
 
+    # BindsTo= stops hostapd when the WiFi device disappears, but Restart=always
+    # is suppressed for BindsTo-triggered stops. WantedBy the device unit ensures
+    # hostapd auto-starts when the device (re)appears after a chip reset.
+    systemd.services.hostapd.wantedBy = config.systemd.services.hostapd.bindsTo;
+
     environment.systemPackages = with pkgs; [
       tcpdump
     ];
