@@ -103,7 +103,7 @@ nix-instantiate --parse-only file.nix
 - Verify behavioral claims from logs/tests, not documentation.
 - Don't mitigate failure modes you haven't observed.
 - Question the necessity of every piece of proposed code and remove what you can't justify with evidence.
-- Write maintainable code: don't duplicate logic that already exists elsewhere.
+- Write minimal, elegant and maintainable code: don't duplicate logic that already exists elsewhere.
 - Review your own work in a loop until you find no more issues, before presenting it.
 - Articulate assumptions explicitly and verify them before building on them.
 - After the work is done, analyze your mistakes and propose updates to these instructions.
