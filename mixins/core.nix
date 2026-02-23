@@ -90,7 +90,9 @@ in {
         perf
         openssl
         # Development
-        unstable.claude-code
+        (pkgs.writeShellScriptBin "claude" ''
+          exec ${unstable.claude-code}/bin/claude --settings /etc/nixos/claude-settings.json "$@"
+        '')
         # Nix
         # nixd
         nil
