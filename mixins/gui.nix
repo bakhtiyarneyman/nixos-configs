@@ -56,6 +56,7 @@ in {
         # Themes.
         kdePackages.breeze-icons
         adwaita-one-dark
+        bibata-cursors
         # Browsers
         (google-chrome.override {commandLineArgs = "--enable-features=VaapiVideoDecoder";})
         brave
