@@ -251,6 +251,7 @@ in {
       ];
       extraConfig = ''
         --local-networks=192.168.10.1/24
+        --ndpi-protocols=/etc/nixos/ndpi-protos.txt
       '';
     };
     prowlarr.enable = true;
