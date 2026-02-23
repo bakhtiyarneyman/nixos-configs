@@ -148,10 +148,6 @@ in {
       i3status-rust = {
         batteries = [
           {
-            model = "Logitech MX Master 3000";
-            icon = "";
-          }
-          {
             model = "CP1500AVRLCDa";
             icon = "";
           }
