@@ -121,6 +121,7 @@ nix-instantiate --parse-only file.nix
 - Don't build if you can just test
 - Don't declare success until you have tested the configuration. It's not enough that `nixos-rebuild test` runs successfully, you might need to look into journal.
 - Modules are global for all machines, machines import mixins directly.
+- On NixOS, binaries are not in standard paths. Always use `/usr/bin/env` for shebangs and absolute paths for referencing scripts/binaries.
 
 ## Communication
 
