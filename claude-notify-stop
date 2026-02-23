@@ -1,0 +1,36 @@
+#!/usr/bin/env fish
+
+# Walk up the process tree to find which Alacritty terminal we're running in.
+set terminal_pid ""
+set ancestor $fish_pid
+while test "$ancestor" -gt 1
+    set name (cat /proc/$ancestor/comm 2>/dev/null)
+    if test "$name" = alacritty
+        set terminal_pid $ancestor
+        break
+    end
+    set ancestor (awk '/PPid/{print $2}' /proc/$ancestor/status 2>/dev/null)
+end
+
+# If that terminal is focused, the user can already see Claude's output.
+set focused_pid (swaymsg -t get_tree | jq '.. | select(.focused? == true) | .pid')
+if test "$focused_pid" = "$terminal_pid"
+    exit 0
+end
+
+# Extract the last assistant message from the transcript.
+set transcript (jq -r '.transcript_path')
+set text (tac $transcript | jq -r 'select(.type=="assistant") | [.message.content[] | select(.type=="text") | .text] | join("")' 2>/dev/null | head -1)
+
+# Truncate with ellipsis.
+if test (string length -- "$text") -gt 200
+    set text (string sub -l 200 -- "$text")"…"
+end
+
+# Show notification in background. On click, focus the terminal.
+begin
+    set action (notify-send -A default=Open 'Claude Code' -- $text)
+    if test "$action" = default -a -n "$terminal_pid"
+        swaymsg "[pid=$terminal_pid] focus"
+    end
+end &

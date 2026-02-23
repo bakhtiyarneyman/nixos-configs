@@ -1,0 +1,40 @@
+#!/usr/bin/env fish
+
+# Walk up the process tree to find which Alacritty terminal we're running in.
+set terminal_pid ""
+set ancestor $fish_pid
+while test "$ancestor" -gt 1
+    set name (cat /proc/$ancestor/comm 2>/dev/null)
+    if test "$name" = alacritty
+        set terminal_pid $ancestor
+        break
+    end
+    set ancestor (awk '/PPid/{print $2}' /proc/$ancestor/status 2>/dev/null)
+end
+
+# If that terminal is focused, let the terminal UI handle it.
+set focused_pid (swaymsg -t get_tree | jq '.. | select(.focused? == true) | .pid')
+if test "$focused_pid" = "$terminal_pid"
+    exit 0
+end
+
+# Read hook input from stdin.
+set input (cat)
+
+set tool (echo $input | jq -r '.tool_name')
+set detail (echo $input | jq -r '.tool_input | to_entries | map(.key + ": " + (.value | tostring)) | join(", ")' | cut -c1-200)
+
+# Show notification with Allow/Deny buttons. Blocks until clicked or dismissed.
+set action (notify-send -A allow=Allow -A deny=Deny 'Claude Code' "$tool: $detail")
+
+if test "$action" = allow
+    echo '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}'
+else if test "$action" = deny
+    echo '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"deny","message":"Denied via notification"}}}'
+else
+    # Dismissed without clicking a button — focus the terminal so the user
+    # can respond via the Claude Code permission prompt instead.
+    if test -n "$terminal_pid"
+        swaymsg "[pid=$terminal_pid] focus"
+    end
+end
