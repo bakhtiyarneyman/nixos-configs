@@ -1,7 +1,5 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## Repository Overview
 
 This is a NixOS flake configuration repository for managing multiple machines with shared configurations. The repository uses a modular architecture with machine-specific configurations and reusable mixins.
@@ -47,7 +45,7 @@ sudo nixos-rebuild build --flake /etc/nixos#iron
 nix flake update
 
 # Update specific input
-nix flake lock --update-input nixpkgs
+nix flake update nixpkgs
 ```
 
 ### Testing and Validation
@@ -76,7 +74,7 @@ nix-instantiate --parse-only file.nix
 1. **Adding New Machines**: Create new file in `machines/` following existing pattern, update `machineNames` in `flake.nix`
 2. **Custom Packages**: Add to `pkgs/` directory and reference in overlays section of `mixins/core.nix`
 3. **Shared Configuration**: Add reusable features to `mixins/`, machine-specific config to `machines/`
-4. **Testing Changes**: Use `nixos-rebuild build` first, then `switch` after verification
+4. **Testing Changes**: Use `nixos-rebuild test` first, then `switch` after verification
 
 ## Key Configuration Patterns
 
@@ -117,6 +115,7 @@ nix-instantiate --parse-only file.nix
 - Use exec to record debug messages in bash scripts.
 - Never invoke `nixos-rebuild (boot|switch)` before testing the configuration with `nixos-rebuild test`.
 - Never read files with passwords, stat them
+- Never see or handle secret values directly. Generate secrets by piping (e.g., `openssl rand -hex 32 > /path/to/secret`)
 - When claude is used via ssh, `sudo` must be used instead of `pkexec`.
 - Don't build or `nix flake check` if you can just test
 - Don't declare success until you have tested the configuration. It's not enough that `nixos-rebuild test` runs successfully, you might need to look into journal.
