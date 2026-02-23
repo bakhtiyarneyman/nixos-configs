@@ -109,6 +109,7 @@ nix-instantiate --parse-only file.nix
 - After the work is done, analyze your mistakes and propose updates to these instructions.
 
 ## Development Memories
+- Don't spawn exploration agents for simple, targeted edits — just read the file.
 - Do not remove temporary debugging facilities until proven working.
 - Use pkexec to execute privileged commands.
 - When authentication prompts (pkexec, sudo) fail or get cancelled, ask the user before trying alternative commands.
@@ -124,3 +125,4 @@ nix-instantiate --parse-only file.nix
 ## Communication
 
 - If I'm asking a question, answer it instead of interpreting it as a request. I will use imperative mood for requests.
+- When asking for permissions, always explain what you are trying to accomplish and why.
