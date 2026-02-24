@@ -2,3 +2,4 @@ result
 vscode/**
 *.ovpn
 secrets
+ndpi-protos.txt
