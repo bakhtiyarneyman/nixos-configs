@@ -394,6 +394,8 @@ in {
 
         nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
 
+        focus-urgent = autostart "/etc/nixos/focus-urgent.sh";
+
         inactive-windows-transparency =
           autostart
           "${pkgs.inactive-windows-transparency}/bin/inactive-windows-transparency.py";
