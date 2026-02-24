@@ -175,7 +175,7 @@ in {
   services.nginx.virtualHosts.${config.services.frigate.hostname} = {
     listen = lib.mkForce [
       {
-        addr = "100.127.84.38";
+        addr = "0.0.0.0";
         port = 8971;
         ssl = true;
       }
