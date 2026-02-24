@@ -395,6 +395,17 @@ in {
 
         swaync = autostart "${pkgs.swaynotificationcenter}/bin/swaync --config /etc/nixos/swaync.conf --style /etc/nixos/swaync.css";
 
+        claude-notify = {
+          enable = true;
+          requisite = ["swaync.service"];
+          after = ["swaync.service"];
+          wantedBy = ["sway-session.target"];
+          serviceConfig = {
+            ExecStart = ["${pkgs.socat}/bin/socat UNIX-LISTEN:%t/claude-notify.sock,fork,unlink-early EXEC:/etc/nixos/claude-notify-handler"];
+            Restart = "on-failure";
+          };
+        };
+
         wlsunset = let
           wlsunset-here = pkgs.writeShellScriptBin "wlsunset-here" ''
             ${pkgs.wlsunset}/bin/wlsunset -t 3300 $(${pkgs.curl}/bin/curl -s http://ip-api.com/json | ${pkgs.jq}/bin/jq -r '"-l \(.lat) -L \(.lon)"')

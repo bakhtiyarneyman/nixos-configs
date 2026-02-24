@@ -82,6 +82,7 @@ in {
         nethogs
         dig
         nmap
+        socat
         lsof
         iperf3
         shell-genie
@@ -220,7 +221,8 @@ in {
         enable = true;
         settings = {
           AllowAgentForwarding = true;
-          AcceptEnv = "COLORTERM";
+          AcceptEnv = "COLORTERM CLAUDE_NOTIFY_SOCK";
+          StreamLocalBindUnlink = true;
         };
       };
 

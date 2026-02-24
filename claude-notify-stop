@@ -1,5 +1,7 @@
 #!/usr/bin/env fish
 
+set sock "$XDG_RUNTIME_DIR/claude-notify.sock"
+
 # Walk up the process tree to find which Alacritty terminal we're running in.
 set terminal_pid ""
 set ancestor $fish_pid
@@ -13,24 +15,47 @@ while test "$ancestor" -gt 1
 end
 
 # If that terminal is focused, the user can already see Claude's output.
-set focused_pid (swaymsg -t get_tree | jq '.. | select(.focused? == true) | .pid')
-if test "$focused_pid" = "$terminal_pid"
+set focused_pid (swaymsg -t get_tree 2>/dev/null | jq '.. | select(.focused? == true) | .pid')
+if test "$focused_pid" = "$terminal_pid" -a -n "$terminal_pid"
     exit 0
 end
 
 # Extract the last assistant message from the transcript.
 set transcript (jq -r '.transcript_path')
-set text (tac $transcript | jq -r 'select(.type=="assistant") | [.message.content[] | select(.type=="text") | .text] | join("")' 2>/dev/null | head -1)
+# Read the JSONL transcript in reverse,
+# slurp into an array and pick the last assistant entry,
+# extract text blocks from the message content,
+# join them and flatten newlines into spaces.
+set text (tac $transcript \
+    | jq -rs '
+        [.[] | select(.type=="assistant")] | first
+        | [.message.content[] | select(.type=="text") | .text]
+        | join(" ")
+        | gsub("\\n"; " ")
+    ' 2>/dev/null)
+
+if test -z "$text" -o "$text" = null
+    exit 0
+end
 
 # Truncate with ellipsis.
 if test (string length -- "$text") -gt 200
     set text (string sub -l 200 -- "$text")"…"
 end
 
-# Show notification in background. On click, focus the terminal.
-begin
-    set action (notify-send -A default=Open 'Claude Code' -- $text)
-    if test "$action" = default -a -n "$terminal_pid"
-        swaymsg "[pid=$terminal_pid] focus"
-    end
-end &
+# Send via socket (SSH) or notify-send (local).
+if test -S "$sock" -a -z "$terminal_pid"
+    jq -n --arg body "$text" '{type:"stop",body:$body}' | socat - UNIX-CONNECT:$sock &
+else if test -n "$text"
+    # notify-send -A blocks until the user interacts with the notification,
+    # so it must run in the background. But Claude Code waits for the hook's
+    # stdout/stderr pipes to close, not just the process to exit — background
+    # children inherit these fds, keeping the pipes open. Redirecting all three
+    # fds on the backgrounded child lets this script exit immediately.
+    fish -c "
+        set action (notify-send -A default=Open 'Claude Code' -- $(string escape -- $text))
+        if test \"\$action\" = default
+            swaymsg '[pid=$terminal_pid] focus'
+        end
+    " </dev/null >/dev/null 2>/dev/null &
+end

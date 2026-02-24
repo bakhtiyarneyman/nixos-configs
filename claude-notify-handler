@@ -1,0 +1,16 @@
+#!/usr/bin/env fish
+
+# Per-connection handler for the claude-notify socket.
+# Reads one JSON request from stdin, calls notify-send, writes response to stdout.
+
+set request (cat)
+set type (echo $request | jq -r '.type')
+set body (echo $request | jq -r '.body')
+
+if test "$type" = stop
+    notify-send 'Claude Code' "$body"
+    echo '{}'
+else if test "$type" = permission
+    set action (notify-send -A allow=Allow -A deny=Deny 'Claude Code' "$body")
+    jq -n --arg action "$action" '{action:$action}'
+end
