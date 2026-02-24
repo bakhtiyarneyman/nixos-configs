@@ -80,6 +80,7 @@ in {
         sd # Better sed.
         xcp # Better cp.
         nethogs
+        dig
         nmap
         lsof
         iperf3
