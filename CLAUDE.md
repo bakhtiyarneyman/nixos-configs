@@ -1,8 +1,14 @@
 # CLAUDE.md
 
+## Communication
+
+- If I'm asking a question, answer it instead of interpreting it as a request. Always answer the question, don't propose changes. I will use imperative mood for requests.
+- When asking for permissions, always explain what you are trying to accomplish and why.
+
 ## Repository Overview
 
 This is a NixOS flake configuration repository for managing multiple machines with shared configurations. The repository uses a modular architecture with machine-specific configurations and reusable mixins.
+
 
 ## Architecture
 
@@ -121,8 +127,3 @@ nix-instantiate --parse-only file.nix
 - Don't declare success until you have tested the configuration. It's not enough that `nixos-rebuild test` runs successfully, you might need to look into journal.
 - Modules are global for all machines, machines import mixins directly.
 - On NixOS, binaries are not in standard paths. Always use `/usr/bin/env` for shebangs and absolute paths for referencing scripts/binaries.
-
-## Communication
-
-- If I'm asking a question, answer it instead of interpreting it as a request. I will use imperative mood for requests.
-- When asking for permissions, always explain what you are trying to accomplish and why.
