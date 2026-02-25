@@ -394,7 +394,9 @@ in {
 
         nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
 
-        focus-urgent = autostart "/etc/nixos/focus-urgent.sh";
+        focus-urgent = autostart "/etc/nixos/focus-urgent.sh" // {
+          path = [pkgs.bash pkgs.sway pkgs.jq];
+        };
 
         inactive-windows-transparency =
           autostart
