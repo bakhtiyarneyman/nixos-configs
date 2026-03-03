@@ -71,6 +71,7 @@
         enable = true;
         key = "/etc/nixos/secrets/${machineName}.syncthing.secret-key.pem";
         cert = "/etc/nixos/secrets/${machineName}.syncthing.public-key.pem";
+        user = "bakhtiyar";
         settings = {
           devices = let
             mkDevice = name: id: {
