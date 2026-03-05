@@ -30,7 +30,7 @@
       nftables = {
         enable = true;
         ruleset = let
-          blockedMacs = lib.mapAttrsToList (_: cam: cam.mac) config.services.neolink.cameras;
+          blockedMacs = lib.mapAttrsToList (_: cam: cam.mac) config.surveillance.cameras;
           blockedMacSet = "{ ${lib.concatStringsSep ", " blockedMacs} }";
           blockedRule = lib.optionalString (blockedMacs != []) ''
             ether saddr ${blockedMacSet} oifname "eth-wan" udp dport 123 counter accept comment "Allow NTP for blocked devices"
@@ -234,7 +234,7 @@
               MACAddress = cam.mac;
               Address = cam.ip;
             })
-            config.services.neolink.cameras;
+            config.surveillance.cameras;
           linkConfig.RequiredForOnline = "no";
           routes = [
             {

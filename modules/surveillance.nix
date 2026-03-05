@@ -4,7 +4,7 @@
   pkgs,
   ...
 }: let
-  cfg = config.services.neolink;
+  cfg = config.surveillance;
   neolink = pkgs.callPackage ../pkgs/neolink.nix {};
   tomlFormat = pkgs.formats.toml {};
 
@@ -17,30 +17,16 @@
     };
 
   configToToml =
-    removeAttrs cfg ["enable" "cameras" "mqtt"]
+    removeAttrs cfg.neolink ["enable" "mqtt"]
     // {cameras = lib.mapAttrsToList cameraToToml cfg.cameras;}
-    // lib.optionalAttrs cfg.mqtt.enable {
-      mqtt = removeAttrs cfg.mqtt ["enable"];
+    // lib.optionalAttrs cfg.neolink.mqtt.enable {
+      mqtt = removeAttrs cfg.neolink.mqtt ["enable"];
     };
 
   configFile = tomlFormat.generate "neolink.toml" configToToml;
 in {
-  options.services.neolink = with lib;
+  options.surveillance = with lib;
   with types; {
-    enable = mkEnableOption "neolink RTSP bridge for Reolink cameras";
-
-    bind = mkOption {
-      type = str;
-      default = "::";
-      description = "Address to bind the RTSP server to.";
-    };
-
-    bind_port = mkOption {
-      type = port;
-      default = 1554;
-      description = "Port for the RTSP server.";
-    };
-
     cameras = mkOption {
       type = attrsOf (submodule {
         options = {
@@ -97,25 +83,41 @@ in {
         };
       });
       default = {};
-      description = "Cameras to proxy.";
+      description = "Surveillance cameras on the network.";
     };
 
-    mqtt = {
-      enable = mkEnableOption "MQTT integration";
-      broker_addr = mkOption {
+    neolink = {
+      enable = mkEnableOption "neolink RTSP bridge for Reolink cameras";
+
+      bind = mkOption {
         type = str;
-        default = "127.0.0.1";
-        description = "MQTT broker address.";
+        default = "::";
+        description = "Address to bind the RTSP server to.";
       };
-      port = mkOption {
+
+      bind_port = mkOption {
         type = port;
-        default = 1883;
-        description = "MQTT broker port.";
+        default = 1554;
+        description = "Port for the RTSP server.";
+      };
+
+      mqtt = {
+        enable = mkEnableOption "MQTT integration";
+        broker_addr = mkOption {
+          type = str;
+          default = "127.0.0.1";
+          description = "MQTT broker address.";
+        };
+        port = mkOption {
+          type = port;
+          default = 1883;
+          description = "MQTT broker port.";
+        };
       };
     };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.neolink.enable {
     systemd.services.neolink = {
       description = "Neolink RTSP bridge for Reolink cameras";
       wantedBy = ["multi-user.target"];

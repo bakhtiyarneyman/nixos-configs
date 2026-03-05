@@ -28,7 +28,7 @@ in {
     ../mixins/router.nix
   ];
 
-  services.neolink.cameras.human_camera = {
+  surveillance.cameras.human_camera = {
     mac = "0c:79:55:ac:ea:67";
     ip = "192.168.10.15";
   };
