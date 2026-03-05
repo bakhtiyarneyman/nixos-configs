@@ -2,22 +2,24 @@
 
 set sock "$XDG_RUNTIME_DIR/claude-notify.sock"
 
-# Walk up the process tree to find which Alacritty terminal we're running in.
-set terminal_pid ""
+# Get the focused window PID and all window PIDs from sway.
+set sway_tree (swaymsg -t get_tree 2>/dev/null)
+set focused_pid (echo $sway_tree | jq '.. | select(.focused? == true) | .pid')
+set -l all_window_pids (echo $sway_tree | jq -r '[.. | select(.pid? > 0) | .pid] | unique | .[]')
+
+# Walk up the process tree.
+# - If any ancestor is the focused window, skip the notification.
+# - Track the first ancestor that is any sway window (for SSH detection and focus-on-click).
+set window_pid ""
 set ancestor $fish_pid
 while test "$ancestor" -gt 1
-    set name (cat /proc/$ancestor/comm 2>/dev/null)
-    if test "$name" = alacritty
-        set terminal_pid $ancestor
-        break
+    if test "$ancestor" = "$focused_pid"
+        exit 0
+    end
+    if test -z "$window_pid"; and contains -- "$ancestor" $all_window_pids
+        set window_pid $ancestor
     end
     set ancestor (awk '/PPid/{print $2}' /proc/$ancestor/status 2>/dev/null)
-end
-
-# If that terminal is focused, let the terminal UI handle it.
-set focused_pid (swaymsg -t get_tree 2>/dev/null | jq '.. | select(.focused? == true) | .pid')
-if test "$focused_pid" = "$terminal_pid" -a -n "$terminal_pid"
-    exit 0
 end
 
 # Read hook input from stdin.
@@ -28,7 +30,7 @@ set detail (echo $input | jq -r '.tool_input | to_entries | map(.key + ": " + (.
 set body "$tool: $detail"
 
 # Send via socket (SSH) or notify-send (local).
-if test -S "$sock" -a -z "$terminal_pid"
+if test -S "$sock" -a -z "$window_pid"
     set response (jq -n --arg body "$body" '{type:"permission",body:$body}' | socat - UNIX-CONNECT:$sock)
     set action (echo $response | jq -r '.action')
 else
@@ -42,8 +44,8 @@ else if test "$action" = deny
 end
 
 # Focus terminal when user explicitly clicks Deny or Focus.
-if test -n "$terminal_pid" -a \( "$action" = deny -o "$action" = default \)
+if test -n "$window_pid" -a \( "$action" = deny -o "$action" = default \)
     # swaymsg outputs JSON to stdout (e.g. [{"success":true}]), which would
     # corrupt the hook's JSON output that Claude Code parses. Redirect to /dev/null.
-    swaymsg "[pid=$terminal_pid] focus" >/dev/null
+    swaymsg "[pid=$window_pid] focus" >/dev/null
 end

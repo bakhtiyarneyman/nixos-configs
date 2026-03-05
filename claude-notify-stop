@@ -2,22 +2,24 @@
 
 set sock "$XDG_RUNTIME_DIR/claude-notify.sock"
 
-# Walk up the process tree to find which Alacritty terminal we're running in.
-set terminal_pid ""
+# Get the focused window PID and all window PIDs from sway.
+set sway_tree (swaymsg -t get_tree 2>/dev/null)
+set focused_pid (echo $sway_tree | jq '.. | select(.focused? == true) | .pid')
+set -l all_window_pids (echo $sway_tree | jq -r '[.. | select(.pid? > 0) | .pid] | unique | .[]')
+
+# Walk up the process tree.
+# - If any ancestor is the focused window, skip the notification.
+# - Track the first ancestor that is any sway window (for SSH detection and focus-on-click).
+set window_pid ""
 set ancestor $fish_pid
 while test "$ancestor" -gt 1
-    set name (cat /proc/$ancestor/comm 2>/dev/null)
-    if test "$name" = alacritty
-        set terminal_pid $ancestor
-        break
+    if test "$ancestor" = "$focused_pid"
+        exit 0
+    end
+    if test -z "$window_pid"; and contains -- "$ancestor" $all_window_pids
+        set window_pid $ancestor
     end
     set ancestor (awk '/PPid/{print $2}' /proc/$ancestor/status 2>/dev/null)
-end
-
-# If that terminal is focused, the user can already see Claude's output.
-set focused_pid (swaymsg -t get_tree 2>/dev/null | jq '.. | select(.focused? == true) | .pid')
-if test "$focused_pid" = "$terminal_pid" -a -n "$terminal_pid"
-    exit 0
 end
 
 # Extract the last assistant message from the transcript.
@@ -44,7 +46,7 @@ if test (string length -- "$text") -gt 200
 end
 
 # Send via socket (SSH) or notify-send (local).
-if test -S "$sock" -a -z "$terminal_pid"
+if test -S "$sock" -a -z "$window_pid"
     jq -n --arg body "$text" '{type:"stop",body:$body}' | socat - UNIX-CONNECT:$sock &
 else if test -n "$text"
     # notify-send -A blocks until the user interacts with the notification,
@@ -55,7 +57,7 @@ else if test -n "$text"
     fish -c "
         set action (notify-send -A default=Open 'Claude Code' -- $(string escape -- $text))
         if test \"\$action\" = default
-            swaymsg '[pid=$terminal_pid] focus'
+            swaymsg '[pid=$window_pid] focus'
         end
     " </dev/null >/dev/null 2>/dev/null &
 end
