@@ -78,7 +78,7 @@
               "${name}" = {
                 id = id;
                 name = name;
-                address = "tcp://${name}:22000";
+                address = "tcp://${name}.orkhon-mohs.ts.net:22000";
               };
             };
           in
@@ -93,6 +93,7 @@
               ignorePerms = true;
             };
           };
+          options.localAnnounceEnabled = false;
           gui = {
             user = "bakhtiyar";
             password = "$2a$10$.WS3YI4AUencLTTke3bgDOUb6q0qInVOPjSJysDGP2YgrGCI3KpNG";
