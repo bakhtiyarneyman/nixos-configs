@@ -66,7 +66,7 @@ in {
         telegram-desktop
         tutanota-desktop
         zoom-us
-        unstable.pkgs.discord
+        discord
         slack
         rofimoji
         # Development
@@ -182,8 +182,7 @@ in {
 
     # Restart soteria after polkitd restarts (e.g. nixos-rebuild switch),
     # otherwise soteria's agent registration is lost and auth prompts silently fail.
-    systemd.services.polkit.serviceConfig.ExecStartPost =
-      "-${pkgs.systemd}/bin/systemctl --machine=bakhtiyar@.host --user restart polkit-soteria.service";
+    systemd.services.polkit.serviceConfig.ExecStartPost = "-${pkgs.systemd}/bin/systemctl --machine=bakhtiyar@.host --user restart polkit-soteria.service";
 
     services = {
       dbus.implementation = "broker";
@@ -386,7 +385,7 @@ in {
 
         telegram = autostart "${pkgs.telegram-desktop}/bin/Telegram";
 
-        discord = autostart "${pkgs.unstable.discord}/bin/discord";
+        discord = autostart "${pkgs.discord}/bin/discord";
 
         easyeffects = autostart "${pkgs.easyeffects}/bin/easyeffects";
 
@@ -394,9 +393,11 @@ in {
 
         nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
 
-        focus-urgent = autostart "/etc/nixos/focus-urgent.sh" // {
-          path = [pkgs.bash pkgs.sway pkgs.jq];
-        };
+        focus-urgent =
+          autostart "/etc/nixos/focus-urgent.sh"
+          // {
+            path = [pkgs.bash pkgs.sway pkgs.jq];
+          };
 
         inactive-windows-transparency =
           autostart

@@ -412,6 +412,8 @@ in {
           home-assistant = super.unstable.home-assistant.override {
             python313 = super.unstable.python313;
           };
+          discord = super.unstable.discord;
+          telegram-desktop = super.unstable.telegram-desktop;
           wyoming-openwakeword = self.unstable.wyoming-openwakeword;
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
           wyoming-piper = self.unstable.wyoming-piper;
