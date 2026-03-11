@@ -1,4 +1,4 @@
-{config, ...}: let
+{config, pkgs, ...}: let
   canHibernate = builtins.elem "nohibernate" config.boot.kernelParams;
 in {
   services = {
@@ -22,5 +22,19 @@ in {
     };
 
     upower.enable = true;
+  };
+
+  systemd.services.suspend-ac-check = {
+    description = "Set RTC wake alarm on AC to detect power disconnect";
+    before = ["systemd-suspend.service"];
+    wantedBy = ["systemd-suspend.service"];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "suspend-ac-check" ''
+        if [ "$(cat /sys/class/power_supply/ACAD/online 2>/dev/null)" = "1" ]; then
+          ${pkgs.util-linux}/bin/rtcwake -m no -s 600
+        fi
+      '';
+    };
   };
 }
