@@ -97,7 +97,7 @@
       ];
 
       sleep.extraConfig = ''
-        HibernateDelaySec=120min
+        HibernateDelaySec=60min
       '';
     };
 
