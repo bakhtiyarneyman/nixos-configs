@@ -155,7 +155,7 @@ in {
         extraBlocks = [
           {
             block = "amd_gpu";
-            device = "card0";
+            device = "card1";
             format = " $icon ^icon_cpu $utilization.eng(width:3) ";
             format_alt = " $icon ^icon_memory_mem $vram_used_percents.eng(width:3) ";
             interval = 1;
