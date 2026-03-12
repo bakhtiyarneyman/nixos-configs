@@ -65,7 +65,11 @@
     };
 
     services = {
-      tailscale.enable = true;
+      tailscale = {
+        enable = true;
+        # TODO: Remove after Tailscale 1.92, which routes service IPs without --accept-routes.
+        extraSetFlags = ["--accept-routes"];
+      };
       i2p.enable = true;
       syncthing = {
         enable = true;
