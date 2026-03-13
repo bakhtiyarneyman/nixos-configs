@@ -34,7 +34,45 @@ if test -S "$sock" -a -z "$window_pid"
     set response (jq -n --arg body "$body" '{type:"permission",body:$body}' | socat - UNIX-CONNECT:$sock)
     set action (echo $response | jq -r '.action')
 else
-    set action (notify-send -A allow=Allow -A deny=Deny -A default=Focus 'Claude Code' "$body")
+    # Send notification in the background, capturing output to a temp file.
+    # stdbuf ensures the ID line is flushed immediately despite file redirection.
+    set out (mktemp)
+    stdbuf -oL notify-send --print-id -A allow=Allow -A deny=Deny -A default=Focus 'Claude Code' "$body" > $out &
+    set notify_pid $last_pid
+
+    # Wait for the notification ID (first line).
+    while not test -s $out
+        sleep 0.01
+    end
+    set notify_id (head -1 $out)
+
+    # Auto-dismiss notification when its window gets focus.
+    fish -c "
+        swaymsg -t subscribe '[\"window\"]' | while read -l line
+            if test (echo \$line | jq -r '.change') = focus \
+                -a (echo \$line | jq -r '.container.pid') = $window_pid
+                swaync-client --close $notify_id 2>/dev/null
+                break
+            end
+        end
+    " </dev/null >/dev/null 2>/dev/null &
+    set watcher_pid $last_pid
+
+    # Handle race: window may have been focused after the initial check (line 16)
+    # but before the watcher subscribed to sway events.
+    set -l current_focus (swaymsg -t get_tree 2>/dev/null | jq '.. | select(.focused? == true) | .pid')
+    if test "$current_focus" = "$window_pid"
+        swaync-client --close $notify_id 2>/dev/null
+    end
+
+    # Wait for notify-send to complete (action selected or notification closed).
+    wait $notify_pid
+
+    # Second line (if present) is the action key.
+    set action (sed -n 2p $out)
+
+    kill $watcher_pid 2>/dev/null
+    rm -f $out
 end
 
 if test "$action" = allow
