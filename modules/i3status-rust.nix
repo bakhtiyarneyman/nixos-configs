@@ -157,13 +157,20 @@ in {
               {
                 block = "battery";
                 driver = "upower";
-                format = " ${battery.icon} $percentage ";
+                format = " ${battery.icon} $percentage $time_remaining ";
+                empty_format = " ${battery.icon} $percentage $time_remaining ";
                 full_format = " ${battery.icon} ";
                 missing_format = " ${battery.icon}  ";
                 info = 100;
                 warning = 50;
                 critical = 20;
                 good = 101;
+                click = [
+                  {
+                    button = "left";
+                    cmd = "${pkgs.gnome-power-manager}/bin/gnome-power-statistics";
+                  }
+                ];
                 theme_overrides = {
                   good_bg = hash "background";
                   good_fg = hash "foreground";
