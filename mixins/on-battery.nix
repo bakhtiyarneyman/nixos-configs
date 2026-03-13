@@ -1,4 +1,4 @@
-{config, pkgs, ...}: let
+{config, lib, pkgs, ...}: let
   canHibernate = builtins.elem "nohibernate" config.boot.kernelParams;
 in {
   services = {
@@ -15,7 +15,7 @@ in {
       enable = true;
       settings = {
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
         PLATFORM_PROFILE_ON_BAT = "low_power";
         PCIE_ASPM_ON_BAT = "powersupersave";
       };
@@ -23,6 +23,10 @@ in {
 
     upower.enable = true;
   };
+
+  environment.systemPackages = lib.optionals config.services.displayManager.enable [
+    pkgs.gnome-power-manager
+  ];
 
   systemd.services.suspend-ac-check = {
     description = "Set RTC wake alarm on AC to detect power disconnect";
