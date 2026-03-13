@@ -519,6 +519,7 @@ in {
           #   # nix = self.pkgs.unstable.nix;
           # };
           prettyLock = pkgs.callPackage ../pkgs/prettyLock.nix {};
+          swaynotificationcenter = pkgs.callPackage ../pkgs/swaynotificationcenter.nix {};
           tutanota-desktop = super.pkgs.unstable.tutanota-desktop;
         })
       ];
