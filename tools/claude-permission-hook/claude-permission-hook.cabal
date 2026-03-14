@@ -1,0 +1,27 @@
+cabal-version:      2.4
+name:               claude-permission-hook
+version:            0.1.0.0
+build-type:         Simple
+
+executable claude-permission-hook
+  main-is:          Main.hs
+  other-modules:    DSL
+                    Shell
+                    Rules
+  hs-source-dirs:   src
+  default-language: Haskell2010
+  default-extensions: NoImplicitPrelude
+                      OverloadedStrings
+                      LambdaCase
+                      QuasiQuotes
+  ghc-options:      -Wall -O2
+  build-depends:
+      base >= 4.14 && < 5
+    , protolude >= 0.3
+    , attoparsec >= 0.14
+    , bytestring
+    , containers
+    , pcre-light >= 0.4
+    , process >= 1.6
+    , raw-strings-qq >= 1.1
+    , text >= 1.2

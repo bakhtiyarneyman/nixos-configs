@@ -92,6 +92,7 @@ in {
         perf
         openssl
         # Development
+        claude-permission-hook
         (pkgs.writeShellScriptBin "claude" ''
           exec ${unstable.claude-code}/bin/claude --settings /etc/nixos/claude-settings.json "$@"
         '')
@@ -418,6 +419,7 @@ in {
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
           wyoming-piper = self.unstable.wyoming-piper;
           ntopng = self.callPackage ../pkgs/ntopng.nix {};
+          claude-permission-hook = self.callPackage ../pkgs/claude-permission-hook.nix {};
         })
       ];
     };
