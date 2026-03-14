@@ -112,6 +112,15 @@ nix-instantiate --parse-only file.nix
 - Articulate assumptions explicitly and verify them before building on them.
 - After the work is done, analyze your mistakes and propose updates to these instructions.
 
+## Responding to Feedback
+- When corrected, extract the GENERAL PRINCIPLE, not just the specific fix. Ask "what class of mistake is this?" and apply it everywhere, not just the instance pointed out.
+- When a constraint rules out an approach, don't just invert/negate it — that's usually the same mistake in disguise. Find a fundamentally different approach.
+- Before adding external tools or shelling out, check whether the system you're building in already has the capability.
+- Understand WHY a constraint exists before implementing it. Mechanical application without understanding leads to accidentally negating the constraint.
+- When corrected, re-examine ALL prior work through the updated lens, not just the specific line pointed at. Corrections should be durable, not local patches.
+- When receiving feedback, it's not always clear if it's specific or general. If unsure whether a correction is a local fix or a broad principle — or if the WHY behind it is unclear — ask rather than guess.
+- When retrying a failed command, always explain what was wrong with the previous attempt and what you changed before running the new version.
+
 ## Development Memories
 - Don't spawn exploration agents for simple, targeted edits — just read the file.
 - Do not remove temporary debugging facilities until proven working.
@@ -127,3 +136,13 @@ nix-instantiate --parse-only file.nix
 - Don't declare success until you have tested the configuration. It's not enough that `nixos-rebuild test` runs successfully, you might need to look into journal.
 - Modules are global for all machines, machines import mixins directly.
 - On NixOS, binaries are not in standard paths. Always use `/usr/bin/env` for shebangs and absolute paths for referencing scripts/binaries.
+- Use `nixos-rebuild ... --sudo` instead of `sudo nixos-rebuild ...`.
+
+## Claude Setup
+- Claude is wrapped to load settings from `/etc/nixos/claude-settings.json` (hooks config, etc.), not the default `~/.claude/settings.json`.
+
+## Permission Hook (tools/claude-permission-hook)
+- Security principles are documented as a comment block at the top of `src/Rules.hs` — read them before modifying rules.
+
+## Memory Policy
+- Only machine-specific instructions belong in the auto-memory directory (`~/.claude/projects/-etc-nixos/memory/`). Everything else must be contributed to this file (CLAUDE.md) so it's shared across all machines.
