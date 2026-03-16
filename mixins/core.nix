@@ -93,9 +93,7 @@ in {
         openssl
         # Development
         claude-permission-hook
-        (pkgs.writeShellScriptBin "claude" ''
-          exec ${unstable.claude-code}/bin/claude --settings /etc/nixos/claude-settings.json "$@"
-        '')
+        unstable.claude-code
         # Nix
         # nixd
         nil
@@ -239,6 +237,11 @@ in {
           (mkAfter ["mdns4"]) # after dns
         ]);
     };
+
+    systemd.tmpfiles.rules = [
+      "L+ /home/bakhtiyar/.claude/commands - bakhtiyar users - /etc/nixos/claude/commands"
+      "L+ /home/bakhtiyar/.claude/settings.json - bakhtiyar users - /etc/nixos/claude/settings.json"
+    ];
 
     systemd.services = {
       # Workaround for nm-online issues.

@@ -139,10 +139,11 @@ nix-instantiate --parse-only file.nix
 - Use `nixos-rebuild ... --sudo` instead of `sudo nixos-rebuild ...`.
 
 ## Claude Setup
-- Claude is wrapped to load settings from `/etc/nixos/claude-settings.json` (hooks config, etc.), not the default `~/.claude/settings.json`.
+- `~/.claude/settings.json` and `~/.claude/commands/` are symlinked to `/etc/nixos/claude/settings.json` and `/etc/nixos/.claude/commands/` via `systemd.tmpfiles.rules` in `mixins/core.nix`.
 
 ## Permission Hook (tools/claude-permission-hook)
 - Security principles are documented as a comment block at the top of `src/Rules.hs` — read them before modifying rules.
+- When a Bash command triggers "ask" from the permission hook and the user approves it, spawn a background agent running `/add-rule` to analyze the command and propose a rule for future auto-allowing.
 
 ## Memory Policy
 - Only machine-specific instructions belong in the auto-memory directory (`~/.claude/projects/-etc-nixos/memory/`). Everything else must be contributed to this file (CLAUDE.md) so it's shared across all machines.

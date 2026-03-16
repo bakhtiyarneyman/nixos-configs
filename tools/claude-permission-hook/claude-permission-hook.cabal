@@ -14,6 +14,7 @@ executable claude-permission-hook
                       OverloadedStrings
                       LambdaCase
                       QuasiQuotes
+                      ImportQualifiedPost
   ghc-options:      -Wall -O2
   build-depends:
       base >= 4.14 && < 5
