@@ -1,29 +1,29 @@
-module DSL
-  ( Node (..)
-  , MatchTarget (..)
-  , Verdict (..)
-  , Result (..)
-  , check
-  , (~>)
-  , allow
-  , ask
-  , deny
-  , recurse
-  , evaluateCommand
-  ) where
+module DSL (
+  Node (..),
+  MatchTarget (..),
+  Verdict (..),
+  Result (..),
+  check,
+  (~>),
+  allow,
+  ask,
+  deny,
+  recurse,
+  evaluateCommand,
+) where
 
 import Protolude hiding (ask, check, try)
 
-import qualified Data.ByteString as BS
-import qualified Data.ByteString.Char8 as BS8
+import Data.ByteString qualified as BS
+import Data.ByteString.Char8 qualified as BS8
 import Data.Map.Strict (Map)
-import qualified Data.Map.Strict as Map
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as TE
+import Data.Map.Strict qualified as Map
+import Data.Text qualified as T
+import Data.Text.Encoding qualified as TE
 import System.Environment (getEnvironment)
 import System.Exit (ExitCode (..))
-import System.Process (readCreateProcessWithExitCode, shell, CreateProcess (..))
-import Text.Regex.PCRE.Light (Regex, compileM, match, captureNames)
+import System.Process (CreateProcess (..), readCreateProcessWithExitCode, shell)
+import Text.Regex.PCRE.Light (Regex, captureNames, compileM, match)
 
 import Shell (Fragment (..), FragmentType (..), parseFragments)
 
@@ -35,15 +35,16 @@ data Node
   deriving (Show)
 
 data MatchTarget = Stdout | ErrorCode
-  deriving (Show, Eq)
+  deriving (Eq, Show)
 
 data Verdict = Allow | Ask | Deny
-  deriving (Show, Eq, Ord)
+  deriving (Eq, Ord, Show)
 
 data Result = Result
   { resultVerdict :: Verdict
   , resultReasons :: [Text]
-  } deriving (Show)
+  }
+  deriving (Show)
 
 -- | DSL combinators
 check :: Text -> MatchTarget -> [(Text, Node)] -> Node
@@ -91,10 +92,11 @@ evaluateCommand root depth command
 -- | Evaluate a single fragment against the rule tree.
 evaluateFragment :: Node -> Int -> Fragment -> IO Result
 evaluateFragment root depth (Fragment ftype content) =
-  let env = Map.fromList
-        [ ("COMMAND", content)
-        , ("FRAGMENT_TYPE", fragmentTypeName ftype)
-        ]
+  let env =
+        Map.fromList
+          [ ("COMMAND", content)
+          , ("FRAGMENT_TYPE", fragmentTypeName ftype)
+          ]
   in evaluateNode root depth env root
 
 fragmentTypeName :: FragmentType -> Text
@@ -107,14 +109,12 @@ evaluateNode :: Node -> Int -> Env -> Node -> IO Result
 evaluateNode root depth env = \case
   Decision verdict reason ->
     pure (Result verdict [expandVars env reason])
-
   Recurse variable ->
     case Map.lookup variable env of
       Nothing ->
         pure (Result Ask ["Recurse variable not set: " <> variable])
       Just value ->
         evaluateCommand root (depth + 1) value
-
   Check cmd matchTarget cases -> do
     let expandedCmd = expandVars env cmd
     (exitCode, stdout, _stderr) <- runCheck env expandedCmd
@@ -126,7 +126,9 @@ evaluateNode root depth env = \case
 -- | Try each case pattern against the subject, first match wins.
 matchCases :: Node -> Int -> Env -> Text -> [(Text, Node)] -> IO Result
 matchCases root depth env subject = \case
-  [] -> pure (Result Ask ["No rule matched: " <> subject])
+  [] ->
+    let cmd = Map.findWithDefault subject "COMMAND" env
+    in pure (Result Ask ["No rule matched '" <> cmd <> "'"])
   (pattern, node) : rest ->
     case compileRegex pattern of
       Left err ->
@@ -136,7 +138,7 @@ matchCases root depth env subject = \case
           Nothing -> matchCases root depth env subject rest
           Just groups -> do
             let captures = extractNamedCaptures regex groups
-            let newEnv = Map.union captures env  -- captures shadow parent
+            let newEnv = Map.union captures env -- captures shadow parent
             evaluateNode root depth newEnv node
 
 -- | Compile a PCRE regex pattern, implicitly anchored to match the full subject.
@@ -165,7 +167,7 @@ runCheck env cmd = do
   parentEnv <- getEnvironment
   let hookEnv = map (\(k, v) -> (T.unpack k, T.unpack v)) (Map.toList env)
   let fullEnv = hookEnv ++ parentEnv
-  let process = (shell (T.unpack cmd)) { env = Just fullEnv }
+  let process = (shell (T.unpack cmd)) {env = Just fullEnv}
   readCreateProcessWithExitCode process ""
 
 -- | Convert ExitCode to Int.
@@ -176,33 +178,33 @@ exitCodeToInt (ExitFailure n) = n
 -- | Expand $VAR and ${VAR} references in a text.
 expandVars :: Env -> Text -> Text
 expandVars env = go
-  where
-    go t
-      | T.null t = t
-      | otherwise =
-          case T.breakOn "$" t of
-            (before, after)
-              | T.null after -> before
-              | otherwise ->
-                  let rest = T.drop 1 after  -- skip the $
-                  in case T.uncons rest of
-                       Nothing -> before <> "$"
-                       Just ('{', rest') ->
-                         case T.breakOn "}" rest' of
-                           (varName, rest'')
-                             | T.null rest'' -> before <> "${" <> rest'
-                             | otherwise ->
-                                 before
-                                   <> Map.findWithDefault "" varName env
-                                   <> go (T.drop 1 rest'')  -- skip }
-                       Just (c, _)
-                         | isVarStartChar c ->
-                             let (varName, rest') = T.span isVarChar rest
-                             in before <> Map.findWithDefault "" varName env <> go rest'
-                         | otherwise -> before <> "$" <> go rest
+ where
+  go t
+    | T.null t = t
+    | otherwise =
+        case T.breakOn "$" t of
+          (before, after)
+            | T.null after -> before
+            | otherwise ->
+                let rest = T.drop 1 after -- skip the $
+                in case T.uncons rest of
+                     Nothing -> before <> "$"
+                     Just ('{', rest') ->
+                       case T.breakOn "}" rest' of
+                         (varName, rest'')
+                           | T.null rest'' -> before <> "${" <> rest'
+                           | otherwise ->
+                               before
+                                 <> Map.findWithDefault "" varName env
+                                 <> go (T.drop 1 rest'') -- skip }
+                     Just (c, _)
+                       | isVarStartChar c ->
+                           let (varName, rest') = T.span isVarChar rest
+                           in before <> Map.findWithDefault "" varName env <> go rest'
+                       | otherwise -> before <> "$" <> go rest
 
-    isVarStartChar c = isAlpha c || c == '_'
-    isVarChar c = isAlphaNum c || c == '_'
+  isVarStartChar c = isAlpha c || c == '_'
+  isVarChar c = isAlphaNum c || c == '_'
 
 -- | Aggregate multiple results: any Deny → Deny, any Ask → Ask, else Allow.
 aggregateResults :: [Result] -> Result
