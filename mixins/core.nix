@@ -238,6 +238,8 @@ in {
         ]);
     };
 
+    environment.etc."claude-code/CLAUDE.md".source = ../claude/CLAUDE.md;
+
     systemd.tmpfiles.rules = [
       "L+ /home/bakhtiyar/.claude/commands - bakhtiyar users - /etc/nixos/claude/commands"
       "L+ /home/bakhtiyar/.claude/settings.json - bakhtiyar users - /etc/nixos/claude/settings.json"
