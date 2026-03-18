@@ -30,13 +30,13 @@
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "ntopng";
-  version = "6.6-top_application_influx_fix";
+  version = "6.6";
 
   src = fetchFromGitHub {
-    owner = "bakhtiyarneyman";
+    owner = "ntop";
     repo = "ntopng";
-    rev = "1d0e44d37de691a348f6179ee6bf2a642bfeb577";
-    hash = "sha256-sRgo6nWGTDR4JbIUVruDJWfhEB19HBRoeZsUUhhdzK0=";
+    rev = "374493e444afebac939752696801354506e183a1";
+    hash = "sha256-dMoX3OSWF0g4tpMnyhwtWNjLy6XAyzvgrS9xzoqiE0Q=";
     fetchSubmodules = true;
   };
 
