@@ -19,9 +19,15 @@
     # hostapd auto-starts when the device (re)appears after a chip reset.
     systemd.services.hostapd.wantedBy = config.systemd.services.hostapd.bindsTo;
 
-    environment.systemPackages = with pkgs; [
-      tcpdump
-    ];
+    environment = {
+      etc."dnscrypt-proxy/forwarding-rules.txt".text = ''
+        ts.net 100.100.100.100
+      '';
+
+      systemPackages = with pkgs; [
+        tcpdump
+      ];
+    };
 
     networking = {
       firewall.enable = lib.mkForce false;
@@ -51,6 +57,7 @@
           # DNS stamp for Mullvad DoH (194.242.2.2). Regenerate with:
           # python3 -c "import base64,struct; d=bytes([0x02])+struct.pack('<Q',0x06)+bytes([11])+b'194.242.2.2'+bytes([0,15])+b'dns.mullvad.net'+bytes([10])+b'/dns-query'; print('sdns://'+base64.urlsafe_b64encode(d).decode().rstrip('='))"
           static.mullvad-doh.stamp = "sdns://AgYAAAAAAAAACzE5NC4yNDIuMi4yAA9kbnMubXVsbHZhZC5uZXQKL2Rucy1xdWVyeQ";
+          forwarding_rules = "/etc/dnscrypt-proxy/forwarding-rules.txt";
         };
       };
 
