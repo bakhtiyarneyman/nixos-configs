@@ -8,3 +8,4 @@ sudo tailscale serve --https=443 --service=svc:prowlarr localhost:9696
 sudo tailscale serve --https=443 --service=svc:qbittorrent https+insecure://localhost:8097
 sudo tailscale serve --https=443 --service=svc:radarr localhost:7878
 sudo tailscale serve --https=443 --service=svc:sonarr localhost:8989
+sudo tailscale serve --https=443 --service=svc:home localhost:8123
