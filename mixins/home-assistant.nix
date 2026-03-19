@@ -80,6 +80,11 @@
           automation = "!include automations.yaml";
           scene = "!include scenes.yaml";
           http = {
+            trusted_proxies = [
+              "127.0.0.1"
+              "::1"
+            ];
+            use_x_forwarded_for = true;
             ssl_certificate = "/etc/nixos/secrets/${machineName}.orkhon-mohs.ts.net.crt";
             ssl_key = "/etc/nixos/secrets/${machineName}.orkhon-mohs.ts.net.key";
           };
