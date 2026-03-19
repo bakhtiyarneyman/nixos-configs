@@ -466,5 +466,22 @@ in {
         RemainAfterExit = true;
       };
     };
+    tailscale-cert-renew = {
+      description = "Renew Tailscale TLS certificates";
+      after = ["tailscaled.service"];
+      path = [pkgs.tailscale pkgs.openssl pkgs.acl pkgs.systemd];
+      script = ''${pkgs.fish}/bin/fish --no-config ${../regenerate_tailscale_certificate.fish}'';
+      serviceConfig = {
+        Type = "oneshot";
+      };
+    };
+  };
+  systemd.timers.tailscale-cert-renew = {
+    description = "Monthly Tailscale TLS certificate renewal";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnCalendar = "*-*-01 03:00:00";
+      Persistent = true;
+    };
   };
 }
