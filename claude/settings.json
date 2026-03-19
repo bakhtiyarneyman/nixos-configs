@@ -37,7 +37,9 @@
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true
   },
+  "effortLevel": "high",
   "feedbackSurveyState": {
     "lastShownTime": 4102444800000
-  }
+  },
+  "voiceEnabled": true
 }
