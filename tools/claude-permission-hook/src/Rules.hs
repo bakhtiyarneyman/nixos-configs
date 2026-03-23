@@ -1,6 +1,6 @@
 module Rules (rules) where
 
-import Protolude hiding (ask, check)
+import Protolude hiding (ask, check, match)
 import Text.RawString.QQ (r)
 
 import DSL
@@ -49,19 +49,16 @@ import DSL
 --    letting the user decide.
 rules :: Node
 rules =
-  check
-    "echo $FRAGMENT_TYPE"
-    Stdout
+  match
+    (Variable "FRAGMENT_TYPE")
     [ "command" ~> commandRules
     , "overwrite" ~>
-        check
-          "echo $COMMAND"
-          Stdout
+        match
+          command
           [ "/dev/null" ~> allow "writing to /dev/null discards data, no side effects"
           , [r|.*|] ~>
-              check
-                [r|test -e "$COMMAND"|]
-                ErrorCode
+              match
+                (Process ErrorCode [r|test -e "$(printenv COMMAND)"|])
                 [ "1" ~> allow "file does not exist yet, creating new file"
                 , "0" ~> ask "file overwrite (existing file): $COMMAND"
                 ]
@@ -70,13 +67,10 @@ rules =
     ]
 
 -- | Dispatch on program name (first word of command).
--- Uses printenv to avoid shell quoting issues when COMMAND contains
--- trailing backslashes (e.g. from parseFragments splitting \;).
 commandRules :: Node
 commandRules =
-  check
-    [r|printenv COMMAND | awk '{print $1}'|]
-    Stdout
+  match
+    (Process Stdout [r|printenv COMMAND | awk '{print $1}'|])
     -- Catastrophic: deny unconditionally.
     [ "rm" ~> rmRules
     , "mkfs" ~> deny "formats filesystems, destroys all data on device"
@@ -139,18 +133,16 @@ commandRules =
 -- subcommand through the full rule tree.
 findRules :: Node
 findRules =
-  check
-    "printenv COMMAND"
-    Stdout
+  match
+    command
     [ [r|find\s+(?P<args>.+)|] ~> findArgRules
     , "find" ~> allow "find with no arguments lists current directory"
     ]
 
 findArgRules :: Node
 findArgRules =
-  check
-    "printenv args"
-    Stdout
+  match
+    (Variable "args")
     [ findExecPattern ~> recurse "subcmd"
     , safeFindFlags ~> allow "find with only known read-only flags"
     ]
@@ -175,18 +167,16 @@ findExecPattern =
 -- execution (-sC, -A, --script) and file output (-oN, -oX, etc.).
 nmapRules :: Node
 nmapRules =
-  check
-    "echo $COMMAND"
-    Stdout
+  match
+    command
     [ [r|nmap\s+(?P<args>.+)|] ~> nmapArgRules
     , "nmap" ~> allow "nmap with no arguments shows usage help"
     ]
 
 nmapArgRules :: Node
 nmapArgRules =
-  check
-    "echo $args"
-    Stdout
+  match
+    (Variable "args")
     [ [r|(\s*(?:-(?:p|e|iL)\s+(?:'[^']*'|"[^"]*"|\S+)|-(?:s[STUAWMNFXOVRL]|sn|sP|Pn|P0|PE|PP|PM|T[0-5]|n|R|F|r|6|v|d|O)(?=\s|$)|-P[SAUY]\S*(?=\s|$)|--(?:open|reason|packet-trace|iflist|unprivileged|version|help|osscan-guess|osscan-limit)(?=\s|$)|--(?:top-ports|min-rate|max-rate|host-timeout|scan-delay|max-retries|version-intensity)\s+(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
         ~> allow "nmap with only known-safe scanning and display flags"
     ]
@@ -194,53 +184,47 @@ nmapArgRules =
 -- | rm: deny when / is a standalone argument (root target), ask otherwise.
 rmRules :: Node
 rmRules =
-  check
-    "echo $COMMAND"
-    Stdout
+  match
+    command
     [ [r|rm\s+.*\s/(\s.*)?|] ~> deny "rm with / as target wipes entire filesystem"
     ]
 
 -- | sudo: strip "sudo" prefix, recurse into subcommand.
 sudoRules :: Node
 sudoRules =
-  check
-    "echo $COMMAND"
-    Stdout
+  match
+    command
     [ [r|sudo\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
     ]
 
 -- | env K=V ...: strip env and variable assignments, recurse.
 envRules :: Node
 envRules =
-  check
-    "echo $COMMAND"
-    Stdout
+  match
+    command
     [ [r|env\s+(?P<subcmd>\S+=\S+\s+.+)|] ~> recurse "subcmd"
     ]
 
 -- | bash -c CMD: extract and recurse into CMD.
 bashRules :: Node
 bashRules =
-  check
-    "echo $COMMAND"
-    Stdout
+  match
+    command
     [ [r|bash\s+-c\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
     ]
 
 -- | sh -c CMD: extract and recurse into CMD.
 shRules :: Node
 shRules =
-  check
-    "echo $COMMAND"
-    Stdout
+  match
+    command
     [ [r|sh\s+-c\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
     ]
 
 -- | fish -c CMD: extract and recurse into CMD.
 fishRules :: Node
 fishRules =
-  check
-    "echo $COMMAND"
-    Stdout
+  match
+    command
     [ [r|fish\s+-c\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
     ]

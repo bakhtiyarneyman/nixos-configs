@@ -1,9 +1,11 @@
 module DSL (
   Node (..),
+  Subject (..),
   MatchTarget (..),
   Verdict (..),
   Result (..),
-  check,
+  match,
+  command,
   (~>),
   allow,
   ask,
@@ -23,13 +25,19 @@ import Data.Text.Encoding qualified as TE
 import System.Environment (getEnvironment)
 import System.Exit (ExitCode (..))
 import System.Process (CreateProcess (..), readCreateProcessWithExitCode, shell)
-import Text.Regex.PCRE.Light (Regex, captureNames, compileM, match)
+import Text.Regex.PCRE.Light (Regex, captureNames, compileM)
+import Text.Regex.PCRE.Light qualified as PCRE
 
 import Shell (Fragment (..), FragmentType (..), parseFragments)
 
 -- | DSL node types
+data Subject
+  = Process MatchTarget Text    -- ^ shell command to execute + what to match
+  | Variable Text               -- ^ env variable name to read
+  deriving (Eq, Show)
+
 data Node
-  = Check Text MatchTarget [(Text, Node)]
+  = Match Subject [(Text, Node)]
   | Decision Verdict Text
   | Recurse Text
   deriving (Show)
@@ -47,8 +55,12 @@ data Result = Result
   deriving (Show)
 
 -- | DSL combinators
-check :: Text -> MatchTarget -> [(Text, Node)] -> Node
-check = Check
+match :: Subject -> [(Text, Node)] -> Node
+match = Match
+
+-- | Convenience: Variable "COMMAND" appears in most rules.
+command :: Subject
+command = Variable "COMMAND"
 
 (~>) :: Text -> Node -> (Text, Node)
 (~>) = (,)
@@ -115,10 +127,13 @@ evaluateNode root depth env = \case
         pure (Result Ask ["Recurse variable not set: " <> variable])
       Just value ->
         evaluateCommand root (depth + 1) value
-  Check cmd matchTarget cases -> do
-    let expandedCmd = expandVars env cmd
-    (exitCode, stdout, _stderr) <- runCheck env expandedCmd
-    let subject = case matchTarget of
+  Match source cases -> do
+    subject <- case source of
+      Variable varName -> pure (Map.findWithDefault "" varName env)
+      Process matchTarget cmd -> do
+        let expandedCmd = expandVars env cmd
+        (exitCode, stdout, _stderr) <- runShell env expandedCmd
+        pure $ case matchTarget of
           Stdout -> T.strip (T.pack stdout)
           ErrorCode -> T.pack (show (exitCodeToInt exitCode))
     matchCases root depth env subject cases
@@ -134,7 +149,7 @@ matchCases root depth env subject = \case
       Left err ->
         pure (Result Ask ["Invalid regex '" <> pattern <> "': " <> T.pack err])
       Right regex ->
-        case match regex (TE.encodeUtf8 subject) [] of
+        case PCRE.match regex (TE.encodeUtf8 subject) [] of
           Nothing -> matchCases root depth env subject rest
           Just groups -> do
             let captures = extractNamedCaptures regex groups
@@ -162,8 +177,8 @@ extractNamedCaptures regex groups =
        ]
 
 -- | Run a shell command with the given environment variables.
-runCheck :: Env -> Text -> IO (ExitCode, [Char], [Char])
-runCheck env cmd = do
+runShell :: Env -> Text -> IO (ExitCode, [Char], [Char])
+runShell env cmd = do
   parentEnv <- getEnvironment
   let hookEnv = map (\(k, v) -> (T.unpack k, T.unpack v)) (Map.toList env)
   let fullEnv = hookEnv ++ parentEnv
