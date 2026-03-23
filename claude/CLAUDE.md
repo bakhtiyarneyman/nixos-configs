@@ -13,6 +13,8 @@
 - Write minimal, elegant and maintainable code: don't duplicate logic that already exists elsewhere.
 - Review your own work in a loop until you find no more issues, before presenting it.
 - Articulate assumptions explicitly and verify them before building on them.
+- When a bug manifests in multiple places, fix the abstraction that caused it — don't patch each call site.
+- Write tests before implementation (TDD). Start with tests in a plan too.
 - After the work is done, analyze your mistakes and propose updates to these instructions.
 
 ## Responding to Feedback
