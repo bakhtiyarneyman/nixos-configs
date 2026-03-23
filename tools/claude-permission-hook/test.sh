@@ -128,7 +128,7 @@ echo
 echo "-- fd duplication parsing (should allow inner commands) --"
 assert_verdict "man find 2>&1 | col -b | head -400" ask
 assert_verdict "cat /etc/passwd 2>&1" allow
-assert_verdict "ls 2>/dev/null" ask
+assert_verdict "ls 2>/dev/null" allow
 
 echo
 echo "-- Ask: unknown commands --"
@@ -141,8 +141,22 @@ assert_verdict "mkfs /dev/sda1" deny
 assert_verdict "dd if=/dev/zero of=/dev/sda" deny
 
 echo
-echo "-- Ask: redirects --"
-assert_verdict "echo hello > /tmp/out" ask
+echo "-- Overwrite: /dev/null (should allow) --"
+assert_verdict "echo hello > /dev/null" allow
+
+echo
+echo "-- Overwrite: new file (should allow) --"
+NEWFILE=$(mktemp -u)  # generate name without creating
+assert_verdict "echo hello > $NEWFILE" allow
+
+echo
+echo "-- Overwrite: existing file (should ask) --"
+EXISTFILE=$(mktemp)   # actually create the file
+assert_verdict "echo hello > $EXISTFILE" ask
+rm -f "$EXISTFILE"
+
+echo
+echo "-- Append: redirects (should ask) --"
 assert_verdict "echo hello >> /tmp/out" ask
 
 echo

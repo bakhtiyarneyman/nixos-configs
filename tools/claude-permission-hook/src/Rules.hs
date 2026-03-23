@@ -53,7 +53,19 @@ rules =
     "echo $FRAGMENT_TYPE"
     Stdout
     [ "command" ~> commandRules
-    , "overwrite" ~> ask "file overwrite: $COMMAND"
+    , "overwrite" ~>
+        check
+          "echo $COMMAND"
+          Stdout
+          [ "/dev/null" ~> allow "writing to /dev/null discards data, no side effects"
+          , [r|.*|] ~>
+              check
+                [r|test -e "$COMMAND"|]
+                ErrorCode
+                [ "1" ~> allow "file does not exist yet, creating new file"
+                , "0" ~> ask "file overwrite (existing file): $COMMAND"
+                ]
+          ]
     , "append" ~> ask "file append: $COMMAND"
     ]
 
