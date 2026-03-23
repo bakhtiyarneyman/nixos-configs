@@ -107,6 +107,7 @@ commandRules =
     , "realpath" ~> allow "resolves paths, no write capability"
     , "dirname" ~> allow "extracts directory component, no write capability"
     , "basename" ~> allow "extracts filename component, no write capability"
+    , "man" ~> allow "displays manual pages, no write capability"
     , -- Search: read-only, cannot modify files.
       "find" ~> findRules
     , "grep" ~> allow "searches file contents, no write capability"

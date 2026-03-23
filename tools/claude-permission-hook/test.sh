@@ -60,6 +60,10 @@ assert_verdict "grep -r foo ." allow
 assert_verdict "rg foo" allow
 
 echo
+echo "-- Manual pages (should allow) --"
+assert_verdict "man find" allow
+
+echo
 echo "-- Sort (should allow without -o/--compress-program) --"
 assert_verdict "sort" allow
 assert_verdict "sort -n -r" allow
