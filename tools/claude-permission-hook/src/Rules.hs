@@ -58,10 +58,12 @@ rules =
     ]
 
 -- | Dispatch on program name (first word of command).
+-- Uses printenv to avoid shell quoting issues when COMMAND contains
+-- trailing backslashes (e.g. from parseFragments splitting \;).
 commandRules :: Node
 commandRules =
   check
-    [r|echo "$COMMAND" | awk '{print $1}'|]
+    [r|printenv COMMAND | awk '{print $1}'|]
     Stdout
     -- Catastrophic: deny unconditionally.
     [ "rm" ~> rmRules
@@ -120,13 +122,13 @@ commandRules =
     , "fish" ~> fishRules
     ]
 
--- | find: capture args, then match against known-safe flag grammar.
--- Dangerous flags (-exec, -delete, -fprint, etc.) are not in the
--- whitelist, so they fall through to the default ask.
+-- | find: capture args via printenv (preserves quoting), then match
+-- against safe-flag grammar.  -exec is handled by recursing into the
+-- subcommand through the full rule tree.
 findRules :: Node
 findRules =
   check
-    "echo $COMMAND"
+    "printenv COMMAND"
     Stdout
     [ [r|find\s+(?P<args>.+)|] ~> findArgRules
     , "find" ~> allow "find with no arguments lists current directory"
@@ -135,11 +137,27 @@ findRules =
 findArgRules :: Node
 findArgRules =
   check
-    "echo $args"
+    "printenv args"
     Stdout
-    [ [r|(\s*(?:-(?:name|iname|path|ipath|wholename|iwholename|regex|iregex|type|xtype|size|perm|user|group|uid|gid|links|inum|samefile|mtime|mmin|atime|amin|ctime|cmin|newer|anewer|cnewer|used|fstype|context|maxdepth|mindepth|regextype|printf|files0-from|D)\s+(?:'[^']*'|"[^"]*"|\S+)|-(?:empty|readable|writable|executable|nouser|nogroup|noleaf|depth|d|mount|xdev|daystart|follow|true|false|warn|nowarn|ignore_readdir_race|noignore_readdir_race|help|version|print|print0|ls|prune|quit|not|and|or|a|o|P|L|H|O[0-3])(?=\s|$)|!|\\[()]|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
-        ~> allow "find with only known read-only flags"
+    [ findExecPattern ~> recurse "subcmd"
+    , safeFindFlags ~> allow "find with only known read-only flags"
     ]
+
+-- | Individual safe find flag alternation (one flag unit).
+safeFindFlag :: Text
+safeFindFlag = [r|-(?:name|iname|path|ipath|wholename|iwholename|regex|iregex|type|xtype|size|perm|user|group|uid|gid|links|inum|samefile|mtime|mmin|atime|amin|ctime|cmin|newer|anewer|cnewer|used|fstype|context|maxdepth|mindepth|regextype|printf|files0-from|D)\s+(?:'[^']*'|"[^"]*"|\S+)|-(?:empty|readable|writable|executable|nouser|nogroup|noleaf|depth|d|mount|xdev|daystart|follow|true|false|warn|nowarn|ignore_readdir_race|noignore_readdir_race|help|version|print|print0|ls|prune|quit|not|and|or|a|o|P|L|H|O[0-3])(?=\s|$)|!|\\[()]|(?:'[^']*'|"[^"]*"|[^-\s]\S*)|]
+
+-- | Zero or more safe find flags.
+safeFindFlags :: Text
+safeFindFlags = [r|(\s*(?:|] <> safeFindFlag <> [r|))*\s*|]
+
+-- | Safe find flags with a single -exec block whose subcommand is captured.
+-- The subcmd capture uses (?:(?!\s*\{\}).)+  to stop before the {} placeholder.
+findExecPattern :: Text
+findExecPattern =
+  [r|(\s*(?:|] <> safeFindFlag
+  <> [r|))*\s*-exec\s+(?P<subcmd>(?:(?!\s*\{\}).)+)\s*\{\}\s*(?:\\|\+)?\s*(\s*(?:|]
+  <> safeFindFlag <> [r|))*\s*|]
 
 -- | nmap: allow known-safe scanning/display flags, ask for script
 -- execution (-sC, -A, --script) and file output (-oN, -oX, etc.).

