@@ -111,6 +111,7 @@ commandRules =
       "find" ~> findRules
     , "grep" ~> allow "searches file contents, no write capability"
     , "rg" ~> allow "searches file contents, no write capability"
+    , "sort" ~> sortRules
     , -- Network inspection: safe scanning flags only.
       "nmap" ~> nmapRules
     , -- Nix tooling: safe in this repo context.
@@ -162,6 +163,16 @@ findExecPattern =
   [r|(\s*(?:|] <> safeFindFlag
   <> [r|))*\s*-exec\s+(?P<subcmd>(?:(?!\s*\{\}).)+)\s*\{\}\s*(?:\\;|\+)?\s*(\s*(?:|]
   <> safeFindFlag <> [r|))*\s*|]
+
+-- | sort: allow known-safe flags, ask for -o/--output (writes file)
+-- and --compress-program (executes external program).
+sortRules :: Node
+sortRules =
+  match
+    command
+    [ [r|sort(\s+(-(?:b|d|f|g|i|M|h|n|R|r|V|c|C|m|s|u|z)(?=\s|$)|-(?:k|t|S|T|batch-size|parallel|random-source|files0-from|sort)\s*(?:'[^']*'|"[^"]*"|\S+)|--(?:reverse|numeric-sort|general-numeric-sort|month-sort|human-numeric-sort|random-sort|version-sort|ignore-leading-blanks|dictionary-order|ignore-case|ignore-nonprinting|check|merge|stable|unique|zero-terminated|debug|help|version)(?=\s|$)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
+        ~> allow "sort with only known-safe flags, no -o/--output or --compress-program"
+    ]
 
 -- | nmap: allow known-safe scanning/display flags, ask for script
 -- execution (-sC, -A, --script) and file output (-oN, -oX, etc.).

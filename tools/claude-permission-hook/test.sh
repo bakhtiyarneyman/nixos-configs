@@ -60,6 +60,14 @@ assert_verdict "grep -r foo ." allow
 assert_verdict "rg foo" allow
 
 echo
+echo "-- Sort (should allow without -o/--compress-program) --"
+assert_verdict "sort" allow
+assert_verdict "sort -n -r" allow
+assert_verdict "sort -t: -k2 /etc/passwd" allow
+assert_verdict "sort -o output.txt input.txt" ask
+assert_verdict "sort --compress-program=gzip bigfile" ask
+
+echo
 echo "-- Nix tooling (should allow) --"
 assert_verdict "nix build" allow
 assert_verdict "nix-build ." allow
