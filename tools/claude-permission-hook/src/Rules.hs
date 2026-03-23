@@ -160,7 +160,7 @@ safeFindFlags = [r|(\s*(?:|] <> safeFindFlag <> [r|))*\s*|]
 findExecPattern :: Text
 findExecPattern =
   [r|(\s*(?:|] <> safeFindFlag
-  <> [r|))*\s*-exec\s+(?P<subcmd>(?:(?!\s*\{\}).)+)\s*\{\}\s*(?:\\|\+)?\s*(\s*(?:|]
+  <> [r|))*\s*-exec\s+(?P<subcmd>(?:(?!\s*\{\}).)+)\s*\{\}\s*(?:\\;|\+)?\s*(\s*(?:|]
   <> safeFindFlag <> [r|))*\s*|]
 
 -- | nmap: allow known-safe scanning/display flags, ask for script

@@ -174,10 +174,21 @@ separator = do
     <|> void (char '\n')
   skipSpace
 
--- Parse a word (non-whitespace, non-special token)
+-- Parse a word (non-whitespace, non-special token).
+-- Handles backslash escapes: \( \; \| etc. are consumed as single units.
 word :: Parser Text
-word = takeWhile1 isWordChar
+word = T.concat <$> some wordPart
   where
+    wordPart =
+      -- Backslash escape: consume \ and next char as a unit
+      (do _ <- char '\\'
+          c <- anyChar
+          pure ("\\" <> T.singleton c))
+      -- Regular word characters
+      <|> takeWhile1 isWordChar
+      -- Bare trailing backslash (no char after it)
+      <|> (T.singleton <$> char '\\')
+
     isWordChar c =
       not (isSpace c)
         && c /= ';'
@@ -191,6 +202,7 @@ word = takeWhile1 isWordChar
         && c /= '"'
         && c /= '`'
         && c /= '$'
+        && c /= '\\'
 
 isVarChar :: Char -> Bool
 isVarChar c = isAlphaNum c || c == '_'

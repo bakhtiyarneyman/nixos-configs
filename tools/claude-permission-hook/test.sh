@@ -96,6 +96,10 @@ assert_verdict "find . -empty -print0" allow
 assert_verdict "find . -not -name '*.o' -print" allow
 
 echo
+echo "-- Find: escaped parens (should allow) --"
+assert_verdict "find . -type f \\( -name '*.js' -o -name '*.ts' \\)" allow
+
+echo
 echo "-- Find: dangerous flags (should ask) --"
 assert_verdict "find . -delete" ask
 assert_verdict "find . -name '*.tmp' -exec rm {} ;" ask
