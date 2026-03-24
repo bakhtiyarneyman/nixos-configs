@@ -15,7 +15,7 @@
       zfs = {
         autoScrub = {
           enable = true;
-          interval = "*-*-* 04:00:00";
+          interval = "*-*-01 04:00:00";
         };
         trim = {
           enable = true;
