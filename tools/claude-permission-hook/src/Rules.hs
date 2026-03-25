@@ -122,8 +122,13 @@ commandRules =
     , "nix-store" ~> allow "nix store queries"
     , "alejandra" ~> allow "nix formatter, only rewrites formatting"
     , "nil" ~> allow "nix language server, read-only"
+    , -- Version control: read-only queries and local-only writes.
+      "git" ~> gitRules
+    , -- System management: safe subcommands only.
+      "nixos-rebuild" ~> nixosRebuildRules
     , -- Commands that execute subcommands — must recurse.
-      "sudo" ~> sudoRules
+      "pkexec" ~> pkexecRules
+    , "sudo" ~> sudoRules
     , "env" ~> envRules
     , "bash" ~> bashRules
     , "sh" ~> shRules
@@ -191,6 +196,39 @@ nmapArgRules =
     (Variable "args")
     [ [r|(\s*(?:-(?:p|e|iL)\s+(?:'[^']*'|"[^"]*"|\S+)|-(?:s[STUAWMNFXOVRL]|sn|sP|Pn|P0|PE|PP|PM|T[0-5]|n|R|F|r|6|v|d|O)(?=\s|$)|-P[SAUY]\S*(?=\s|$)|--(?:open|reason|packet-trace|iflist|unprivileged|version|help|osscan-guess|osscan-limit)(?=\s|$)|--(?:top-ports|min-rate|max-rate|host-timeout|scan-delay|max-retries|version-intensity)\s+(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
         ~> allow "nmap with only known-safe scanning and display flags"
+    ]
+
+-- | git: allow read-only subcommands unconditionally (no flags on these
+-- can write).  Allow add/commit as local, reversible operations.
+-- Everything else (push, reset, checkout, rebase, merge, clean, etc.)
+-- falls through to ask.
+gitRules :: Node
+gitRules =
+  match
+    command
+    [ [r|git\s+(?:status|diff|log|show|blame|shortlog|describe|rev-parse|rev-list|ls-files|ls-tree|cat-file|name-rev|merge-base|for-each-ref)(?:\s+.*)?|]
+        ~> allow "read-only git query, no flags can write or modify state"
+    , [r|git\s+(?:add|commit)(?:\s+.*)?|]
+        ~> allow "local staging/commit, fully reversible and does not affect remotes"
+    ]
+
+-- | nixos-rebuild: allow non-persistent subcommands (test, build, dry-build,
+-- dry-run, dry-activate, build-vm, build-vm-with-bootloader, list-generations,
+-- repl).  switch and boot modify the boot menu, so they fall through to ask.
+nixosRebuildRules :: Node
+nixosRebuildRules =
+  match
+    command
+    [ [r|nixos-rebuild\s+(?:build|dry-build|dry-run|dry-activate|build-vm|build-vm-with-bootloader|list-generations|repl)(?:\s+.*)?|]
+        ~> allow "nixos-rebuild build/query subcommand, does not activate or modify boot menu"
+    ]
+
+-- | pkexec: strip "pkexec" prefix, recurse into subcommand.
+pkexecRules :: Node
+pkexecRules =
+  match
+    command
+    [ [r|pkexec\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
     ]
 
 -- | rm: deny when / is a standalone argument (root target), ask otherwise.
