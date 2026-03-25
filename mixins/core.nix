@@ -416,7 +416,7 @@ in {
           journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
           github-cli = super.unstable.pkgs.github-cli;
           home-assistant = super.unstable.home-assistant.override {
-            python313 = super.unstable.python313;
+            python314 = super.unstable.python314;
           };
           discord = super.unstable.discord;
           telegram-desktop = super.unstable.telegram-desktop;
