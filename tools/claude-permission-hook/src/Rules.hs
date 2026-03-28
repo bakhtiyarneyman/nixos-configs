@@ -242,6 +242,11 @@ nmapArgRules =
         ~> allow "nmap with only known-safe scanning and display flags"
     ]
 
+-- | Git command prefix: "git" followed by zero or more safe global options.
+-- -C <path> changes directory before running, which is safe.
+gitPrefix :: Text
+gitPrefix = [r|git(?:\s+-C\s+(?:'[^']*'|"[^"]*"|\S+))*\s+|]
+
 -- | git: allow read-only subcommands unconditionally (no flags on these
 -- can write).  Allow add/commit as local, reversible operations.
 -- Everything else (push, reset, checkout, rebase, merge, clean, etc.)
@@ -250,11 +255,11 @@ gitRules :: Node
 gitRules =
   match
     command
-    [ [r|git\s+(?:status|diff|log|show|blame|shortlog|describe|rev-parse|rev-list|ls-files|ls-tree|cat-file|name-rev|merge-base|for-each-ref)(?:\s+.*)?|]
+    [ gitPrefix <> [r|(?:status|diff|log|show|blame|shortlog|describe|rev-parse|rev-list|ls-files|ls-tree|cat-file|name-rev|merge-base|for-each-ref)(?:\s+.*)?|]
         ~> allow "read-only git query, no flags can write or modify state"
-    , [r|git\s+branch(?:\s+.*)?|] ~> gitBranchRules
-    , [r|git\s+tag(?:\s+.*)?|] ~> gitTagRules
-    , [r|git\s+(?:add|commit)(?:\s+.*)?|]
+    , gitPrefix <> [r|branch(?:\s+.*)?|] ~> gitBranchRules
+    , gitPrefix <> [r|tag(?:\s+.*)?|] ~> gitTagRules
+    , gitPrefix <> [r|(?:add|commit)(?:\s+.*)?|]
         ~> allow "local staging/commit, fully reversible and does not affect remotes"
     ]
 
@@ -266,7 +271,7 @@ gitBranchRules :: Node
 gitBranchRules =
   match
     command
-    [ [r|git\s+branch(\s+(-[avrvi]+(?=\s|$)|--(?:all|remotes|verbose|show-current|no-color|no-column|ignore-case)(?=\s|$)|--(?:list|merged|no-merged|contains|no-contains)(?:(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|--(?:sort|format|color|column|points-at|abbrev)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)))*\s*|]
+    [ gitPrefix <> [r|branch(\s+(-[avrvi]+(?=\s|$)|--(?:all|remotes|verbose|show-current|no-color|no-column|ignore-case)(?=\s|$)|--(?:list|merged|no-merged|contains|no-contains)(?:(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|--(?:sort|format|color|column|points-at|abbrev)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)))*\s*|]
         ~> allow "git branch with only read-only listing and query flags"
     ]
 
@@ -277,7 +282,7 @@ gitTagRules :: Node
 gitTagRules =
   match
     command
-    [ [r|git\s+tag(\s+(-n\d*(?=\s|$)|--(?:no-color|no-column|ignore-case)(?=\s|$)|--(?:list|verify|contains|no-contains|points-at|merged|no-merged|sort|format|color|column|abbrev)(?:(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|-[lv](?:\s+(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)))*\s*|]
+    [ gitPrefix <> [r|tag(\s+(-n\d*(?=\s|$)|--(?:no-color|no-column|ignore-case)(?=\s|$)|--(?:list|verify|contains|no-contains|points-at|merged|no-merged|sort|format|color|column|abbrev)(?:(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|-[lv](?:\s+(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)))*\s*|]
         ~> allow "git tag with only read-only listing, query, and verify flags"
     ]
 

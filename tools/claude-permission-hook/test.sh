@@ -230,6 +230,16 @@ assert_verdict "git tag -f v1.0" ask
 assert_verdict "git tag -s v1.0" ask
 
 echo
+echo "-- Git: -C global option (should allow) --"
+assert_verdict "git -C /etc/nixos status" allow
+assert_verdict "git -C /etc/nixos diff foo" allow
+assert_verdict "git -C /etc/nixos log --oneline -5" allow
+assert_verdict "git -C /etc/nixos branch -a" allow
+assert_verdict "git -C /etc/nixos tag -l" allow
+assert_verdict "git -C /etc/nixos add ." allow
+assert_verdict "git -C /etc/nixos push" ask
+
+echo
 echo "-- Git: remote/destructive (should ask) --"
 assert_verdict "git push" ask
 assert_verdict "git reset --hard" ask
