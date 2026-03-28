@@ -3,3 +3,4 @@ vscode/**
 *.ovpn
 secrets
 ndpi-protos.txt
+dist-newstyle
