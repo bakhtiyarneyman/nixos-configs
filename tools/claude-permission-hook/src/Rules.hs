@@ -210,8 +210,21 @@ gitRules =
     command
     [ [r|git\s+(?:status|diff|log|show|blame|shortlog|describe|rev-parse|rev-list|ls-files|ls-tree|cat-file|name-rev|merge-base|for-each-ref)(?:\s+.*)?|]
         ~> allow "read-only git query, no flags can write or modify state"
+    , [r|git\s+branch(?:\s+.*)?|] ~> gitBranchRules
     , [r|git\s+(?:add|commit)(?:\s+.*)?|]
         ~> allow "local staging/commit, fully reversible and does not affect remotes"
+    ]
+
+-- | git branch: allow only known read-only listing and query flags.
+-- Mutation flags (-d, -D, -m, -M, -c, -C, --set-upstream-to,
+-- --unset-upstream, --edit-description) and bare branch names fall
+-- through to ask.
+gitBranchRules :: Node
+gitBranchRules =
+  match
+    command
+    [ [r|git\s+branch(\s+(-[avrvi]+(?=\s|$)|--(?:all|remotes|verbose|show-current|no-color|no-column|ignore-case)(?=\s|$)|--(?:list|merged|no-merged|contains|no-contains)(?:(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|--(?:sort|format|color|column|points-at|abbrev)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)))*\s*|]
+        ~> allow "git branch with only read-only listing and query flags"
     ]
 
 -- | nixos-rebuild: allow non-persistent subcommands (test, build, dry-build,

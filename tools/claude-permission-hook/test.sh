@@ -170,6 +170,32 @@ assert_verdict "git add ." allow
 assert_verdict "git commit -m 'test'" allow
 
 echo
+echo "-- Git: branch listing (should allow) --"
+assert_verdict "git branch" allow
+assert_verdict "git branch -a" allow
+assert_verdict "git branch -r" allow
+assert_verdict "git branch -v" allow
+assert_verdict "git branch -vv" allow
+assert_verdict "git branch --show-current" allow
+assert_verdict "git branch --list" allow
+assert_verdict "git branch --contains abc123" allow
+assert_verdict "git branch --merged main" allow
+assert_verdict "git branch --sort=-committerdate" allow
+assert_verdict "git branch -a -v --sort=-committerdate" allow
+
+echo
+echo "-- Git: branch mutation (should ask) --"
+assert_verdict "git branch newbranch" ask
+assert_verdict "git branch -d foo" ask
+assert_verdict "git branch -D foo" ask
+assert_verdict "git branch -m old new" ask
+assert_verdict "git branch -M old new" ask
+assert_verdict "git branch -c foo bar" ask
+assert_verdict "git branch --set-upstream-to=origin/main" ask
+assert_verdict "git branch --unset-upstream" ask
+assert_verdict "git branch --edit-description" ask
+
+echo
 echo "-- Git: remote/destructive (should ask) --"
 assert_verdict "git push" ask
 assert_verdict "git reset --hard" ask
