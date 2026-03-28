@@ -80,6 +80,21 @@ assert_verdict "sort -o output.txt input.txt" ask
 assert_verdict "sort --compress-program=gzip bigfile" ask
 
 echo
+echo "-- Sed: safe flags (should allow) --"
+assert_verdict "sed 's/foo/bar/' file" allow
+assert_verdict "sed -n 's/foo/bar/p' file" allow
+assert_verdict "sed -e 's/foo/bar/' -e 's/baz/qux/' file" allow
+assert_verdict "sed -E 's/[0-9]+/NUM/g'" allow
+assert_verdict "sed --sandbox 's/foo/bar/'" allow
+assert_verdict "sed -f script.sed input.txt" allow
+
+echo
+echo "-- Sed: in-place edit (should ask) --"
+assert_verdict "sed -i 's/foo/bar/' file" ask
+assert_verdict "sed --in-place 's/foo/bar/' file" ask
+assert_verdict "sed -i.bak 's/foo/bar/' file" ask
+
+echo
 echo "-- Nix tooling (should allow) --"
 assert_verdict "nix build" allow
 assert_verdict "nix-build ." allow

@@ -142,6 +142,7 @@ commandRules =
     , "grep" ~> allow "searches file contents, no write capability"
     , "rg" ~> allow "searches file contents, no write capability"
     , "sort" ~> sortRules
+    , "sed" ~> sedRules
     , -- Network inspection: safe scanning flags only.
       "nmap" ~> nmapRules
     , -- Nix tooling: safe in this repo context.
@@ -210,6 +211,17 @@ sortRules =
     command
     [ [r|sort(\s+(-(?:b|d|f|g|i|M|h|n|R|r|V|c|C|m|s|u|z)(?=\s|$)|-(?:k|t|S|T|batch-size|parallel|random-source|files0-from|sort)\s*(?:'[^']*'|"[^"]*"|\S+)|--(?:reverse|numeric-sort|general-numeric-sort|month-sort|human-numeric-sort|random-sort|version-sort|ignore-leading-blanks|dictionary-order|ignore-case|ignore-nonprinting|check|merge|stable|unique|zero-terminated|debug|help|version)(?=\s|$)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
         ~> allow "sort with only known-safe flags, no -o/--output or --compress-program"
+    ]
+
+-- | sed: stream editor. Without -i/--in-place, sed reads from
+-- files/stdin and writes to stdout only. Allow known-safe flags,
+-- ask for -i/--in-place (modifies files in place).
+sedRules :: Node
+sedRules =
+  match
+    command
+    [ [r|sed(\s+(-[nErsuz]+(?=\s|$)|-[efl]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:quiet|silent|debug|posix|regexp-extended|separate|unbuffered|null-data|sandbox|follow-symlinks|help|version)(?=\s|$)|--(?:expression|file|line-length)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
+        ~> allow "sed with only known-safe flags, no -i/--in-place; reads files/stdin and writes to stdout only"
     ]
 
 -- | nmap: allow known-safe scanning/display flags, ask for script
