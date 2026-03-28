@@ -183,7 +183,7 @@ findArgRules :: Node
 findArgRules =
   match
     (Variable "args")
-    [ findExecPattern ~> recurse Command "$subcmd"
+    [ findExecPattern ~> recurse [(Command, "$subcmd")]
     , safeFindFlags ~> allow "find with only known read-only flags"
     ]
 
@@ -297,7 +297,7 @@ pkexecRules :: Node
 pkexecRules =
   match
     command
-    [ [r|pkexec\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
+    [ [r|pkexec\s+(?P<subcmd>.+)|] ~> recurse [(Command, "$subcmd")]
     ]
 
 -- | rm: deny when / is a standalone argument (root target), ask otherwise.
@@ -313,7 +313,7 @@ sudoRules :: Node
 sudoRules =
   match
     command
-    [ [r|sudo\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
+    [ [r|sudo\s+(?P<subcmd>.+)|] ~> recurse [(Command, "$subcmd")]
     ]
 
 -- | env K=V ...: strip env and variable assignments, recurse.
@@ -321,7 +321,7 @@ envRules :: Node
 envRules =
   match
     command
-    [ [r|env\s+(?P<subcmd>\S+=\S+\s+.+)|] ~> recurse Command "$subcmd"
+    [ [r|env\s+(?P<subcmd>\S+=\S+\s+.+)|] ~> recurse [(Command, "$subcmd")]
     ]
 
 -- | bash -c CMD: extract and recurse into CMD.
@@ -329,7 +329,7 @@ bashRules :: Node
 bashRules =
   match
     command
-    [ [r|bash\s+-c\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
+    [ [r|bash\s+-c\s+(?P<subcmd>.+)|] ~> recurse [(Command, "$subcmd")]
     ]
 
 -- | sh -c CMD: extract and recurse into CMD.
@@ -337,7 +337,7 @@ shRules :: Node
 shRules =
   match
     command
-    [ [r|sh\s+-c\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
+    [ [r|sh\s+-c\s+(?P<subcmd>.+)|] ~> recurse [(Command, "$subcmd")]
     ]
 
 -- | fish -c CMD: extract and recurse into CMD.
@@ -345,7 +345,7 @@ fishRules :: Node
 fishRules =
   match
     command
-    [ [r|fish\s+-c\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
+    [ [r|fish\s+-c\s+(?P<subcmd>.+)|] ~> recurse [(Command, "$subcmd")]
     ]
 
 -- | xargs: builds command lines from stdin, so the captured subcommand
@@ -358,5 +358,5 @@ xargsRules =
   match
     command
     [ [r|xargs(?:\s+(?:-[0rxtp](?=\s|$)|--(?=\s|$)|-[nLPsdEIa]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:null|no-run-if-empty|verbose|interactive|open-tty|help|version|exit)(?=\s|$)|--(?:max-args|max-lines|max-procs|max-chars|delimiter|eof|replace|arg-file|process-slot-var)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)))*\s+(?P<subcmd>.+)|]
-        ~> recurse Command "$subcmd --unrecognized-flag-injected-by-xargs-rule"
+        ~> recurse [(Command, "$subcmd --unrecognized-flag-injected-by-xargs-rule")]
     ]

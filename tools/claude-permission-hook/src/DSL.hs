@@ -40,7 +40,7 @@ data Subject
 data Node
   = Match Subject [(Text, Node)]
   | Decision Verdict Text
-  | Recurse FragmentType Text
+  | Recurse [(FragmentType, Text)]
   deriving (Show)
 
 data MatchTarget = Stdout | ErrorCode
@@ -77,7 +77,7 @@ ask = Decision Ask
 deny :: Text -> Node
 deny = Decision Deny
 
-recurse :: FragmentType -> Text -> Node
+recurse :: [(FragmentType, Text)] -> Node
 recurse = Recurse
 
 type Env = Map Text Text
@@ -122,12 +122,14 @@ evaluateNode :: Node -> Int -> Env -> Node -> IO Result
 evaluateNode root depth env = \case
   Decision verdict reason ->
     pure (Result verdict [expandVars env reason])
-  Recurse ftype template
+  Recurse pairs
     | depth > maxRecursionDepth ->
         pure (Result Ask ["Max recursion depth exceeded"])
-    | otherwise ->
-        let value = expandVars env template
-        in evaluateFragment root (depth + 1) (Fragment ftype value)
+    | otherwise -> do
+        results <- forM pairs $ \(ftype, template) ->
+          let value = expandVars env template
+          in evaluateFragment root (depth + 1) (Fragment ftype value)
+        pure (aggregateResults results)
   Match source cases -> do
     subject <- case source of
       Variable varName -> pure (Map.findWithDefault "" varName env)
