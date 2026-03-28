@@ -61,6 +61,13 @@ nix flake show
 pkexec nixos-rebuild dry-run --flake /etc/nixos
 ```
 
+### Building Custom Packages
+```bash
+# Build a custom package (e.g., claude-permission-hook)
+nix-build -E '(import (builtins.getFlake "nixpkgs") { system = "x86_64-linux"; }).callPackage ./pkgs/claude-permission-hook.nix {}'
+```
+`cabal build` does not work on NixOS — C libraries (e.g., pcre) and pkg-config are not in global paths. Always use `nix-build` via `callPackage` for packages in `pkgs/`.
+
 ### Formatting and Linting
 ```bash
 # Format Nix files with alejandra
