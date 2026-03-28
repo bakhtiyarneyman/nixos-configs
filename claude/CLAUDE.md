@@ -11,6 +11,10 @@
 - Don't mitigate failure modes you haven't observed.
 - Question the necessity of every piece of proposed code and remove what you can't justify with evidence.
 - Write minimal, elegant and maintainable code: don't duplicate logic that already exists elsewhere.
+- Optimize for the simplest possible end state, not the simplest modification. No compat shims, no parallel representations of concepts already modeled, no indirection through mechanisms that duplicate existing capabilities.
+- When you can't observe full input, probe for the property you need. Don't give up or pretend you have complete information — find a way to test the relevant property indirectly.
+- Use self-documenting names. When a value's purpose isn't obvious from context, the name should make it self-evident to the reader.
+- Security documentation must articulate conditions, not just rules. "Don't do X" is insufficient — enumerate the conditions under which the approach is safe and what must hold for it to remain safe.
 - Review your own work in a loop until you find no more issues, before presenting it.
 - Articulate assumptions explicitly and verify them before building on them.
 - When a bug manifests in multiple places, fix the abstraction that caused it — don't patch each call site.
