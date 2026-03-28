@@ -47,6 +47,33 @@ import DSL
 -- 9. DENY SPARINGLY. Only deny commands that are catastrophic and
 --    unrecoverable (rm -rf /, mkfs, dd). Everything else should ask,
 --    letting the user decide.
+--
+-- 10. XARGS SAFETY PROBE. xargs injects arguments from stdin that are
+--     unknown at permission-check time, so we cannot evaluate the full
+--     command. Instead, the xargs rule appends a synthetic unrecognized
+--     flag ("--unrecognized-flag-injected-by-xargs-rule") to the
+--     captured subcommand and recurses. If the rule tree still allows,
+--     the subcommand must be unconditionally safe regardless of what
+--     arguments stdin provides.
+--
+--     This is secure under the following conditions (all currently hold):
+--
+--     a) Principle #2 is maintained: rules only whitelist explicitly
+--        enumerated known-safe flags, never catch-all patterns like .*.
+--        A catch-all would match the probe flag and incorrectly allow
+--        argument-dependent commands via xargs.
+--
+--     b) Rules that unconditionally allow a program (e.g. "grep" ~> allow)
+--        are genuinely safe with ANY arguments. These are the only rules
+--        that survive the probe, because the probe flag is irrelevant
+--        when no argument checking occurs.
+--
+--     c) Rules with argument whitelists (find, sort, nmap, etc.) enumerate
+--        specific known-safe flags. The probe flag does not appear in any
+--        whitelist, so it fails to match and falls through to ask.
+--
+--     d) The probe flag name is deliberately long and self-documenting
+--        to prevent accidental inclusion in a whitelist.
 rules :: Node
 rules =
   match
@@ -123,6 +150,8 @@ commandRules =
     , "nix-instantiate" ~> allow "nix eval tooling"
     , "nix-store" ~> allow "nix store queries"
     , "alejandra" ~> allow "nix formatter, only rewrites formatting"
+    , -- Haskell build tooling: compiles source to build artifacts.
+      "ghc" ~> allow "Haskell compiler, produces build artifacts (.o, .hi, executables)"
     , "nil" ~> allow "nix language server, read-only"
     , -- Version control: read-only queries and local-only writes.
       "git" ~> gitRules
@@ -135,6 +164,7 @@ commandRules =
     , "bash" ~> bashRules
     , "sh" ~> shRules
     , "fish" ~> fishRules
+    , "xargs" ~> xargsRules
     ]
 
 -- | find: capture args via printenv (preserves quoting), then match
@@ -152,7 +182,7 @@ findArgRules :: Node
 findArgRules =
   match
     (Variable "args")
-    [ findExecPattern ~> recurse "subcmd"
+    [ findExecPattern ~> recurse Command "$subcmd"
     , safeFindFlags ~> allow "find with only known read-only flags"
     ]
 
@@ -255,7 +285,7 @@ pkexecRules :: Node
 pkexecRules =
   match
     command
-    [ [r|pkexec\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
+    [ [r|pkexec\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
     ]
 
 -- | rm: deny when / is a standalone argument (root target), ask otherwise.
@@ -271,7 +301,7 @@ sudoRules :: Node
 sudoRules =
   match
     command
-    [ [r|sudo\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
+    [ [r|sudo\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
     ]
 
 -- | env K=V ...: strip env and variable assignments, recurse.
@@ -279,7 +309,7 @@ envRules :: Node
 envRules =
   match
     command
-    [ [r|env\s+(?P<subcmd>\S+=\S+\s+.+)|] ~> recurse "subcmd"
+    [ [r|env\s+(?P<subcmd>\S+=\S+\s+.+)|] ~> recurse Command "$subcmd"
     ]
 
 -- | bash -c CMD: extract and recurse into CMD.
@@ -287,7 +317,7 @@ bashRules :: Node
 bashRules =
   match
     command
-    [ [r|bash\s+-c\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
+    [ [r|bash\s+-c\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
     ]
 
 -- | sh -c CMD: extract and recurse into CMD.
@@ -295,7 +325,7 @@ shRules :: Node
 shRules =
   match
     command
-    [ [r|sh\s+-c\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
+    [ [r|sh\s+-c\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
     ]
 
 -- | fish -c CMD: extract and recurse into CMD.
@@ -303,5 +333,18 @@ fishRules :: Node
 fishRules =
   match
     command
-    [ [r|fish\s+-c\s+(?P<subcmd>.+)|] ~> recurse "subcmd"
+    [ [r|fish\s+-c\s+(?P<subcmd>.+)|] ~> recurse Command "$subcmd"
+    ]
+
+-- | xargs: builds command lines from stdin, so the captured subcommand
+-- is incomplete — stdin-injected arguments are unknown at check time.
+-- We append a synthetic unknown flag and recurse: if the rule tree still
+-- allows the probed command, the subcommand must be unconditionally safe
+-- regardless of arguments.  See CLAUDE.md "xargs safety probe" section.
+xargsRules :: Node
+xargsRules =
+  match
+    command
+    [ [r|xargs(?:\s+(?:-[0rxtp](?=\s|$)|--(?=\s|$)|-[nLPsdEIa]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:null|no-run-if-empty|verbose|interactive|open-tty|help|version|exit)(?=\s|$)|--(?:max-args|max-lines|max-procs|max-chars|delimiter|eof|replace|arg-file|process-slot-var)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)))*\s+(?P<subcmd>.+)|]
+        ~> recurse Command "$subcmd --unrecognized-flag-injected-by-xargs-rule"
     ]

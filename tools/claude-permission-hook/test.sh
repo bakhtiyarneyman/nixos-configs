@@ -240,6 +240,28 @@ assert_verdict "echo hello > $EXISTFILE" ask
 rm -f "$EXISTFILE"
 
 echo
+echo "-- Xargs: unconditionally safe subcommand (should allow) --"
+assert_verdict 'xargs grep -l "InfluxDB\|Timeseries"' allow
+assert_verdict "xargs -0 cat" allow
+assert_verdict "xargs -n 1 head" allow
+assert_verdict "xargs ls" allow
+assert_verdict "xargs -I {} stat {}" allow
+
+echo
+echo "-- Xargs: conditionally safe subcommand (should ask) --"
+assert_verdict "xargs rm" ask
+assert_verdict "xargs find . -delete" ask
+assert_verdict "xargs sort -o out" ask
+
+echo
+echo "-- Xargs: unknown subcommand (should ask) --"
+assert_verdict "xargs curl http://example.com" ask
+
+echo
+echo "-- Xargs: unknown xargs flags (should ask) --"
+assert_verdict "xargs --unknown-flag grep foo" ask
+
+echo
 echo "-- Append: redirects (should ask) --"
 assert_verdict "echo hello >> /tmp/out" ask
 

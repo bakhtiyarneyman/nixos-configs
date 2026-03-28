@@ -2,6 +2,7 @@ module DSL (
   Node (..),
   Subject (..),
   MatchTarget (..),
+  FragmentType (..),
   Verdict (..),
   Result (..),
   match,
@@ -39,7 +40,7 @@ data Subject
 data Node
   = Match Subject [(Text, Node)]
   | Decision Verdict Text
-  | Recurse Text
+  | Recurse FragmentType Text
   deriving (Show)
 
 data MatchTarget = Stdout | ErrorCode
@@ -76,7 +77,7 @@ ask = Decision Ask
 deny :: Text -> Node
 deny = Decision Deny
 
-recurse :: Text -> Node
+recurse :: FragmentType -> Text -> Node
 recurse = Recurse
 
 type Env = Map Text Text
@@ -121,12 +122,12 @@ evaluateNode :: Node -> Int -> Env -> Node -> IO Result
 evaluateNode root depth env = \case
   Decision verdict reason ->
     pure (Result verdict [expandVars env reason])
-  Recurse variable ->
-    case Map.lookup variable env of
-      Nothing ->
-        pure (Result Ask ["Recurse variable not set: " <> variable])
-      Just value ->
-        evaluateCommand root (depth + 1) value
+  Recurse ftype template
+    | depth > maxRecursionDepth ->
+        pure (Result Ask ["Max recursion depth exceeded"])
+    | otherwise ->
+        let value = expandVars env template
+        in evaluateFragment root (depth + 1) (Fragment ftype value)
   Match source cases -> do
     subject <- case source of
       Variable varName -> pure (Map.findWithDefault "" varName env)

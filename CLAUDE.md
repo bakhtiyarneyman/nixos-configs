@@ -97,6 +97,9 @@ nix-instantiate --parse-only file.nix
 - Email notifications configured via msmtp for system monitoring
 - Auto-updates enabled with cache building strategy (iron builds first, others use cache)
 
+## Permission Hook Security Invariants
+- **xargs safety probe**: The xargs rule appends `--unrecognized-flag-injected-by-xargs-rule` to the subcommand before recursing. This probes whether the rule tree allows the command regardless of arguments (since xargs injects unknown arguments from stdin). Security depends on: (a) principle #2 is maintained — rules only whitelist explicitly enumerated flags, never catch-all `.*` patterns; (b) unconditionally-allowed programs (e.g. `grep ~> allow`) are genuinely safe with any arguments; (c) rules with argument whitelists never include the probe flag. See principle #10 in `Rules.hs` for full analysis.
+
 ## Development Memories
 - Never invoke `nixos-rebuild (boot|switch)` before testing the configuration with `nixos-rebuild test`.
 - Don't build or `nix flake check` if you can just test
