@@ -196,6 +196,25 @@ assert_verdict "git branch --unset-upstream" ask
 assert_verdict "git branch --edit-description" ask
 
 echo
+echo "-- Git: tag listing (should allow) --"
+assert_verdict "git tag" allow
+assert_verdict "git tag -l" allow
+assert_verdict "git tag -l 'v1.*'" allow
+assert_verdict "git tag -n5" allow
+assert_verdict "git tag -v v1.0" allow
+assert_verdict "git tag --sort=-creatordate" allow
+assert_verdict "git tag --contains abc123" allow
+assert_verdict "git tag -l --sort=refname --column=always" allow
+
+echo
+echo "-- Git: tag mutation (should ask) --"
+assert_verdict "git tag v1.0" ask
+assert_verdict "git tag -a v1.0 -m 'release'" ask
+assert_verdict "git tag -d v1.0" ask
+assert_verdict "git tag -f v1.0" ask
+assert_verdict "git tag -s v1.0" ask
+
+echo
 echo "-- Git: remote/destructive (should ask) --"
 assert_verdict "git push" ask
 assert_verdict "git reset --hard" ask

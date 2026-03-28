@@ -211,6 +211,7 @@ gitRules =
     [ [r|git\s+(?:status|diff|log|show|blame|shortlog|describe|rev-parse|rev-list|ls-files|ls-tree|cat-file|name-rev|merge-base|for-each-ref)(?:\s+.*)?|]
         ~> allow "read-only git query, no flags can write or modify state"
     , [r|git\s+branch(?:\s+.*)?|] ~> gitBranchRules
+    , [r|git\s+tag(?:\s+.*)?|] ~> gitTagRules
     , [r|git\s+(?:add|commit)(?:\s+.*)?|]
         ~> allow "local staging/commit, fully reversible and does not affect remotes"
     ]
@@ -225,6 +226,17 @@ gitBranchRules =
     command
     [ [r|git\s+branch(\s+(-[avrvi]+(?=\s|$)|--(?:all|remotes|verbose|show-current|no-color|no-column|ignore-case)(?=\s|$)|--(?:list|merged|no-merged|contains|no-contains)(?:(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|--(?:sort|format|color|column|points-at|abbrev)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)))*\s*|]
         ~> allow "git branch with only read-only listing and query flags"
+    ]
+
+-- | git tag: allow only known read-only listing, query, and verify flags.
+-- Mutation flags (-d, -a, -s, -u, -f, -m, -F, --delete, --force) and bare
+-- tag names fall through to ask.
+gitTagRules :: Node
+gitTagRules =
+  match
+    command
+    [ [r|git\s+tag(\s+(-n\d*(?=\s|$)|--(?:no-color|no-column|ignore-case)(?=\s|$)|--(?:list|verify|contains|no-contains|points-at|merged|no-merged|sort|format|color|column|abbrev)(?:(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|-[lv](?:\s+(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)))*\s*|]
+        ~> allow "git tag with only read-only listing, query, and verify flags"
     ]
 
 -- | nixos-rebuild: allow non-persistent subcommands (test, build, dry-build,
