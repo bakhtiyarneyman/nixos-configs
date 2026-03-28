@@ -80,6 +80,7 @@ commandRules =
     , "printf" ~> allow "output to stdout only, cannot modify filesystem"
     , "true" ~> allow "no-op builtin, always succeeds"
     , "false" ~> allow "no-op builtin, always fails"
+    , "cd" ~> allow "changes working directory, process-local state only, no filesystem writes"
     , "test" ~> allow "evaluates expressions, no side effects"
     , [r|\[|] ~> allow "evaluates expressions, no side effects"
     , -- Read-only file inspection: no flags make these write.

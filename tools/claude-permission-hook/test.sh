@@ -35,6 +35,8 @@ assert_verdict "printf '%s\n' foo" allow
 assert_verdict "true" allow
 assert_verdict "false" allow
 assert_verdict "test -f /etc/passwd" allow
+assert_verdict "cd /tmp" allow
+assert_verdict "cd" allow
 
 echo
 echo "-- Read-only inspection (should allow) --"
