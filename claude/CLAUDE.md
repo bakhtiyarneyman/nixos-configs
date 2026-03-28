@@ -45,6 +45,7 @@
 - Never read files with passwords, stat them
 - Never see or handle secret values directly. Generate secrets by piping (e.g., `openssl rand -hex 32 > /path/to/secret`)
 - When claude is used via ssh, `sudo` must be used instead of `pkexec`.
+- In Haskell, never make unnecessary states representable. Each sum type constructor should carry exactly the data it needs — don't add shared fields only used by one variant.
 
 ## Claude Setup
 - `~/.claude/settings.json` and `~/.claude/commands/` are symlinked to `/etc/nixos/claude/settings.json` and `/etc/nixos/.claude/commands/` via `systemd.tmpfiles.rules` in `mixins/core.nix`.
@@ -52,7 +53,10 @@
 ## Permission Hook (tools/claude-permission-hook)
 - Security principles are documented as a comment block at the top of `src/Rules.hs` — read them before modifying rules.
 - `nix-build` runs `test.sh` integration tests automatically — no need to run them separately.
+- Never propose catch-all `.*` allow patterns. Always enumerate known-safe patterns explicitly. If a tool has too many safe flags to enumerate, that's a signal to find a different decomposition — not to use a catch-all.
 - When a Bash command triggers "ask" from the permission hook and the user approves it, spawn a background agent running `/add-rule` to analyze the command and propose a rule for future auto-allowing.
+- Don't auto-allow git subcommands that can delete commits, branches, or uncommitted changes — "local" ≠ "safe".
+- Never auto-allow subcommands that execute project code or delete files (test, bench, run, clean) in permission rules.
 
 ## Memory Policy
 - Machine-specific instructions belong in the auto-memory directory (`~/.claude/projects/-etc-nixos/memory/`).
