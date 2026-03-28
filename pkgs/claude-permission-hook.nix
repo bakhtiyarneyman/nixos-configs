@@ -1,5 +1,6 @@
 {
   haskellPackages,
+  jq,
   lib,
 }:
 haskellPackages.mkDerivation {
@@ -15,6 +16,8 @@ haskellPackages.mkDerivation {
     raw-strings-qq
     containers
   ];
+  testToolDepends = [ jq ];
+  checkPhase = "bash test.sh dist/build/claude-permission-hook/claude-permission-hook";
   license = lib.licenses.mit;
   description = "Claude Code PreToolUse permission hook";
 }

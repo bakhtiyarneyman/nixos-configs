@@ -42,6 +42,7 @@
 
 ## Permission Hook (tools/claude-permission-hook)
 - Security principles are documented as a comment block at the top of `src/Rules.hs` — read them before modifying rules.
+- `nix-build` runs `test.sh` integration tests automatically — no need to run them separately.
 - When a Bash command triggers "ask" from the permission hook and the user approves it, spawn a background agent running `/add-rule` to analyze the command and propose a rule for future auto-allowing.
 
 ## Memory Policy
