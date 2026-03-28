@@ -30,7 +30,12 @@
 - When receiving feedback, it's not always clear if it's specific or general. If unsure whether a correction is a local fix or a broad principle — or if the WHY behind it is unclear — ask rather than guess.
 - When retrying a failed command, always explain what was wrong with the previous attempt and what you changed before running the new version.
 
-## Development Memories
+## Committing
+- When asked to commit, only stage changes made in the current session. Do not stage other changes that happen to be in the same files from concurrent sessions. Use selective staging (e.g., `git apply --cached` with extracted patches).
+- Never use `git stash` — other Claude sessions may be working off the same directory concurrently. Stashing would disrupt their working tree.
+- After implementation, before committing, scan CLAUDE.md files and instructions for stale references to the behavior you changed.
+
+## Development Principles
 - Don't spawn exploration agents for simple, targeted edits — just read the file.
 - Do not remove temporary debugging facilities until proven working.
 - Use pkexec to execute privileged commands.
