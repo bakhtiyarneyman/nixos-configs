@@ -87,6 +87,7 @@ commandRules =
     , "head" ~> allow "reads beginning of files, no write capability"
     , "tail" ~> allow "reads end of files, no write capability"
     , "wc" ~> allow "counts lines/words/bytes, no write capability"
+    , "uniq" ~> allow "filters adjacent duplicate lines, all flags control filtering only"
     , "diff" ~> allow "compares files, no write capability"
     , "file" ~> allow "identifies file types, no write capability"
     , "stat" ~> allow "displays file metadata, no write capability"
