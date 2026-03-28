@@ -64,6 +64,12 @@ echo "-- Manual pages (should allow) --"
 assert_verdict "man find" allow
 
 echo
+echo "-- Uniq (should allow) --"
+assert_verdict "uniq" allow
+assert_verdict "uniq -c" allow
+assert_verdict "uniq -d -i input.txt" allow
+
+echo
 echo "-- Sort (should allow without -o/--compress-program) --"
 assert_verdict "sort" allow
 assert_verdict "sort -n -r" allow
@@ -148,8 +154,23 @@ assert_verdict "ls 2>/dev/null" allow
 
 echo
 echo "-- Ask: unknown commands --"
-assert_verdict "git status" ask
 assert_verdict "curl http://example.com" ask
+
+echo
+echo "-- Git: read-only (should allow) --"
+assert_verdict "git status" allow
+assert_verdict "git diff" allow
+assert_verdict "git log --oneline -5" allow
+
+echo
+echo "-- Git: local writes (should allow) --"
+assert_verdict "git add ." allow
+assert_verdict "git commit -m 'test'" allow
+
+echo
+echo "-- Git: remote/destructive (should ask) --"
+assert_verdict "git push" ask
+assert_verdict "git reset --hard" ask
 
 echo
 echo "-- Ask: destructive but not catastrophic --"
