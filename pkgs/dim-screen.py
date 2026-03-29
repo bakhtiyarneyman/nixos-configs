@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument('--dim-seconds', type=int, default=10, help='Time in seconds to dim the screen')
-parser.add_argument('--dim-step-seconds', type=float, default=0.25, help='Time in seconds to wait between each step')
+parser.add_argument('--dim-step-seconds', type=float, default=0.025, help='Time in seconds to wait between each step')
 parser.add_argument('--min-brightness-percents', type=int, default=1, help='Minimum brightness in percents')
 parser.add_argument('--hibernate', action='store_true', help='Invoke `suspend-then-hibernate` on battery discharge, instead of `suspend`')
 
@@ -89,24 +89,29 @@ def restore(sig: signal.Signals, frame: Any):
 signal.signal(signal.SIGTERM, restore)
 signal.signal(signal.SIGINT, restore)
 
-steps = int(args.dim_seconds / args.dim_step_seconds)
-
 Brightness.save()
-brightness = Brightness.get()
-step = brightness / steps
+initial_brightness = Brightness.get()
+min_brightness = args.min_brightness_percents
+total_time = args.dim_seconds
 
 start_time = time.time()
+last_notification_time = 0
 while True:
-  current_time = time.time()
-  elapsed_time = current_time - start_time
-  remaining_time = 15 - elapsed_time
+  elapsed_time = time.time() - start_time
+  remaining_time = total_time - elapsed_time
   if remaining_time <= 0:
     break
 
-  Brightness.set(brightness)
-  Notification.send(f"Screen will be locked in {round(remaining_time)} seconds")
+  # Cubic curve: drops faster at the start, slower at the end,
+  # compensating for logarithmic human brightness perception.
+  fraction = remaining_time / total_time
+  brightness = min_brightness + (initial_brightness - min_brightness) * fraction ** 3
 
-  brightness -= step
+  Brightness.set(brightness)
+  if round(remaining_time) != last_notification_time:
+    last_notification_time = round(remaining_time)
+    Notification.send(f"Screen will be locked in {last_notification_time} seconds")
+
   time.sleep(args.dim_step_seconds)
 
 Brightness.set(args.min_brightness_percents)
