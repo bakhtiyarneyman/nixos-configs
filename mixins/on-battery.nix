@@ -1,4 +1,9 @@
-{config, lib, pkgs, ...}: let
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   canHibernate = builtins.elem "nohibernate" config.boot.kernelParams;
 in {
   services = {
@@ -15,7 +20,7 @@ in {
       enable = true;
       settings = {
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
         PLATFORM_PROFILE_ON_BAT = "low_power";
         PCIE_ASPM_ON_BAT = "powersupersave";
       };
