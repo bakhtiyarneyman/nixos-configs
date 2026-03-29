@@ -287,6 +287,25 @@ echo "-- Xargs: unknown xargs flags (should ask) --"
 assert_verdict "xargs --unknown-flag grep foo" ask
 
 echo
+echo "-- Heredoc: basic (should allow) --"
+assert_verdict $'cat << EOF\nhello\nEOF' allow
+assert_verdict $'cat << \'EOF\'\nhello\nEOF' allow
+assert_verdict $'cat << "EOF"\nhello\nEOF' allow
+assert_verdict $'cat <<EOF\nhello\nEOF' allow
+assert_verdict $'cat <<- EOF\n\thello\nEOF' allow
+
+echo
+echo "-- Heredoc: with redirect (should ask due to overwrite) --"
+HFILE=$(mktemp)
+assert_verdict $"cat > $HFILE << EOF\nhello\nEOF" ask
+rm -f "$HFILE"
+
+echo
+echo "-- Heredoc: followed by commands (should evaluate both) --"
+assert_verdict $'cat << EOF\nhello\nEOF\nls' allow
+assert_verdict $'cat << EOF\nhello\nEOF\nrm foo' ask
+
+echo
 echo "-- Append: redirects (should ask) --"
 assert_verdict "echo hello >> /tmp/out" ask
 

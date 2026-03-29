@@ -39,7 +39,7 @@ commandGroup = do
   where
     go :: [Text] -> [Fragment] -> Parser [Fragment]
     go cmdParts extraFrags = do
-      skipSpace
+      skipHSpace
       atEnd <- atEnd
       if atEnd
         then pure (emitCmd cmdParts extraFrags)
@@ -78,10 +78,12 @@ commandGroup = do
                   let subFrags = parseSubcommand inner
                   go (cmdParts ++ ["<(" <> inner <> ")"]) (extraFrags ++ subFrags)
                 Just '<' -> do
-                  -- Heredoc << - consume delimiter, treat opaquely
+                  -- Heredoc << or <<-
                   _ <- char '<'
+                  _ <- option ' ' (char '-')  -- <<- strips leading tabs
                   skipSpace
-                  _delim <- word
+                  delim <- heredocDelim
+                  consumeHeredocBody delim
                   go cmdParts extraFrags
                 _ -> do
                   -- Input redirect < file
@@ -163,16 +165,20 @@ commandGroup = do
 isSepStart :: Char -> Bool
 isSepStart c = c == ';' || c == '|' || c == '&' || c == '\n'
 
--- Parse a separator: ;, &&, ||, |
+-- Parse a separator: ;, &&, ||, |, newline
 separator :: Parser ()
 separator = do
-  skipSpace
+  skipHSpace
   void (string "&&")
     <|> void (string "||")
     <|> void (char ';')
     <|> void (char '|')
     <|> void (char '\n')
-  skipSpace
+  skipHSpace
+
+-- Skip horizontal whitespace only (spaces and tabs, not newlines)
+skipHSpace :: Parser ()
+skipHSpace = skipWhile (\c -> c == ' ' || c == '\t')
 
 -- Parse a word (non-whitespace, non-special token).
 -- Handles backslash escapes: \( \; \| etc. are consumed as single units.
@@ -216,6 +222,30 @@ redirectTarget = do
     '\'' -> singleQuoted
     '"' -> doubleQuoted
     _ -> word
+
+-- Parse heredoc delimiter: bare word, 'quoted', or "quoted"
+-- Returns the bare delimiter text (quotes stripped)
+heredocDelim :: Parser Text
+heredocDelim =
+  (char '\'' *> takeTill (== '\'') <* char '\'')
+  <|> (char '"' *> takeTill (== '"') <* char '"')
+  <|> word
+
+-- Consume heredoc body from current position to closing delimiter line
+consumeHeredocBody :: Text -> Parser ()
+consumeHeredocBody delim = do
+  _ <- takeTill (== '\n')  -- skip rest of current line
+  consumeHeredocLines delim
+
+consumeHeredocLines :: Text -> Parser ()
+consumeHeredocLines delim = do
+  end <- atEnd
+  if end then pure ()
+  else do
+    _ <- char '\n'
+    line <- takeTill (== '\n')
+    unless (T.strip line == delim) $
+      consumeHeredocLines delim
 
 -- Parse single-quoted string (no escaping inside)
 singleQuoted :: Parser Text
