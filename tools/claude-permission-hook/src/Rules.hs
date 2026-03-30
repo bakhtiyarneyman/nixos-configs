@@ -74,6 +74,11 @@ import DSL
 --
 --     d) The probe flag name is deliberately long and self-documenting
 --        to prevent accidental inclusion in a whitelist.
+--
+-- 11. EXPLICIT ASK FOR KNOWN DANGERS. When a command has subcommands or
+--     flags that are deliberately not allowed, match them with an
+--     explicit `ask` rather than relying on fall-through. This tells
+--     future editors the omission was a deliberate security decision.
 rules :: Node
 rules =
   match
