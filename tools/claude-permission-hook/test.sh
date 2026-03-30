@@ -160,6 +160,54 @@ assert_verdict "ghc -ghci-script evil.ghci file.hs" ask
 assert_verdict "ghc @opts.txt file.hs" ask
 
 echo
+echo "-- Cabal: safe compile/query subcommands (should allow) --"
+assert_verdict "cabal build" allow
+assert_verdict "cabal build all" allow
+assert_verdict "cabal v2-build" allow
+assert_verdict "cabal new-build" allow
+assert_verdict "cabal haddock" allow
+assert_verdict "cabal haddock-project" allow
+assert_verdict "cabal v2-haddock-project" allow
+assert_verdict "cabal sdist" allow
+assert_verdict "cabal freeze" allow
+assert_verdict "cabal gen-bounds" allow
+assert_verdict "cabal configure" allow
+assert_verdict "cabal target lib:foo" allow
+assert_verdict "cabal list aeson" allow
+assert_verdict "cabal info aeson" allow
+assert_verdict "cabal path" allow
+assert_verdict "cabal list-bin foo" allow
+assert_verdict "cabal outdated" allow
+assert_verdict "cabal check" allow
+assert_verdict "cabal help" allow
+
+echo
+echo "-- Cabal: code execution (should ask via fall-through) --"
+assert_verdict "cabal test" ask
+assert_verdict "cabal v2-test" ask
+assert_verdict "cabal bench" ask
+assert_verdict "cabal run foo" ask
+assert_verdict "cabal exec -- foo" ask
+assert_verdict "cabal repl" ask
+assert_verdict "cabal v2-run foo" ask
+
+echo
+echo "-- Cabal: destructive/install (should ask via fall-through) --"
+assert_verdict "cabal clean" ask
+assert_verdict "cabal install foo" ask
+assert_verdict "cabal v2-install foo" ask
+
+echo
+echo "-- Cabal: network/config (should ask explicitly) --"
+assert_verdict "cabal upload dist/foo.tar.gz" ask
+assert_verdict "cabal report" ask
+assert_verdict "cabal update" ask
+assert_verdict "cabal fetch aeson" ask
+assert_verdict "cabal get aeson" ask
+assert_verdict "cabal init" ask
+assert_verdict "cabal user-config diff" ask
+
+echo
 echo "-- Recurse: sudo (should allow if subcommand is safe) --"
 assert_verdict "sudo ls /root" allow
 assert_verdict "sudo cat /etc/shadow" allow

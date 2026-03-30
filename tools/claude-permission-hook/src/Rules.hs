@@ -151,8 +151,9 @@ commandRules =
     , "nix-instantiate" ~> allow "pure Nix evaluation, no host execution"
     , "nix-store" ~> nixStoreRules
     , "alejandra" ~> allow "nix formatter, only rewrites formatting"
-    , -- Haskell build tooling: safe compilation flags only.
-      "ghc" ~> ghcRules
+    , -- Haskell build tooling: safe subcommands/flags only.
+      "cabal" ~> cabalRules
+    , "ghc" ~> ghcRules
     , "nil" ~> allow "nix language server, read-only"
     , -- Version control: read-only queries and local-only writes.
       "git" ~> gitRules
@@ -359,6 +360,24 @@ nixosRebuildRules =
     command
     [ [r|nixos-rebuild\s+(?:build|dry-build|dry-run|dry-activate|build-vm|build-vm-with-bootloader|list-generations|repl)(?:\s+.*)?|]
         ~> allow "nixos-rebuild build/query subcommand, does not activate or modify boot menu"
+    ]
+
+-- | cabal: allow compile-only and read-only subcommands.
+-- test/bench/run/exec/repl/clean/install fall through to default ask.
+cabalRules :: Node
+cabalRules =
+  match
+    command
+    [ [r|cabal\s+(?:(?:v[12]-|new-)?(?:build|haddock(?:-project)?|sdist|freeze|gen-bounds|configure|target)|list|info|path|list-bin|outdated|check|help)(?:\s+.*)?|]
+        ~> allow "compile/query subcommand, does not execute project code, delete files, install, or upload"
+    , [r|cabal\s+(?:upload|report)(?:\s+.*)?|]
+        ~> ask "uploads to remote server"
+    , [r|cabal\s+(?:update|fetch|get|unpack)(?:\s+.*)?|]
+        ~> ask "downloads from network"
+    , [r|cabal\s+init(?:\s+.*)?|]
+        ~> ask "creates new package files"
+    , [r|cabal\s+user-config(?:\s+.*)?|]
+        ~> ask "modifies global cabal configuration"
     ]
 
 -- | pkexec: strip "pkexec" prefix, recurse into subcommand.
