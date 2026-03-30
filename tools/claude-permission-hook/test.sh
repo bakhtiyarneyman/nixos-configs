@@ -95,10 +95,69 @@ assert_verdict "sed --in-place 's/foo/bar/' file" ask
 assert_verdict "sed -i.bak 's/foo/bar/' file" ask
 
 echo
-echo "-- Nix tooling (should allow) --"
+echo "-- Nix: safe subcommands (should allow) --"
 assert_verdict "nix build" allow
+assert_verdict "nix build .#foo" allow
+assert_verdict "nix eval .#lib.version" allow
+assert_verdict "nix search nixpkgs hello" allow
+assert_verdict "nix flake check" allow
+assert_verdict "nix flake show" allow
+assert_verdict "nix flake update" allow
+assert_verdict "nix store ls --store /nix/store abc" allow
+assert_verdict "nix derivation show /nix/store/foo.drv" allow
+assert_verdict "nix nar ls /path/to/file.nar" allow
+assert_verdict "nix path-info /nix/store/foo" allow
 assert_verdict "nix-build ." allow
 assert_verdict "alejandra ." allow
+
+echo
+echo "-- Nix: host execution / destructive (should ask) --"
+assert_verdict "nix run .#foo" ask
+assert_verdict "nix develop" ask
+assert_verdict "nix shell nixpkgs#hello" ask
+assert_verdict "nix repl" ask
+assert_verdict "nix fmt" ask
+assert_verdict "nix profile install nixpkgs#hello" ask
+assert_verdict "nix store gc" ask
+assert_verdict "nix store delete /nix/store/foo" ask
+assert_verdict "nix flake init" ask
+
+echo
+echo "-- Nix-store: safe operations (should allow) --"
+assert_verdict "nix-store -q --references /nix/store/foo" allow
+assert_verdict "nix-store -r /nix/store/foo.drv" allow
+assert_verdict "nix-store --verify" allow
+assert_verdict "nix-store --read-log /nix/store/foo" allow
+
+echo
+echo "-- Nix-store: destructive (should ask) --"
+assert_verdict "nix-store --gc" ask
+assert_verdict "nix-store --delete /nix/store/foo" ask
+assert_verdict "nix-store --optimise" ask
+
+echo
+echo "-- GHC: safe compilation (should allow) --"
+assert_verdict "ghc -c -O2 src/Main.hs" allow
+assert_verdict "ghc --make -o hook src/Main.hs" allow
+assert_verdict "ghc -Wall -Werror -XOverloadedStrings file.hs" allow
+assert_verdict "ghc -fforce-recomp -fPIC -dynamic src/Main.hs" allow
+assert_verdict "ghc -ddump-simpl file.hs" allow
+assert_verdict "ghc -v3 -j4 file.hs" allow
+assert_verdict "ghc -package text -isrc file.hs" allow
+assert_verdict "ghc" allow
+
+echo
+echo "-- GHC: code execution flags (should ask) --"
+assert_verdict 'ghc -e "putStrLn hello"' ask
+assert_verdict "ghc --interactive" ask
+assert_verdict "ghc -O2 --run file.hs" ask
+assert_verdict "ghc -pgmF /bin/evil file.hs" ask
+assert_verdict "ghc -pgmc /usr/bin/gcc file.hs" ask
+assert_verdict "ghc -fplugin=Evil file.hs" ask
+assert_verdict "ghc -fplugin-library=evil.so file.hs" ask
+assert_verdict "ghc --frontend Evil file.hs" ask
+assert_verdict "ghc -ghci-script evil.ghci file.hs" ask
+assert_verdict "ghc @opts.txt file.hs" ask
 
 echo
 echo "-- Recurse: sudo (should allow if subcommand is safe) --"

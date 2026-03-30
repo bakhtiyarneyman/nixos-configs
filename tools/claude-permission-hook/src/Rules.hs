@@ -145,14 +145,14 @@ commandRules =
     , "sed" ~> sedRules
     , -- Network inspection: safe scanning flags only.
       "nmap" ~> nmapRules
-    , -- Nix tooling: safe in this repo context.
-      "nix" ~> allow "nix build/eval tooling"
-    , "nix-build" ~> allow "nix build tooling"
-    , "nix-instantiate" ~> allow "nix eval tooling"
-    , "nix-store" ~> allow "nix store queries"
+    , -- Nix tooling: sandboxed builds and read-only queries allowed.
+      "nix" ~> nixRules
+    , "nix-build" ~> allow "nix build tooling, executes in Nix sandbox"
+    , "nix-instantiate" ~> allow "pure Nix evaluation, no host execution"
+    , "nix-store" ~> nixStoreRules
     , "alejandra" ~> allow "nix formatter, only rewrites formatting"
-    , -- Haskell build tooling: compiles source to build artifacts.
-      "ghc" ~> allow "Haskell compiler, produces build artifacts (.o, .hi, executables)"
+    , -- Haskell build tooling: safe compilation flags only.
+      "ghc" ~> ghcRules
     , "nil" ~> allow "nix language server, read-only"
     , -- Version control: read-only queries and local-only writes.
       "git" ~> gitRules
@@ -223,6 +223,70 @@ sedRules =
     [ [r|sed(\s+(-[nErsuz]+(?=\s|$)|-[efl]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:quiet|silent|debug|posix|regexp-extended|separate|unbuffered|null-data|sandbox|follow-symlinks|help|version)(?=\s|$)|--(?:expression|file|line-length)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
         ~> allow "sed with only known-safe flags, no -i/--in-place; reads files/stdin and writes to stdout only"
     ]
+
+-- | nix: allow sandboxed builds and read-only queries.
+-- Host-execution subcommands (run, develop, shell, repl, fmt) and
+-- destructive store operations fall through to ask.
+nixRules :: Node
+nixRules =
+  match
+    command
+    [ [r|nix\s+(?:build|eval|search|log|path-info|hash|why-depends|print-dev-env|doctor|help|help-stores)(?:\s+.*)?|]
+        ~> allow "nix build/eval/query subcommand — sandboxed or read-only"
+    , [r|nix\s+flake\s+(?:check|show|update|lock|metadata|info|archive|prefetch|prefetch-inputs|clone)(?:\s+.*)?|]
+        ~> allow "nix flake query/update — sandboxed, read-only, or updates lock file"
+    , [r|nix\s+store\s+(?:cat|dump-path|info|ls|diff-closures|verify|path-from-hash-part)(?:\s+.*)?|]
+        ~> allow "nix store read-only query"
+    , [r|nix\s+derivation\s+show(?:\s+.*)?|]
+        ~> allow "nix derivation show — read-only"
+    , [r|nix\s+nar\s+(?:cat|dump-path|ls)(?:\s+.*)?|]
+        ~> allow "nix nar read-only inspection"
+    ]
+
+-- | nix-store: allow read-only queries and sandboxed builds.
+-- Destructive operations (gc, delete) and store modifications fall
+-- through to ask.
+nixStoreRules :: Node
+nixStoreRules =
+  match
+    command
+    [ [r|nix-store\s+(?:-q|--query|--verify|--verify-path|--dump|--export|--read-log|--dump-db|--print-env)(?:\s+.*)?|]
+        ~> allow "nix-store read-only query or export"
+    , [r|nix-store\s+(?:-r|--realise)(?:\s+.*)?|]
+        ~> allow "nix-store realise — builds in Nix sandbox"
+    ]
+
+-- | ghc: allow compilation with known-safe flags only.
+-- Dangerous flags that fall through to ask: -e (eval), --run,
+-- --interactive (REPL), --frontend (plugin), -pgm* (substitute
+-- external programs), -fplugin* (compiler plugins), -ghci-script
+-- (execute GHCi commands), @file (response files bypass flag checking).
+ghcRules :: Node
+ghcRules =
+  match
+    command
+    [ [r|ghc\s+(?P<args>.+)|] ~> ghcArgRules
+    , "ghc" ~> allow "ghc with no arguments shows usage"
+    ]
+
+ghcArgRules :: Node
+ghcArgRules =
+  match
+    (Variable "args")
+    [ safeGhcFlags ~> allow "ghc compilation with known-safe flags only"
+    ]
+
+-- | Single safe GHC flag unit. Organized by prefix family:
+-- -X (extensions), -W/-w (warnings), -d (debug/dump), -f except
+-- -fplugin (features), -opt (sub-tool options), -O (optimization),
+-- phase stops, verbosity/parallelism, paths, boolean keywords,
+-- flags with arguments, long flags, and source files.
+safeGhcFlag :: Text
+safeGhcFlag = [r|-X\S+|-W\S*|-w(?=\s|$)|-d\S+|-f(?!plugin)\S+|-opt\S+|-O[012]?(?=\s|$)|-[cSECMFg](?=\s|$)|-[vj]\d*(?=\s|$)|-[Hi]\S*|-[IlLDU]\S+|-(?:auto|auto-all|caf-all|dynamic|static|shared|staticlib|threaded|single-threaded|prof|debug|eventlog|pie|no-pie|rdynamic|cpp|no-hs-main|no-link|split-sections|no-split-sections|hide-all-packages|no-auto-link-packages)(?=\s|$)|-(?:keep-\S+|no-keep-\S+)(?=\s|$)|-(?:rtsopts(?:=\S+)?|no-rtsopts|no-rtsopts-suggestions|with-rtsopts=\S+)(?=\s|$)|-pgm[cl]-supports-no-pie(?=\s|$)|-(?:o|odir|hidir|stubdir|dumpdir|outputdir|osuf|hisuf|hcsuf|main-is|package|package-db|package-id|package-env|hide-package|this-unit-id|this-package-name|unit|working-dir|framework|framework-path|dylib-install-name|tmpdir|x|hpcdir)\s+(?:'[^']*'|"[^"]*"|\S+)|-o\S+|--(?:make|info|help|version|numeric-version|show-iface|show-options)(?=\s|$)|--print-\S+(?=\s|$)|(?:'[^']*'|"[^"]*"|[^-@\s]\S*)|]
+
+-- | Zero or more safe GHC flags.
+safeGhcFlags :: Text
+safeGhcFlags = [r|(\s*(?:|] <> safeGhcFlag <> [r|))*\s*|]
 
 -- | nmap: allow known-safe scanning/display flags, ask for script
 -- execution (-sC, -A, --script) and file output (-oN, -oX, etc.).
