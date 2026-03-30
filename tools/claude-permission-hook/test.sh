@@ -352,17 +352,60 @@ assert_verdict $'cat << \'EOF\'\nhello\nEOF' allow
 assert_verdict $'cat << "EOF"\nhello\nEOF' allow
 assert_verdict $'cat <<EOF\nhello\nEOF' allow
 assert_verdict $'cat <<- EOF\n\thello\nEOF' allow
+assert_verdict $'cat <<- EOF\n\thello\n\tEOF' allow
 
 echo
-echo "-- Heredoc: with redirect (should ask due to overwrite) --"
+echo "-- Heredoc: body not evaluated as commands --"
+assert_verdict $'cat << EOF\nrm -rf /\nEOF' allow
+assert_verdict $'cat << EOF\ncurl http://evil.com\nEOF' allow
+
+echo
+echo "-- Heredoc: empty body --"
+assert_verdict $'cat << EOF\nEOF' allow
+
+echo
+echo "-- Heredoc: body line resembles but isn't delimiter --"
+assert_verdict $'cat << EOF\nEOFish\nEOF' allow
+
+echo
+echo "-- Heredoc: no body (at end of input) --"
+assert_verdict 'cat << EOF' allow
+
+echo
+echo "-- Heredoc: redirect AFTER delimiter (should detect overwrite) --"
 HFILE=$(mktemp)
-assert_verdict $"cat > $HFILE << EOF\nhello\nEOF" ask
+assert_verdict $'cat << EOF > '"$HFILE"$'\nhello\nEOF' ask
 rm -f "$HFILE"
 
 echo
-echo "-- Heredoc: followed by commands (should evaluate both) --"
+echo "-- Heredoc: redirect before delimiter (already worked) --"
+HFILE2=$(mktemp)
+assert_verdict $'cat > '"$HFILE2"$' << EOF\nhello\nEOF' ask
+rm -f "$HFILE2"
+
+echo
+echo "-- Heredoc: append after delimiter --"
+assert_verdict $'cat << EOF >> /tmp/out\nhello\nEOF' ask
+
+echo
+echo "-- Heredoc: FD redirect after delimiter --"
+assert_verdict $'cat << EOF 2>/dev/null\nhello\nEOF' allow
+
+echo
+echo "-- Heredoc: followed by safe command --"
 assert_verdict $'cat << EOF\nhello\nEOF\nls' allow
+
+echo
+echo "-- Heredoc: followed by unsafe command --"
 assert_verdict $'cat << EOF\nhello\nEOF\nrm foo' ask
+
+echo
+echo "-- Heredoc: multiple heredocs on one command --"
+assert_verdict $'cat << A << B\nbody1\nA\nbody2\nB' allow
+
+echo
+echo "-- Heredoc: in pipeline (body not consumed at pipe, conservative ask) --"
+assert_verdict $'cat << EOF | grep hello\nhello\nEOF' ask
 
 echo
 echo "-- Append: redirects (should ask) --"

@@ -35,19 +35,23 @@ topLevel = concat <$> commandGroup `sepBy` separator
 commandGroup :: Parser [Fragment]
 commandGroup = do
   skipSpace
-  go [] []
+  go [] [] []
   where
-    go :: [Text] -> [Fragment] -> Parser [Fragment]
-    go cmdParts extraFrags = do
+    go :: [Text] -> [Fragment] -> [Text] -> Parser [Fragment]
+    go cmdParts extraFrags heredocs = do
       skipHSpace
       atEnd <- atEnd
       if atEnd
-        then pure (emitCmd cmdParts extraFrags)
+        then do
+          mapM_ consumeHeredocLines heredocs
+          pure (emitCmd cmdParts extraFrags)
         else do
           c <- peekChar'
           case c of
             -- Separators end this command group
-            _ | isSepStart c -> pure (emitCmd cmdParts extraFrags)
+            _ | isSepStart c -> do
+              when (c == '\n') $ mapM_ consumeHeredocLines heredocs
+              pure (emitCmd cmdParts extraFrags)
 
             -- Redirect >> or > or >&
             '>' -> do
@@ -60,12 +64,12 @@ commandGroup = do
                 Just '&' -> do
                   _ <- char '&'
                   _ <- takeWhile1 (\x -> isDigit x || x == '-')
-                  go cmdParts extraFrags
+                  go cmdParts extraFrags heredocs
                 _ -> do
                   target <- redirectTarget
                   let subFrags = extractSubcommandFragments target
                   let fragType = if isAppend then Append else Overwrite
-                  go cmdParts (extraFrags ++ [Fragment fragType target] ++ subFrags)
+                  go cmdParts (extraFrags ++ [Fragment fragType target] ++ subFrags) heredocs
 
             -- Could be process substitution <(...) or input redirect
             '<' -> do
@@ -76,20 +80,19 @@ commandGroup = do
                   -- Process substitution <(...)
                   inner <- parenBlock
                   let subFrags = parseSubcommand inner
-                  go (cmdParts ++ ["<(" <> inner <> ")"]) (extraFrags ++ subFrags)
+                  go (cmdParts ++ ["<(" <> inner <> ")"]) (extraFrags ++ subFrags) heredocs
                 Just '<' -> do
                   -- Heredoc << or <<-
                   _ <- char '<'
                   _ <- option ' ' (char '-')  -- <<- strips leading tabs
                   skipSpace
                   delim <- heredocDelim
-                  consumeHeredocBody delim
-                  go cmdParts extraFrags
+                  go cmdParts extraFrags (heredocs ++ [delim])
                 _ -> do
                   -- Input redirect < file
                   skipSpace
                   target <- redirectTarget
-                  go (cmdParts ++ ["<", target]) extraFrags
+                  go (cmdParts ++ ["<", target]) extraFrags heredocs
 
             -- Command substitution $(...)
             '$' -> do
@@ -99,27 +102,27 @@ commandGroup = do
                 Just '(' -> do
                   inner <- parenBlock
                   let subFrags = parseSubcommand inner
-                  go (cmdParts ++ ["$(" <> inner <> ")"]) (extraFrags ++ subFrags)
+                  go (cmdParts ++ ["$(" <> inner <> ")"]) (extraFrags ++ subFrags) heredocs
                 _ -> do
                   -- Regular $variable
                   rest <- takeWhile1 isVarChar <|> pure ""
-                  go (cmdParts ++ ["$" <> rest]) extraFrags
+                  go (cmdParts ++ ["$" <> rest]) extraFrags heredocs
 
             -- Backtick command substitution
             '`' -> do
               inner <- backtickBlock
               let subFrags = parseSubcommand inner
-              go (cmdParts ++ ["`" <> inner <> "`"]) (extraFrags ++ subFrags)
+              go (cmdParts ++ ["`" <> inner <> "`"]) (extraFrags ++ subFrags) heredocs
 
             -- Quoted strings
             '\'' -> do
               s <- singleQuoted
-              go (cmdParts ++ [s]) extraFrags
+              go (cmdParts ++ [s]) extraFrags heredocs
 
             '"' -> do
               s <- doubleQuoted
               let subFrags = extractSubcommandFragments s
-              go (cmdParts ++ [s]) (extraFrags ++ subFrags)
+              go (cmdParts ++ [s]) (extraFrags ++ subFrags) heredocs
 
             -- FD number before redirect (e.g., 2> or 2>> or 2>&1)
             _ | isDigit c -> do
@@ -136,26 +139,26 @@ commandGroup = do
                     Just '&' -> do
                       _ <- char '&'
                       _ <- takeWhile1 (\x -> isDigit x || x == '-')
-                      go cmdParts extraFrags
+                      go cmdParts extraFrags heredocs
                     _ -> do
                       target <- redirectTarget
                       let subFrags = extractSubcommandFragments target
                       let fragType = if isAppend then Append else Overwrite
-                      go cmdParts (extraFrags ++ [Fragment fragType target] ++ subFrags)
+                      go cmdParts (extraFrags ++ [Fragment fragType target] ++ subFrags) heredocs
                 _ ->
                   -- Just a number as part of a command
-                  go (cmdParts ++ [digits]) extraFrags
+                  go (cmdParts ++ [digits]) extraFrags heredocs
 
             -- Parenthesized subshell
             '(' -> do
               inner <- parenBlock
               let subFrags = parseSubcommand inner
-              go (cmdParts ++ ["(" <> inner <> ")"]) (extraFrags ++ subFrags)
+              go (cmdParts ++ ["(" <> inner <> ")"]) (extraFrags ++ subFrags) heredocs
 
             -- Regular word
             _ -> do
               w <- word
-              go (cmdParts ++ [w]) extraFrags
+              go (cmdParts ++ [w]) extraFrags heredocs
 
     emitCmd :: [Text] -> [Fragment] -> [Fragment]
     emitCmd [] extras = extras
@@ -231,12 +234,7 @@ heredocDelim =
   <|> (char '"' *> takeTill (== '"') <* char '"')
   <|> word
 
--- Consume heredoc body from current position to closing delimiter line
-consumeHeredocBody :: Text -> Parser ()
-consumeHeredocBody delim = do
-  _ <- takeTill (== '\n')  -- skip rest of current line
-  consumeHeredocLines delim
-
+-- Consume heredoc body lines until a line matches the delimiter
 consumeHeredocLines :: Text -> Parser ()
 consumeHeredocLines delim = do
   end <- atEnd
