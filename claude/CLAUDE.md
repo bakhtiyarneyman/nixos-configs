@@ -21,7 +21,7 @@
 - When writing instructions or documentation, include the triggering condition — specify when the instruction applies, not just what to do.
 - When a bug manifests in multiple places, fix the abstraction that caused it — don't patch each call site.
 - Write tests before implementation (TDD). Start with tests in a plan too.
-- After the work is done, analyze your mistakes and propose updates to these instructions.
+- After the work is done, use /commit to commit the session's changes, then /analyze-mistakes to propose updates to these instructions.
 
 ## Responding to Feedback
 - When corrected, extract the GENERAL PRINCIPLE, not just the specific fix. Ask "what class of mistake is this?" and apply it everywhere, not just the instance pointed out.
