@@ -36,6 +36,3 @@ style = "Regular"
 
 [scrolling]
 history = 100000
-
-[bell]
-command = { program = "notify-send", args = ["Alacritty", "Bell"] }
