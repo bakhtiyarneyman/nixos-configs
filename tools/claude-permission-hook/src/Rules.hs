@@ -330,6 +330,7 @@ gitRules =
     , gitPrefix <> [r|branch(?:\s+.*)?|] ~> gitBranchRules
     , gitPrefix <> [r|tag(?:\s+.*)?|] ~> gitTagRules
     , gitPrefix <> [r|remote(?:\s+.*)?|] ~> gitRemoteRules
+    , gitPrefix <> [r|worktree(?:\s+.*)?|] ~> gitWorktreeRules
     , gitPrefix <> [r|(?:add|commit)(?:\s+.*)?|]
         ~> allow "local staging/commit, fully reversible and does not affect remotes"
     ]
@@ -370,6 +371,24 @@ gitRemoteRules =
         ~> allow "git remote show, read-only display of remote details"
     , gitPrefix <> [r|remote\s+get-url(?:\s+(?:--push|--all)(?=\s|$))*\s+(?:'[^']*'|"[^"]*"|\S+)\s*|]
         ~> allow "git remote get-url, reads URL from local config"
+    ]
+
+-- | git worktree: allow read-only listing, protective lock, and add
+-- with safe flags. -B (force-reset branch) falls through to ask.
+-- remove/move/prune/repair/unlock fall through to ask as they delete
+-- or modify state.
+gitWorktreeRules :: Node
+gitWorktreeRules =
+  match
+    command
+    [ gitPrefix <> [r|worktree\s+list(?:\s+.*)?|]
+        ~> allow "git worktree list, read-only display of worktrees"
+    , gitPrefix <> [r|worktree\s+lock(?:\s+.*)?|]
+        ~> allow "git worktree lock, adds pruning protection only"
+    , gitPrefix <> [r|worktree\s+add(\s+(-[fq](?=\s|$)|-b\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:detach|checkout|no-checkout|lock|orphan|track|no-track|guess-remote|no-guess-remote|quiet|force)(?=\s|$)|--reason\s+(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
+        ~> allow "git worktree add with known-safe flags, no -B which can force-reset existing branches"
+    , gitPrefix <> [r|worktree\s+(?:remove|move|prune|repair|unlock)(?:\s+.*)?|]
+        ~> ask "git worktree mutation: may delete directories, move paths, remove safety guards, or modify administrative data"
     ]
 
 -- | nixos-rebuild: allow non-persistent subcommands (test, build, dry-build,

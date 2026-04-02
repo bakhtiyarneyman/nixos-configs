@@ -347,6 +347,38 @@ assert_verdict "git -C /etc/nixos add ." allow
 assert_verdict "git -C /etc/nixos push" ask
 
 echo
+echo "-- Git: worktree read-only (should allow) --"
+assert_verdict "git worktree list" allow
+assert_verdict "git worktree list -v" allow
+assert_verdict "git worktree list --porcelain" allow
+
+echo
+echo "-- Git: worktree lock (should allow) --"
+assert_verdict "git worktree lock /tmp/wt" allow
+assert_verdict "git worktree lock --reason 'on USB' /tmp/wt" allow
+
+echo
+echo "-- Git: worktree add safe (should allow) --"
+assert_verdict "git worktree add /tmp/wt" allow
+assert_verdict "git worktree add -b feature /tmp/wt" allow
+assert_verdict "git worktree add --detach /tmp/wt HEAD" allow
+assert_verdict "git worktree add -f --lock /tmp/wt main" allow
+assert_verdict "git worktree add -q --orphan /tmp/wt" allow
+assert_verdict "git -C /etc/nixos worktree add /tmp/wt" allow
+
+echo
+echo "-- Git: worktree add -B (should ask) --"
+assert_verdict "git worktree add -B feature /tmp/wt" ask
+
+echo
+echo "-- Git: worktree mutation (should ask) --"
+assert_verdict "git worktree remove /tmp/wt" ask
+assert_verdict "git worktree move /tmp/wt /tmp/wt2" ask
+assert_verdict "git worktree prune" ask
+assert_verdict "git worktree repair" ask
+assert_verdict "git worktree unlock /tmp/wt" ask
+
+echo
 echo "-- Git: remote/destructive (should ask) --"
 assert_verdict "git push" ask
 assert_verdict "git reset --hard" ask
