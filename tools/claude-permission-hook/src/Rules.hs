@@ -325,10 +325,11 @@ gitRules :: Node
 gitRules =
   match
     command
-    [ gitPrefix <> [r|(?:status|diff|log|show|blame|shortlog|describe|rev-parse|rev-list|ls-files|ls-tree|cat-file|name-rev|merge-base|for-each-ref)(?:\s+.*)?|]
+    [ gitPrefix <> [r|(?:status|diff|log|show|blame|shortlog|describe|rev-parse|rev-list|ls-files|ls-tree|cat-file|name-rev|merge-base|for-each-ref|check-ignore)(?:\s+.*)?|]
         ~> allow "read-only git query, no flags can write or modify state"
     , gitPrefix <> [r|branch(?:\s+.*)?|] ~> gitBranchRules
     , gitPrefix <> [r|tag(?:\s+.*)?|] ~> gitTagRules
+    , gitPrefix <> [r|remote(?:\s+.*)?|] ~> gitRemoteRules
     , gitPrefix <> [r|(?:add|commit)(?:\s+.*)?|]
         ~> allow "local staging/commit, fully reversible and does not affect remotes"
     ]
@@ -354,6 +355,21 @@ gitTagRules =
     command
     [ gitPrefix <> [r|tag(\s+(-n\d*(?=\s|$)|--(?:no-color|no-column|ignore-case)(?=\s|$)|--(?:list|verify|contains|no-contains|points-at|merged|no-merged|sort|format|color|column|abbrev)(?:(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|-[lv](?:\s+(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)))*\s*|]
         ~> allow "git tag with only read-only listing, query, and verify flags"
+    ]
+
+-- | git remote: allow read-only listing and query subcommands.
+-- Mutation subcommands (add, rename, remove/rm, set-head, set-branches,
+-- set-url, prune, update) fall through to ask.
+gitRemoteRules :: Node
+gitRemoteRules =
+  match
+    command
+    [ gitPrefix <> [r|remote(\s+(-v|--verbose)(?=\s|$))*\s*|]
+        ~> allow "git remote listing, read-only display of remote names and URLs"
+    , gitPrefix <> [r|remote\s+show(?:\s+(?:-n|--no-query)(?=\s|$))*(?:\s+(?:'[^']*'|"[^"]*"|\S+))*\s*|]
+        ~> allow "git remote show, read-only display of remote details"
+    , gitPrefix <> [r|remote\s+get-url(?:\s+(?:--push|--all)(?=\s|$))*\s+(?:'[^']*'|"[^"]*"|\S+)\s*|]
+        ~> allow "git remote get-url, reads URL from local config"
     ]
 
 -- | nixos-rebuild: allow non-persistent subcommands (test, build, dry-build,
