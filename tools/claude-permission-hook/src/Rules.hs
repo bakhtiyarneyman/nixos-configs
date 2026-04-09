@@ -120,6 +120,7 @@ commandRules =
     , "head" ~> allow "reads beginning of files, no write capability"
     , "tail" ~> allow "reads end of files, no write capability"
     , "wc" ~> allow "counts lines/words/bytes, no write capability"
+    , "tr" ~> allow "translates/deletes characters from stdin to stdout, no flags can write files or execute commands"
     , "uniq" ~> allow "filters adjacent duplicate lines, all flags control filtering only"
     , "diff" ~> allow "compares files, no write capability"
     , "file" ~> allow "identifies file types, no write capability"
