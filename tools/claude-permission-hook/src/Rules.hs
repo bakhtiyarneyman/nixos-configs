@@ -122,6 +122,7 @@ commandRules =
     , "wc" ~> allow "counts lines/words/bytes, no write capability"
     , "tr" ~> allow "translates/deletes characters from stdin to stdout, no flags can write files or execute commands"
     , "uniq" ~> allow "filters adjacent duplicate lines, all flags control filtering only"
+    , "jq" ~> allow "JSON processor, reads stdin/files and writes to stdout only, no flags can write files or execute commands"
     , "diff" ~> allow "compares files, no write capability"
     , "file" ~> allow "identifies file types, no write capability"
     , "stat" ~> allow "displays file metadata, no write capability"
