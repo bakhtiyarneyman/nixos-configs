@@ -26,8 +26,38 @@ end
 set input (cat)
 
 set tool (echo $input | jq -r '.tool_name')
-set detail (echo $input | jq -r '.tool_input | to_entries | map(.key + ": " + (.value | tostring)) | join(", ")' | cut -c1-200)
-set body "$tool: $detail"
+set -l xml_escape 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g'
+if test "$tool" = Bash
+    set description (echo $input | jq -r '.tool_input.description // empty')
+    set command (echo $input | jq -r '.tool_input.command // empty')
+    set body "<b>$description</b>
+<span font_family=\"monospace\">$command</span>"
+else if test "$tool" = Write
+    set file_path (echo $input | jq -r '.tool_input.file_path // empty')
+    set content (echo $input | jq -r '.tool_input.content // empty' | sed $xml_escape | string collect)
+    set body "<b>Write: $file_path</b>
+<span font_family=\"monospace\">$content</span>"
+else if test "$tool" = Edit
+    set file_path (echo $input | jq -r '.tool_input.file_path // empty')
+    set replace_all (echo $input | jq -r '.tool_input.replace_all // empty')
+    set old_string (echo $input | jq -r '.tool_input.old_string // empty' | sed $xml_escape | string collect)
+    set new_string (echo $input | jq -r '.tool_input.new_string // empty' | sed $xml_escape | string collect)
+    set header "<b>Edit: $file_path</b>"
+    if test "$replace_all" = true
+        set header "$header (replace all)"
+    end
+    set body "$header
+
+<b>old:</b>
+<span font_family=\"monospace\">$old_string</span>
+
+<b>new:</b>
+<span font_family=\"monospace\">$new_string</span>"
+else
+    set detail (echo $input | jq '.tool_input' | sed $xml_escape | string collect)
+    set body "<b>$tool</b>
+<span font_family=\"monospace\">$detail</span>"
+end
 
 # Send via socket (SSH) or notify-send (local).
 if test -S "$sock" -a -z "$window_pid"
