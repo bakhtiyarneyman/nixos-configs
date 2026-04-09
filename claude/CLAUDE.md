@@ -7,6 +7,7 @@
 
 ## General Principles
 - Gather facts about the system before researching solutions.
+- When command output contains values you cannot trace to a known source, investigate their origin before theorizing. Unexplained data is the fastest path to the real cause.
 - Verify behavioral claims from logs/tests, not documentation.
 - Don't mitigate failure modes you haven't observed.
 - Question the necessity of every piece of proposed code and remove what you can't justify with evidence.
