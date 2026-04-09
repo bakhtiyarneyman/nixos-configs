@@ -34,5 +34,8 @@ style = "Italic"
 family = "Fira Mono for Powerline"
 style = "Regular"
 
+[keyboard]
+bindings = [{ key = "N", mods = "Control", action = "SpawnNewInstance" }]
+
 [scrolling]
 history = 100000
