@@ -22,27 +22,13 @@ while test "$ancestor" -gt 1
     set ancestor (awk '/PPid/{print $2}' /proc/$ancestor/status 2>/dev/null)
 end
 
-# Extract the last assistant message from the transcript.
-set transcript (jq -r '.transcript_path')
-# Read the JSONL transcript in reverse,
-# slurp into an array and pick the last assistant entry,
-# extract text blocks from the message content,
-# join them and flatten newlines into spaces.
-set text (tac $transcript \
-    | jq -rs '
-        [.[] | select(.type=="assistant")] | first
-        | [.message.content[] | select(.type=="text") | .text]
-        | join(" ")
-        | gsub("\\n"; " ")
-    ' 2>/dev/null)
+# Extract the last assistant message from the hook input.
+set text (jq -r '.last_assistant_message // empty' | string collect)
+# Convert markdown bold/italic to Pango markup.
+set text (echo $text | sed -E 's/\*\*([^*]+)\*\*/<b>\1<\/b>/g; s/\*([^*]+)\*/<i>\1<\/i>/g' | string collect)
 
 if test -z "$text" -o "$text" = null
     exit 0
-end
-
-# Truncate with ellipsis.
-if test (string length -- "$text") -gt 200
-    set text (string sub -l 200 -- "$text")"…"
 end
 
 # Send via socket (SSH) or notify-send (local).
