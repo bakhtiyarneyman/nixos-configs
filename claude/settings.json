@@ -43,6 +43,10 @@
     "lastShownTime": 4102444800000
   },
   "permissions": {
-    "defaultMode": "plan"
+    "defaultMode": "plan",
+    "allow": [
+      "Write(/tmp/**)",
+      "Edit(/tmp/**)"
+    ]
   }
 }
