@@ -18,6 +18,9 @@
 - Security documentation must articulate conditions, not just rules. "Don't do X" is insufficient — enumerate the conditions under which the approach is safe and what must hold for it to remain safe.
 - Review your own work in a loop until you find no more issues, before presenting it.
 - Articulate assumptions explicitly and verify them before building on them.
+- When generating text that will be embedded in another format (markup inside shell strings, HTML inside JSON, etc.), trace every escaping layer the text passes through before writing. Each layer may require its own escaping.
+- When building a feature that needs data, check what's already provided in the immediate context (stdin, arguments, environment) before reading external files or APIs.
+- When building UI-visible changes (notifications, markup, terminal output) that you cannot directly observe, ask the user to verify each individual change before moving on. Don't stack multiple untested changes.
 - When existing code contradicts a stated constraint, treat the contradiction as a bug to fix — not as precedent that weakens the constraint.
 - When writing instructions or documentation, include the triggering condition — specify when the instruction applies, not just what to do.
 - When a bug manifests in multiple places, fix the abstraction that caused it — don't patch each call site.
@@ -52,6 +55,7 @@
 
 ## Claude Setup
 - `~/.claude/settings.json` and `~/.claude/commands/` are symlinked to `/etc/nixos/claude/settings.json` and `/etc/nixos/claude/commands/` via `systemd.tmpfiles.rules` in `mixins/core.nix`.
+- `/etc/claude-code/CLAUDE.md` is built from `/etc/nixos/claude/CLAUDE.md` via `environment.etc` in `mixins/core.nix`. To modify it, edit the source in `/etc/nixos/claude/CLAUDE.md` (requires `nixos-rebuild` to take effect).
 
 ## Permission Hook (tools/claude-permission-hook)
 - Security principles are documented as a comment block at the top of `src/Rules.hs` — read them before modifying rules.
