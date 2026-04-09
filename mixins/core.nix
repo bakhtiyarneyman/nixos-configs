@@ -392,9 +392,17 @@ in {
     nix = {
       package = pkgs.unstable.nix;
       settings = {
+        extra-substituters = [
+          "https://ghcide-nix.cachix.org"
+          "https://haskell-language-server.cachix.org"
+          "https://hercules-ci.cachix.org"
+        ];
         extra-trusted-public-keys = [
           "iron:OaC7pyOu4UcI9Fgp4Go1d5Qo2dChSjr0bTuCJqfgirc="
           "tin:1xuVbjflY1Z/kH6uEaeNivgLHYvORLli3r//baX6N78="
+          "ghcide-nix.cachix.org-1:ibAY5FD+XWLzbLr8fxK6n8fL9zZe7jS+gYeyxyWYK5c="
+          "haskell-language-server.cachix.org-1:juFfHrwkOxqIOZShtC4YC1uT1bBcq2RSvC7OMKx0Nz8="
+          "hercules-ci.cachix.org-1:ZZeDl9Va+xe9j+KqdzoBZMFJHVQ42Uu/c/1/KMC5Lw0="
         ];
         trusted-users = ["root" "bakhtiyar"];
       };
