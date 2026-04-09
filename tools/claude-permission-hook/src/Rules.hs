@@ -165,6 +165,7 @@ commandRules =
       "git" ~> gitRules
     , -- System management: safe subcommands only.
       "nixos-rebuild" ~> nixosRebuildRules
+    , "systemctl" ~> systemctlRules
     , -- Commands that execute subcommands — must recurse.
       "pkexec" ~> pkexecRules
     , "sudo" ~> sudoRules
@@ -401,6 +402,23 @@ nixosRebuildRules =
     command
     [ [r|nixos-rebuild\s+(?:build|dry-build|dry-run|dry-activate|build-vm|build-vm-with-bootloader|list-generations|repl)(?:\s+.*)?|]
         ~> allow "nixos-rebuild build/query subcommand, does not activate or modify boot menu"
+    ]
+
+-- | systemctl global option prefix: "systemctl" followed by zero or more
+-- known-safe global options (display filters, output formatting, query targets).
+-- Mutation-relevant flags (--force, --now, --runtime, etc.) are excluded.
+systemctlPrefix :: Text
+systemctlPrefix = [r|systemctl(?:\s+(?:-(?:l|a|q|r)(?=\s|$)|--(?:user|system|no-pager|no-ask-password|plain|full|all|quiet|value|failed|recursive|reverse|after|before|with-dependencies|show-types)(?=\s|$)|--(?:type|state|property|lines|output|timestamp|legend|host|machine)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|-[tpnoPHM]\s+(?:'[^']*'|"[^"]*"|\S+)))*\s+|]
+
+-- | systemctl: allow read-only introspection subcommands.
+-- Mutation subcommands (start/stop/restart/enable/disable/etc.) and
+-- system state changes (halt/poweroff/reboot) fall through to ask.
+systemctlRules :: Node
+systemctlRules =
+  match
+    command
+    [ systemctlPrefix <> [r|(?:list-units|list-automounts|list-paths|list-sockets|list-timers|is-active|is-failed|is-enabled|is-system-running|status|show|cat|help|list-dependencies|whoami|list-unit-files|list-machines|list-jobs|get-default|show-environment)(?:\s+.*)?|]
+        ~> allow "systemctl read-only subcommand, no flags can write or modify state"
     ]
 
 -- | cabal: allow compile-only and read-only subcommands.

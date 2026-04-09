@@ -281,6 +281,27 @@ echo "-- Ask: unknown commands --"
 assert_verdict "curl http://example.com" ask
 
 echo
+echo "-- Systemctl: read-only subcommands (should allow) --"
+assert_verdict "systemctl cat foo.service" allow
+assert_verdict "systemctl --user status sshd.service" allow
+assert_verdict "systemctl --no-pager list-units" allow
+assert_verdict "systemctl show --property=MainPID sshd.service" allow
+assert_verdict "systemctl is-active sshd.service" allow
+assert_verdict "systemctl list-unit-files" allow
+assert_verdict "systemctl get-default" allow
+assert_verdict "systemctl show-environment" allow
+
+echo
+echo "-- Systemctl: mutation subcommands (should ask) --"
+assert_verdict "systemctl restart sshd.service" ask
+assert_verdict "systemctl enable foo.service" ask
+assert_verdict "systemctl daemon-reload" ask
+assert_verdict "systemctl start foo.service" ask
+assert_verdict "systemctl stop foo.service" ask
+assert_verdict "systemctl reboot" ask
+assert_verdict "systemctl set-environment FOO=bar" ask
+
+echo
 echo "-- Git: read-only (should allow) --"
 assert_verdict "git status" allow
 assert_verdict "git diff" allow
