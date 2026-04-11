@@ -505,6 +505,6 @@ xargsRules :: Node
 xargsRules =
   match
     command
-    [ [r|xargs(?:\s+(?:-[0rxtp](?=\s|$)|--(?=\s|$)|-[nLPsdEIa]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:null|no-run-if-empty|verbose|interactive|open-tty|help|version|exit)(?=\s|$)|--(?:max-args|max-lines|max-procs|max-chars|delimiter|eof|replace|arg-file|process-slot-var)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)))*\s+(?P<subcmd>.+)|]
+    [ [r|xargs(?:\s+(?:-[0rxtp](?=\s|$)|--(?=\s|$)|-I(?:'[^']*'|"[^"]*"|\S+)|-[nLPsdEIa]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:null|no-run-if-empty|verbose|interactive|open-tty|help|version|exit)(?=\s|$)|--(?:max-args|max-lines|max-procs|max-chars|delimiter|eof|replace|arg-file|process-slot-var)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)))*\s+(?P<subcmd>.+)|]
         ~> recurse [(Command, "$subcmd --unrecognized-flag-injected-by-xargs-rule")]
     ]

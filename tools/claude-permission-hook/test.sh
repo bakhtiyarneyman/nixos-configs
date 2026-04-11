@@ -431,6 +431,8 @@ assert_verdict "xargs -0 cat" allow
 assert_verdict "xargs -n 1 head" allow
 assert_verdict "xargs ls" allow
 assert_verdict "xargs -I {} stat {}" allow
+assert_verdict "xargs -I{} basename {}" allow
+assert_verdict "ls /home/bakhtiyar/code/neurasium/backend/server/api/mutations/src/*.rs 2>/dev/null | xargs -I{} basename {} .rs | sort" allow
 
 echo
 echo "-- Xargs: conditionally safe subcommand (should ask) --"
