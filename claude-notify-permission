@@ -1,25 +1,10 @@
 #!/usr/bin/env fish
 
-set sock "$XDG_RUNTIME_DIR/claude-notify.sock"
+source /etc/nixos/claude-notify.fish
 
-# Get the focused window PID and all window PIDs from sway.
-set sway_tree (swaymsg -t get_tree 2>/dev/null)
-set focused_pid (echo $sway_tree | jq '.. | select(.focused? == true) | .pid')
-set -l all_window_pids (echo $sway_tree | jq -r '[.. | select(.pid? > 0) | .pid] | unique | .[]')
-
-# Walk up the process tree.
-# - If any ancestor is the focused window, skip the notification.
-# - Track the first ancestor that is any sway window (for SSH detection and focus-on-click).
-set window_pid ""
-set ancestor $fish_pid
-while test "$ancestor" -gt 1
-    if test "$ancestor" = "$focused_pid"
-        exit 0
-    end
-    if test -z "$window_pid"; and contains -- "$ancestor" $all_window_pids
-        set window_pid $ancestor
-    end
-    set ancestor (awk '/PPid/{print $2}' /proc/$ancestor/status 2>/dev/null)
+set window_pid (find_ancestor_window)
+if test -n "$window_pid"; and is_focused_window $window_pid
+    exit 0
 end
 
 # Read hook input from stdin.
@@ -59,61 +44,12 @@ else
 <span font_family=\"monospace\">$detail</span>"
 end
 
-# Send via socket (SSH) or notify-send (local).
-if test -S "$sock" -a -z "$window_pid"
-    set response (jq -n --arg body "$body" '{type:"permission",body:$body}' | socat - UNIX-CONNECT:$sock)
-    set action (echo $response | jq -r '.action')
-else
-    # Send notification in the background, capturing output to a temp file.
-    # stdbuf ensures the ID line is flushed immediately despite file redirection.
-    set out (mktemp)
-    stdbuf -oL notify-send --print-id -A allow=Allow -A deny=Deny -A default=Focus 'Claude Code' "$body" > $out &
-    set notify_pid $last_pid
-
-    # Wait for the notification ID (first line).
-    while not test -s $out
-        sleep 0.01
-    end
-    set notify_id (head -1 $out)
-
-    # Auto-dismiss notification when its window gets focus.
-    fish -c "
-        swaymsg -t subscribe '[\"window\"]' | while read -l line
-            if test (echo \$line | jq -r '.change') = focus \
-                -a (echo \$line | jq -r '.container.pid') = $window_pid
-                swaync-client --close $notify_id 2>/dev/null
-                break
-            end
-        end
-    " </dev/null >/dev/null 2>/dev/null &
-    set watcher_pid $last_pid
-
-    # Handle race: window may have been focused after the initial check (line 16)
-    # but before the watcher subscribed to sway events.
-    set -l current_focus (swaymsg -t get_tree 2>/dev/null | jq '.. | select(.focused? == true) | .pid')
-    if test "$current_focus" = "$window_pid"
-        swaync-client --close $notify_id 2>/dev/null
-    end
-
-    # Wait for notify-send to complete (action selected or notification closed).
-    wait $notify_pid
-
-    # Second line (if present) is the action key.
-    set action (sed -n 2p $out)
-
-    kill $watcher_pid 2>/dev/null
-    rm -f $out
-end
+set action (send_notification --window-pid "$window_pid" --type permission \
+    --focus-on deny --focus-on default \
+    -A allow=Allow -A deny=Deny -A default=Focus -- "$body")
 
 if test "$action" = allow
     echo '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}'
 else if test "$action" = deny
     echo '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"deny","message":"Rejected via notification"}}}'
-end
-
-# Focus terminal when user explicitly clicks Deny or Focus.
-if test -n "$window_pid" -a \( "$action" = deny -o "$action" = default \)
-    # swaymsg outputs JSON to stdout (e.g. [{"success":true}]), which would
-    # corrupt the hook's JSON output that Claude Code parses. Redirect to /dev/null.
-    swaymsg "[pid=$window_pid] focus" >/dev/null
 end
