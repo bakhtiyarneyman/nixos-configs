@@ -129,6 +129,7 @@ commandRules =
     , "md5sum" ~> allow "computes checksums, no write capability"
     , "sha256sum" ~> allow "computes checksums, no write capability"
     , "readlink" ~> allow "resolves symlinks, no write capability"
+    , "mktemp" ~> allow "creates temporary files/directories with unique random names, no flags can overwrite existing files, delete, or execute commands"
     , -- Read-only system queries: no flags can make these write.
       "ls" ~> allow "lists directory contents, no write capability"
     , "which" ~> allow "locates executables, no write capability"
@@ -152,6 +153,7 @@ commandRules =
     , "sed" ~> sedRules
     , -- Network inspection: safe scanning flags only.
       "nmap" ~> nmapRules
+    , "ss" ~> ssRules
     , -- Nix tooling: sandboxed builds and read-only queries allowed.
       "nix" ~> nixRules
     , "nix-build" ~> allow "nix build tooling, executes in Nix sandbox"
@@ -314,6 +316,21 @@ nmapArgRules =
     (Variable "args")
     [ [r|(\s*(?:-(?:p|e|iL)\s+(?:'[^']*'|"[^"]*"|\S+)|-(?:s[STUAWMNFXOVRL]|sn|sP|Pn|P0|PE|PP|PM|T[0-5]|n|R|F|r|6|v|d|O)(?=\s|$)|-P[SAUY]\S*(?=\s|$)|--(?:open|reason|packet-trace|iflist|unprivileged|version|help|osscan-guess|osscan-limit)(?=\s|$)|--(?:top-ports|min-rate|max-rate|host-timeout|scan-delay|max-retries|version-intensity)\s+(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
         ~> allow "nmap with only known-safe scanning and display flags"
+    ]
+
+-- | ss: socket statistics. Allow known-safe inspection flags.
+-- -K/--kill (forcibly close sockets) and -D/--diag (dump to file) fall
+-- through to ask.
+ssRules :: Node
+ssRules =
+  match
+    command
+    [ [r|ss\s+.*(?:-K|--kill).*|]
+        ~> ask "ss --kill forcibly closes sockets"
+    , [r|ss\s+.*(?:-D|--diag).*|]
+        ~> ask "ss --diag writes raw socket data to a file"
+    , [r|ss(\s+(-[hVnralBoempiTsbEZz460tMSudwxHQO]+(?=\s|$)|-[NfAF]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:help|version|numeric|resolve|all|listening|bound-inactive|options|extended|memory|processes|threads|info|tipcinfo|summary|tos|cgroup|bpf|bpf-maps|events|context|contexts|ipv4|ipv6|packet|tcp|mptcp|sctp|udp|dccp|raw|unix|tipc|vsock|xdp|no-header|no-queues|oneline|inet-sockopt)(?=\s|$)|--(?:net|family|query|socket|filter|bpf-map-id)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
+        ~> allow "ss with only known-safe socket inspection flags, no --kill or --diag"
     ]
 
 -- | Git command prefix: "git" followed by zero or more safe global options.
