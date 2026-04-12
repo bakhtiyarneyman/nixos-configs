@@ -520,11 +520,14 @@ shRules =
     ]
 
 -- | fish -c CMD: extract and recurse into CMD.
+-- fish -n/--no-execute: syntax check only, no commands are executed.
 fishRules :: Node
 fishRules =
   match
     command
-    [ [r|fish\s+-c\s+(?P<subcmd>.+)|] ~> recurse [(Command, "$subcmd")]
+    [ [r|fish\s+(?:-n|--no-execute)(?:\s+.*)?|]
+        ~> allow "fish --no-execute only parses for syntax errors, never executes commands"
+    , [r|fish\s+-c\s+(?P<subcmd>.+)|] ~> recurse [(Command, "$subcmd")]
     ]
 
 -- | xargs: builds command lines from stdin, so the captured subcommand
