@@ -167,6 +167,7 @@ commandRules =
     , -- System management: safe subcommands only.
       "nixos-rebuild" ~> nixosRebuildRules
     , "systemctl" ~> systemctlRules
+    , "journalctl" ~> journalctlRules
     , -- Commands that execute subcommands — must recurse.
       "pkexec" ~> pkexecRules
     , "sudo" ~> sudoRules
@@ -420,6 +421,18 @@ systemctlRules =
     command
     [ systemctlPrefix <> [r|(?:list-units|list-automounts|list-paths|list-sockets|list-timers|is-active|is-failed|is-enabled|is-system-running|status|show|cat|help|list-dependencies|whoami|list-unit-files|list-machines|list-jobs|get-default|show-environment)(?:\s+.*)?|]
         ~> allow "systemctl read-only subcommand, no flags can write or modify state"
+    ]
+
+-- | journalctl: allow known-safe read-only flags (filtering, output
+-- formatting, display options).  Mutation flags are explicitly asked.
+journalctlRules :: Node
+journalctlRules =
+  match
+    command
+    [ [r|journalctl\s+.*--(?:rotate|vacuum-size|vacuum-time|vacuum-files|flush|sync|setup-keys|update-catalog|cursor-file|relinquish-var|smart-relinquish-var).*|]
+        ~> ask "journalctl with mutation flag: may rotate/delete journal files, flush data, or modify catalog/FSS state"
+    , [r|journalctl(\s+(-[aefklmqrxhN]+(?=\s|$)|-(?:c|D|g|i|n|o|p|S|t|T|u|U|M|F)\s+(?:'[^']*'|"[^"]*"|\S+)|-[bI](?:\s+(?:'[^']*'|"[^"]*"|[^-\s]\S*))?(?=\s|$)|--(?:system|user|merge|no-pager|no-full|full|no-tail|no-hostname|utc|show-cursor|truncate-newline|reverse|catalog|all|follow|quiet|pager-end|dmesg|fields|list-boots|list-invocations|disk-usage|verify|header|version|help)(?=\s|$)|--case-sensitive(?:=\S+)?(?=\s|$)|--boot(?:(?:=(?:'[^']*'|"[^"]*"|\S+)|\s+(?:'[^']*'|"[^"]*"|[^-\s]\S*)))?(?=\s|$)|--(?:since|until|cursor|after-cursor|unit|user-unit|identifier|exclude-identifier|facility|priority|grep|invocation|namespace|directory|file|root|image|image-policy|output|output-fields|lines|machine|field|verify-key)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|--(?:list-catalog|dump-catalog)(?:\s+(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
+        ~> allow "journalctl with only known-safe read-only flags"
     ]
 
 -- | cabal: allow compile-only and read-only subcommands.
