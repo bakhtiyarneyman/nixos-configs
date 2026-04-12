@@ -35,6 +35,7 @@
 - When corrected, re-examine ALL prior work through the updated lens, not just the specific line pointed at. Corrections should be durable, not local patches.
 - When receiving feedback, it's not always clear if it's specific or general. If unsure whether a correction is a local fix or a broad principle — or if the WHY behind it is unclear — ask rather than guess.
 - When retrying a failed command, always explain what was wrong with the previous attempt and what you changed before running the new version.
+- When a plan revision is rejected, don't just fix the cited issue — make the entire plan consistent with the fix. If the fix implies a cleaner API style, update naming, error handling, and structure to match.
 
 ## Committing
 - When asked to commit, only stage changes made in the current session. Do not stage other changes that happen to be in the same files from concurrent sessions. Use selective staging (e.g., `git apply --cached` with extracted patches).
