@@ -323,4 +323,19 @@ function move_to_cache -d "Move to cache"
     print_success "Moved `$src` to cache."
 end
 
+function ssh --wraps ssh
+    # Forward the Claude notification socket through SSH so that notifications
+    # from remote Claude Code sessions appear on this GUI machine.
+    set -l notification_server_socket "$XDG_RUNTIME_DIR/claude-notification-server.socket"
+    if test -S "$notification_server_socket"
+        source /etc/nixos/claude-notify.fish
+        set -l notification_client_socket "/tmp/claude-notification-client-(random).socket"
+        set -lx CLAUDE_NOTIFY_SOCKET "$notification_client_socket"
+        set -lx CLAUDE_NOTIFY_WINDOW_PID (find_ancestor_window)
+        command ssh -R "$notification_client_socket:$notification_server_socket" $argv
+    else
+        command ssh $argv
+    end
+end
+
 atuin init fish --disable-up-arrow | source

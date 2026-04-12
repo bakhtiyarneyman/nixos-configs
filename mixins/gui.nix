@@ -410,9 +410,9 @@ in {
           requisite = ["swaync.service"];
           after = ["swaync.service"];
           wantedBy = ["sway-session.target"];
-          path = [pkgs.fish pkgs.jq pkgs.libnotify];
+          path = [pkgs.fish pkgs.jq pkgs.libnotify pkgs.socat pkgs.sway];
           serviceConfig = {
-            ExecStart = ["${pkgs.socat}/bin/socat UNIX-LISTEN:%t/claude-notify.sock,fork,unlink-early EXEC:/etc/nixos/claude-notify-handler"];
+            ExecStart = ["${pkgs.socat}/bin/socat UNIX-LISTEN:%t/claude-notification-server.socket,fork,unlink-early EXEC:/etc/nixos/claude-notify-handler"];
             Restart = "on-failure";
           };
         };

@@ -44,7 +44,7 @@ else
 <span font_family=\"monospace\">$detail</span>"
 end
 
-set action (send_notification --window-pid "$window_pid" --type permission \
+set action (send_notification --window-pid "$window_pid" \
     --focus-on deny --focus-on default \
     -A allow=Allow -A deny=Deny -A default=Focus -- "$body")
 

@@ -23,17 +23,15 @@ end
 
 function send_notification
     # Sends a desktop notification with auto-dismiss when the given window gets focus.
-    # Usage: send_notification --window-pid PID [--type TYPE] [--focus-on ACTION]... [-A action=Label]... [--] BODY
+    # Usage: send_notification --window-pid PID [--focus-on ACTION]... [-A action=Label]... [--] BODY
     # Outputs the selected action key, or nothing if dismissed.
-    argparse 'window-pid=' 'type=' 'focus-on=+' 'A=+' -- $argv
+    argparse 'window-pid=' 'focus-on=+' 'A=+' -- $argv
     or return 1
 
     set -l body "$argv"
     set -l window_pid "$_flag_window_pid"
-    set -l type $_flag_type
-    set -q _flag_type; or set type stop
     set -l focus_actions $_flag_focus_on
-    set -l sock "$XDG_RUNTIME_DIR/claude-notify.sock"
+    set -l sock "$CLAUDE_NOTIFY_SOCKET"
 
     if test -z "$body"
         return
@@ -46,11 +44,31 @@ function send_notification
 
     set -l action
 
-    # Send via socket (SSH) or notify-send (local).
+    # Send via forwarded socket (SSH) or notify-send (local).
     if test -S "$sock" -a -z "$window_pid"
-        set -l response (jq -n --arg body "$body" --arg type "$type" '{type:$type,body:$body}' | socat - UNIX-CONNECT:$sock)
+        # Build actions JSON object from -A key=Label arguments.
+        set -l actions_json '{}'
+        for a in $_flag_A
+            set -l key (string split -m 1 = -- "$a")[1]
+            set -l label (string split -m 1 = -- "$a")[2]
+            set actions_json (echo $actions_json | jq --arg k "$key" --arg v "$label" '. + {($k): $v}')
+        end
+
+        # Build focus_on JSON array.
+        set -l focus_json '[]'
+        for f in $focus_actions
+            set focus_json (echo $focus_json | jq --arg v "$f" '. + [$v]')
+        end
+
+        set -l response (jq -n \
+            --arg body "$body" \
+            --arg window_pid "$CLAUDE_NOTIFY_WINDOW_PID" \
+            --argjson actions "$actions_json" \
+            --argjson focus_on "$focus_json" \
+            '{body:$body, window_pid:$window_pid, actions:$actions, focus_on:$focus_on}' \
+            | socat - UNIX-CONNECT:$sock)
         set action (echo $response | jq -r '.action')
-    else
+    else if test -n "$body"
         set -l out (mktemp)
         stdbuf -oL notify-send --print-id $action_args 'Claude Code' -- "$body" > $out &
         set -l notify_pid $last_pid

@@ -1,16 +1,28 @@
 #!/usr/bin/env fish
 
-# Per-connection handler for the claude-notify socket.
-# Reads one JSON request from stdin, calls notify-send, writes response to stdout.
+# Per-connection handler for the claude-notification-server socket.
+# Reads a JSON notification request from stdin, relays it as a local
+# notification via send_notification, and writes the action response to stdout.
+
+source /etc/nixos/claude-notify.fish
 
 set request (cat)
-set type (echo $request | jq -r '.type')
 set body (echo $request | jq -r '.body')
+set window_pid (echo $request | jq -r '.window_pid // empty')
 
-if test "$type" = stop
-    notify-send 'Claude Code' "$body"
-    echo '{}'
-else if test "$type" = permission
-    set action (notify-send -A allow=Allow -A deny=Deny 'Claude Code' "$body")
-    jq -n --arg action "$action" '{action:$action}'
+set -l args
+if test -n "$window_pid"
+    set -a args --window-pid "$window_pid"
 end
+
+for key in (echo $request | jq -r '.actions // {} | keys[]')
+    set -l label (echo $request | jq -r ".actions.\"$key\"")
+    set -a args -A "$key=$label"
+end
+
+for focus_action in (echo $request | jq -r '.focus_on // [] | .[]')
+    set -a args --focus-on "$focus_action"
+end
+
+set selected_action (send_notification $args -- "$body")
+jq -n --arg action "$selected_action" '{action:$action}'

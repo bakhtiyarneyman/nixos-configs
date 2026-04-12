@@ -19,6 +19,6 @@ end
 # Run in background. Claude Code waits for the hook's stdout/stderr pipes to
 # close — background children inherit these fds. Redirecting all three fds on
 # the backgrounded child lets this script exit immediately.
-send_notification --window-pid "$window_pid" --type stop \
+send_notification --window-pid "$window_pid" \
     --focus-on default -A default=Open -- "$text" \
     </dev/null >/dev/null 2>/dev/null &

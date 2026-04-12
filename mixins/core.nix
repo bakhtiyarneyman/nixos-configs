@@ -220,7 +220,7 @@ in {
         enable = true;
         settings = {
           AllowAgentForwarding = true;
-          AcceptEnv = "COLORTERM CLAUDE_NOTIFY_SOCK";
+          AcceptEnv = "COLORTERM CLAUDE_NOTIFY_SOCKET CLAUDE_NOTIFY_WINDOW_PID";
           StreamLocalBindUnlink = true;
         };
       };
@@ -372,7 +372,7 @@ in {
           builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines))
           + ''
             Host *
-              SendEnv COLORTERM
+              SendEnv COLORTERM CLAUDE_NOTIFY_SOCKET CLAUDE_NOTIFY_WINDOW_PID
           '';
       };
 
