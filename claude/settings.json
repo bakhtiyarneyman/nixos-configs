@@ -45,6 +45,7 @@
   "permissions": {
     "defaultMode": "plan",
     "allow": [
+      "Read(/tmp/**)",
       "Write(/tmp/**)",
       "Edit(/tmp/**)"
     ]
