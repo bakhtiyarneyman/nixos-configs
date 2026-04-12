@@ -407,7 +407,7 @@ in {
 
         claude-notify = {
           enable = true;
-          requisite = ["swaync.service"];
+          requires = ["swaync.service"];
           after = ["swaync.service"];
           wantedBy = ["sway-session.target"];
           path = [pkgs.fish pkgs.jq pkgs.libnotify pkgs.socat pkgs.sway];
