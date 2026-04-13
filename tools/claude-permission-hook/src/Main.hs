@@ -7,7 +7,7 @@ import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
 import qualified System.IO as IO
 
-import DSL (Result (..), Verdict (..), evaluateCommand)
+import DSL (Reason (..), Result (..), Verdict (..), evaluateCommand)
 import Rules (rules)
 
 main :: IO ()
@@ -74,6 +74,10 @@ jsonStringPart =
   -- Regular characters (not " or \)
   <|> takeWhile1 (\c -> c /= '"' && c /= '\\')
 
+-- | Format a reason for display: "command: message".
+formatReason :: Reason -> Text
+formatReason (Reason cmd msg) = cmd <> ": " <> msg
+
 -- | Format the hook response as JSON.
 formatResponse :: Result -> Text
 formatResponse (Result verdict reasons) =
@@ -81,7 +85,7 @@ formatResponse (Result verdict reasons) =
         Allow -> "allow"
         Ask -> "ask"
         Deny -> "deny"
-      reasonStr = T.intercalate "; " reasons
+      reasonStr = T.intercalate "; " (map formatReason reasons)
   in "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\""
      <> ",\"permissionDecision\":\"" <> verdictStr <> "\""
      <> ",\"permissionDecisionReason\":\"" <> escapeJson reasonStr <> "\""
