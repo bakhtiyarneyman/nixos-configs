@@ -145,6 +145,7 @@ commandRules =
     , "realpath" ~> allow "resolves paths, no write capability"
     , "dirname" ~> allow "extracts directory component, no write capability"
     , "basename" ~> allow "extracts filename component, no write capability"
+    , "pgrep" ~> allow "looks up running processes by name/attributes, output only, no flags can write or execute"
     , "man" ~> allow "displays manual pages, no write capability"
     , -- Search: read-only, cannot modify files.
       "find" ~> findRules
