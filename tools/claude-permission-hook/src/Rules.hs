@@ -155,6 +155,8 @@ commandRules =
     , -- Network inspection: safe scanning flags only.
       "nmap" ~> nmapRules
     , "ss" ~> ssRules
+    , -- Network transfer: safe fetching flags only.
+      "curl" ~> curlRules
     , -- Nix tooling: sandboxed builds and read-only queries allowed.
       "nix" ~> nixRules
     , "nix-build" ~> allow "nix build tooling, executes in Nix sandbox"
@@ -332,6 +334,25 @@ ssRules =
         ~> ask "ss --diag writes raw socket data to a file"
     , [r|ss(\s+(-[hVnralBoempiTsbEZz460tMSudwxHQO]+(?=\s|$)|-[NfAF]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:help|version|numeric|resolve|all|listening|bound-inactive|options|extended|memory|processes|threads|info|tipcinfo|summary|tos|cgroup|bpf|bpf-maps|events|context|contexts|ipv4|ipv6|packet|tcp|mptcp|sctp|udp|dccp|raw|unix|tipc|vsock|xdp|no-header|no-queues|oneline|inet-sockopt)(?=\s|$)|--(?:net|family|query|socket|filter|bpf-map-id)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
         ~> allow "ss with only known-safe socket inspection flags, no --kill or --diag"
+    ]
+
+-- | curl: allow fetching with known-safe flags that cannot send data,
+-- authenticate, set custom headers, upload files, or write to disk.
+-- Flags that fall through to ask: -d/--data* (request body), -F/--form*
+-- (multipart upload), --json (JSON body), -T/--upload-file, -H/--header
+-- (custom headers could leak auth tokens), -b/--cookie (sends cookies),
+-- -e/--referer, -u/--user (credentials), -o/-O/--output/--remote-name
+-- (file writes), -D/--dump-header, --trace/--trace-ascii, -c/--cookie-jar,
+-- -K/--config (arbitrary options), -X/--request (method change),
+-- -n/--netrc (credential file), --variable/--expand-* (variable expansion),
+-- -x/--proxy (proxy sees traffic), --next (resets state).
+curlRules :: Node
+curlRules =
+  match
+    command
+    [ [r|curl(\s+(-[sSfgLIikv46NZRqVMh#]+(?=\s|$)|-[mYyrAzw]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:silent|show-error|fail|fail-early|fail-with-body|globoff|location|head|include|insecure|verbose|ipv4|ipv6|no-buffer|progress-bar|no-progress-meter|parallel|parallel-immediate|compressed|compressed-ssh|raw|path-as-is|tcp-nodelay|tcp-fastopen|no-keepalive|no-sessionid|no-alpn|no-npn|http0\.9|http1\.0|http1\.1|http2|http2-prior-knowledge|http3|http3-only|styled-output|no-styled-output|ca-native|help|version|manual|crlf|disable|disallow-username-in-url|remote-time|retry-connrefused|retry-all-errors|tr-encoding|xattr|ssl|ssl-reqd|ssl-allow-beast|ssl-no-revoke|ssl-revoke-best-effort|ssl-auto-client-cert|tlsv1|tlsv1\.[0-3]|sslv[23]|haproxy-protocol)(?=\s|$)|--(?:max-time|connect-timeout|max-redirs|max-filesize|retry|retry-delay|retry-max-time|speed-limit|speed-time|limit-rate|keepalive-time|keepalive-cnt|interface|local-port|ip-tos|resolve|connect-to|dns-interface|dns-ipv4-addr|dns-ipv6-addr|dns-servers|doh-url|unix-socket|abstract-unix-socket|range|user-agent|proto|proto-default|proto-redir|tls-max|cacert|capath|crlfile|ciphers|tls13-ciphers|curves|pinnedpubkey|parallel-max|write-out|expect100-timeout|happy-eyeballs-timeout-ms|rate|time-cond)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
+        ~> allow "curl with only known-safe fetching/display flags — no data-sending, auth, header, upload, or file-writing flags"
+    , "curl" ~> allow "curl with no arguments shows usage"
     ]
 
 -- | Git command prefix: "git" followed by zero or more safe global options.

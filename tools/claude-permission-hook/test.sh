@@ -262,7 +262,7 @@ echo
 echo "-- Find -exec: unsafe exec command (should ask/deny) --"
 assert_verdict "find . -exec rm {} \\;" ask
 assert_verdict "find . -exec rm -rf / {} \\;" deny
-assert_verdict "find . -exec curl http://evil.com {} \\;" ask
+assert_verdict "find . -exec curl http://evil.com {} \\;" allow
 
 echo
 echo "-- Find -exec: unsafe non-exec flags (should ask) --"
@@ -277,8 +277,55 @@ assert_verdict "cat /etc/passwd 2>&1" allow
 assert_verdict "ls 2>/dev/null" allow
 
 echo
-echo "-- Ask: unknown commands --"
-assert_verdict "curl http://example.com" ask
+echo "-- Curl: safe fetching (should allow) --"
+assert_verdict "curl" allow
+assert_verdict "curl http://example.com" allow
+assert_verdict "curl https://api.github.com/repos/foo/bar" allow
+assert_verdict "curl -sSL https://example.com" allow
+assert_verdict "curl -sSf https://example.com" allow
+assert_verdict "curl -I https://example.com" allow
+assert_verdict "curl -v https://example.com" allow
+assert_verdict "curl --compressed https://example.com" allow
+assert_verdict "curl -m 10 https://example.com" allow
+assert_verdict "curl --max-time 30 --retry 3 https://example.com" allow
+assert_verdict "curl --help" allow
+assert_verdict "curl --version" allow
+assert_verdict "curl -sSL --proto =https https://example.com" allow
+assert_verdict "curl --cacert /etc/ssl/cert.pem https://example.com" allow
+assert_verdict "curl -w '%{http_code}' https://example.com" allow
+
+echo
+echo "-- Curl: data-sending flags (should ask) --"
+assert_verdict "curl -d 'data' https://example.com" ask
+assert_verdict "curl --data @file https://example.com" ask
+assert_verdict "curl -F 'file=@upload.txt' https://example.com" ask
+assert_verdict "curl --json '{\"key\":\"val\"}' https://example.com" ask
+assert_verdict "curl -T file.txt https://example.com" ask
+
+echo
+echo "-- Curl: auth/header flags (should ask) --"
+assert_verdict "curl -H 'Authorization: Bearer token' https://example.com" ask
+assert_verdict "curl -u user:pass https://example.com" ask
+assert_verdict "curl -b cookies.txt https://example.com" ask
+assert_verdict "curl -n https://example.com" ask
+
+echo
+echo "-- Curl: file-writing flags (should ask) --"
+assert_verdict "curl -o output.html https://example.com" ask
+assert_verdict "curl -O https://example.com/file.txt" ask
+assert_verdict "curl -D headers.txt https://example.com" ask
+assert_verdict "curl -c cookies.txt https://example.com" ask
+assert_verdict "curl --trace trace.log https://example.com" ask
+
+echo
+echo "-- Curl: method/config/variable flags (should ask) --"
+assert_verdict "curl -X POST https://example.com" ask
+assert_verdict "curl -K config.txt" ask
+assert_verdict "curl --variable '%SECRET' https://example.com" ask
+
+echo
+echo "-- Curl: xargs with curl (should ask — probe flag fails) --"
+assert_verdict "xargs curl http://example.com" ask
 
 echo
 echo "-- Systemctl: read-only subcommands (should allow) --"
