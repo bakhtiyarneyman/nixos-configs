@@ -11,10 +11,10 @@ end
 set input (cat)
 
 set tool (echo $input | jq -r '.tool_name')
-set -l xml_escape 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g'
+set -l xml_escape 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/\\\\/\\&#92;/g'
 if test "$tool" = Bash
     set description (echo $input | jq -r '.tool_input.description // empty' | sed $xml_escape | string collect)
-    set command (echo $input | jq -r '.tool_input.command // empty' | sed 's/ && / \\\n  \&\& /g; s/ || / \\\n  || /g; s/ | / \\\n  | /g' | shfmt -bn -i 2 - | sed $xml_escape | string collect)
+    set command (echo $input | jq -r '.tool_input.command // empty' | sed 's/ && / \\\\\n  \&\& /g; s/ || / \\\\\n  || /g; s/ | / \\\\\n  | /g' | shfmt -bn -i 2 - | sed $xml_escape | string collect)
     set body "<b>$description</b>
 <span font_family=\"monospace\">$command</span>"
 else if test "$tool" = Write
