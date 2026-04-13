@@ -18,16 +18,17 @@
 - When naming a pair of related things (client/server, source/sink, request/response), choose names from an established dual pair. Don't mix metaphors across the pair.
 - Security documentation must articulate conditions, not just rules. "Don't do X" is insufficient — enumerate the conditions under which the approach is safe and what must hold for it to remain safe.
 - Review your own work in a loop until you find no more issues, before presenting it.
-- Articulate assumptions explicitly and verify them before building on them.
+- Articulate assumptions explicitly and verify them before building on them. In particular, verify file paths exist (via glob or ls) before embedding them in plans or commands.
 - Before running a command that escalates privileges or changes execution context, trace what each step will run as and whether it can proceed non-interactively.
 - When generating text that will be embedded in another format (markup inside shell strings, HTML inside JSON, etc.), trace every escaping layer the text passes through before writing. Each layer may require its own escaping.
 - When building a feature that needs data, check what's already provided in the immediate context (stdin, arguments, environment) before reading external files or APIs.
 - When building UI-visible changes (notifications, markup, terminal output) that you cannot directly observe, ask the user to verify each individual change before moving on. Don't stack multiple untested changes.
 - When existing code contradicts a stated constraint, treat the contradiction as a bug to fix — not as precedent that weakens the constraint.
 - When writing instructions or documentation, include the triggering condition — specify when the instruction applies, not just what to do.
-- When a bug manifests in multiple places, fix the abstraction that caused it — don't patch each call site.
+- When a bug manifests in multiple places, fix the abstraction that caused it — don't patch each call site. This includes when a test fails due to a bug in supporting code (parser, framework, utility) — fix the underlying bug rather than adjusting the test inputs to avoid triggering it.
 - Write tests before implementation (TDD). Start with tests in a plan too.
 - After the work is done, use /commit to commit the session's changes, then /analyze-mistakes to propose updates to these instructions.
+- When analyzing mistakes, extract a learning from every failure — even if an existing instruction covers it. If an instruction was violated, add examples showing how the abstraction applies to non-obvious cases, so the connection is easier to see next time.
 
 ## Responding to Feedback
 - When corrected, extract the GENERAL PRINCIPLE, not just the specific fix. Ask "what class of mistake is this?" and apply it everywhere, not just the instance pointed out.
@@ -57,6 +58,7 @@
 - Never see or handle secret values directly. Generate secrets by piping (e.g., `openssl rand -hex 32 > /path/to/secret`)
 - When claude is used via ssh, `sudo` must be used instead of `pkexec`.
 - In Haskell, never make unnecessary states representable. Each sum type constructor should carry exactly the data it needs — don't add shared fields only used by one variant.
+- When working in a git worktree, always use worktree-relative paths for file reads and edits. Never reference the original repo path (e.g., use `./tools/foo` not `/etc/nixos/tools/foo` when CWD is a worktree).
 
 ## Claude Setup
 - `~/.claude/settings.json` and `~/.claude/commands/` are symlinked to `/etc/nixos/claude/settings.json` and `/etc/nixos/claude/commands/` via `systemd.tmpfiles.rules` in `mixins/core.nix`.
