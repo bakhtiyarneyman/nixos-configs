@@ -182,7 +182,7 @@ in {
 
     # Restart soteria after polkitd restarts (e.g. nixos-rebuild switch),
     # otherwise soteria's agent registration is lost and auth prompts silently fail.
-    systemd.services.polkit.serviceConfig.ExecStartPost = "-${pkgs.systemd}/bin/systemctl --machine=bakhtiyar@.host --user restart polkit-soteria.service";
+    systemd.services.polkit.serviceConfig.ExecStartPost = "-+${pkgs.systemd}/bin/systemctl --machine=bakhtiyar@.host --user restart polkit-soteria.service";
 
     services = {
       dbus.implementation = "broker";
