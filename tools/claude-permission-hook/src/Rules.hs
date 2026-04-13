@@ -165,6 +165,7 @@ commandRules =
       "nix" ~> nixRules
     , "nix-build" ~> allow "nix build tooling, executes in Nix sandbox"
     , "nix-instantiate" ~> allow "pure Nix evaluation, no host execution"
+    , "nix-shell" ~> nixShellRules
     , "nix-store" ~> nixStoreRules
     , "alejandra" ~> allow "nix formatter, only rewrites formatting"
     , -- Haskell build tooling: safe subcommands/flags only.
@@ -280,6 +281,41 @@ safeNixShellArg = [r|--(?:no-registries|no-use-registries|no-update-lock-file|no
 -- | Zero or more safe nix-shell arguments.
 safeNixShellArgs :: Text
 safeNixShellArgs = [r|(\s+(?:|] <> safeNixShellArg <> [r|))*|]
+
+-- | nix-shell: sets up build environments from Nix expressions.
+-- With -p (ad-hoc packages from nixpkgs), package building is
+-- sandboxed and there is no shellHook. --run/--command execute
+-- a subcommand — recurse to evaluate it.
+-- Without -p, evaluates local Nix expressions (shell.nix/default.nix)
+-- which may contain shellHook with arbitrary code — falls through to ask.
+-- Without --run/--command, drops to interactive shell — falls through to ask.
+nixShellRules :: Node
+nixShellRules =
+  match
+    command
+    [ -- Require -p/--packages as a standalone token (ad-hoc mode, no shellHook).
+      -- Without -p, nix-shell evaluates local Nix expressions whose
+      -- shellHook can execute arbitrary code — falls through to ask.
+      [r|nix-shell\s+(?:\S+\s+)*(?:-p|--packages)\s+.*|] ~> nixShellRunRules
+    ]
+
+-- | Extract --run/--command argument from nix-shell -p command and recurse.
+-- Without --run/--command, nix-shell drops to interactive shell — falls
+-- through to ask.
+nixShellRunRules :: Node
+nixShellRunRules =
+  match
+    command
+    [ -- Single-quoted --run/--command argument: strip quotes and recurse
+      [r|.*(?:--run|--command)\s+'(?P<subcmd>[^']*)'(?:\s+.*)?|]
+        ~> recurse [(Command, "$subcmd")]
+    , -- Double-quoted --run/--command argument: strip quotes and recurse
+      [r|.*(?:--run|--command)\s+"(?P<subcmd>[^"]*)"(?:\s+.*)?|]
+        ~> recurse [(Command, "$subcmd")]
+    , -- Unquoted --run/--command argument: recurse directly
+      [r|.*(?:--run|--command)\s+(?P<subcmd>\S+)(?:\s+.*)?|]
+        ~> recurse [(Command, "$subcmd")]
+    ]
 
 -- | nix-store: allow read-only queries and sandboxed builds.
 -- Destructive operations (gc, delete) and store modifications fall
