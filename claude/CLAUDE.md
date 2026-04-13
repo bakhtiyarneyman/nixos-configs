@@ -21,7 +21,7 @@
 - Articulate assumptions explicitly and verify them before building on them. In particular, verify file paths exist (via glob or ls) before embedding them in plans or commands.
 - Before running a command that escalates privileges or changes execution context, trace what each step will run as and whether it can proceed non-interactively.
 - When generating text that will be embedded in another format (markup inside shell strings, HTML inside JSON, etc.), trace every escaping layer the text passes through before writing. Each layer may require its own escaping.
-- When building a feature that needs data, check what's already provided in the immediate context (stdin, arguments, environment) before reading external files or APIs.
+- When building a feature that needs data, check what's already provided in the immediate context (stdin, arguments, environment) and what already flows through the system's internal layers, before adding new plumbing or reading external sources.
 - When building UI-visible changes (notifications, markup, terminal output) that you cannot directly observe, ask the user to verify each individual change before moving on. Don't stack multiple untested changes.
 - When existing code contradicts a stated constraint, treat the contradiction as a bug to fix — not as precedent that weakens the constraint.
 - When writing instructions or documentation, include the triggering condition — specify when the instruction applies, not just what to do.
@@ -58,6 +58,7 @@
 - Never see or handle secret values directly. Generate secrets by piping (e.g., `openssl rand -hex 32 > /path/to/secret`)
 - When claude is used via ssh, `sudo` must be used instead of `pkexec`.
 - In Haskell, never make unnecessary states representable. Each sum type constructor should carry exactly the data it needs — don't add shared fields only used by one variant.
+- When propagating data through layers, preserve structural representation (types, lists, records) until the final output stage. String concatenation is lossy — structure first, format last.
 - When working in a git worktree, always use worktree-relative paths for file reads and edits. Never reference the original repo path (e.g., use `./tools/foo` not `/etc/nixos/tools/foo` when CWD is a worktree).
 
 ## Claude Setup
