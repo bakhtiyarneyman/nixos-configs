@@ -4,6 +4,7 @@ module DSL (
   MatchTarget (..),
   FragmentType (..),
   Verdict (..),
+  Reason (..),
   Result (..),
   match,
   command,
@@ -49,9 +50,18 @@ data MatchTarget = Stdout | ErrorCode
 data Verdict = Allow | Ask | Deny
   deriving (Eq, Ord, Show)
 
+-- | A reason pairs the command that triggered the verdict with a message.
+-- The command is always the COMMAND from the evaluation environment,
+-- which tracks the correct (innermost) command through recursion.
+data Reason = Reason
+  { reasonCommand :: Text
+  , reasonMessage :: Text
+  }
+  deriving (Show)
+
 data Result = Result
   { resultVerdict :: Verdict
-  , resultReasons :: [Text]
+  , resultReasons :: [Reason]
   }
   deriving (Show)
 
@@ -90,11 +100,11 @@ maxRecursionDepth = 10
 evaluateCommand :: Node -> Int -> Text -> IO Result
 evaluateCommand root depth command
   | depth > maxRecursionDepth =
-      pure (Result Ask ["Max recursion depth exceeded for: " <> command])
+      pure (Result Ask [Reason command "max recursion depth exceeded"])
   | otherwise =
       case parseFragments command of
         Left err ->
-          pure (Result Ask ["Failed to parse command: " <> T.pack err])
+          pure (Result Ask [Reason command ("failed to parse: " <> T.pack err)])
         Right [] ->
           -- Empty command (e.g., comment only) — no opinion
           pure (Result Allow [])
@@ -121,10 +131,12 @@ fragmentTypeName Append = "append"
 evaluateNode :: Node -> Int -> Env -> Node -> IO Result
 evaluateNode root depth env = \case
   Decision verdict reason ->
-    pure (Result verdict [expandVars env reason])
+    let cmd = Map.findWithDefault "" "COMMAND" env
+    in pure (Result verdict [Reason cmd (expandVars env reason)])
   Recurse pairs
     | depth > maxRecursionDepth ->
-        pure (Result Ask ["Max recursion depth exceeded"])
+        let cmd = Map.findWithDefault "" "COMMAND" env
+        in pure (Result Ask [Reason cmd "max recursion depth exceeded"])
     | otherwise -> do
         results <- forM pairs $ \(ftype, template) ->
           let value = expandVars env template
@@ -146,11 +158,12 @@ matchCases :: Node -> Int -> Env -> Text -> [(Text, Node)] -> IO Result
 matchCases root depth env subject = \case
   [] ->
     let cmd = Map.findWithDefault subject "COMMAND" env
-    in pure (Result Ask ["No rule matched '" <> cmd <> "'"])
+    in pure (Result Ask [Reason cmd "no rule matched"])
   (pattern, node) : rest ->
     case compileRegex pattern of
       Left err ->
-        pure (Result Ask ["Invalid regex '" <> pattern <> "': " <> T.pack err])
+        let cmd = Map.findWithDefault subject "COMMAND" env
+        in pure (Result Ask [Reason cmd ("invalid regex '" <> pattern <> "': " <> T.pack err)])
       Right regex ->
         case PCRE.match regex (TE.encodeUtf8 subject) [] of
           Nothing -> matchCases root depth env subject rest
