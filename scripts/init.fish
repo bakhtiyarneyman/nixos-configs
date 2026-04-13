@@ -329,7 +329,7 @@ function ssh --wraps ssh
     set -l notification_server_socket "$XDG_RUNTIME_DIR/claude-notification-server.socket"
     if test -S "$notification_server_socket"
         source /etc/nixos/claude-notify.fish
-        set -l notification_client_socket "/tmp/claude-notification-client-(random).socket"
+        set -l notification_client_socket /tmp/claude-notification-client-(random).socket
         set -lx CLAUDE_NOTIFY_SOCKET "$notification_client_socket"
         set -lx CLAUDE_NOTIFY_WINDOW_PID (find_ancestor_window)
         command ssh -R "$notification_client_socket:$notification_server_socket" $argv
