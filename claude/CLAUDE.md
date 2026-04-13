@@ -35,6 +35,7 @@
 - Understand WHY a constraint exists before implementing it. Mechanical application without understanding leads to accidentally negating the constraint.
 - When corrected, re-examine ALL prior work through the updated lens, not just the specific line pointed at. Corrections should be durable, not local patches.
 - When receiving feedback, it's not always clear if it's specific or general. If unsure whether a correction is a local fix or a broad principle — or if the WHY behind it is unclear — ask rather than guess.
+- When a tool call is rejected, read the rejection reason carefully before deciding on a next action. The reason often contains the fix.
 - When a command fails or is rejected, never resubmit it unchanged — diagnose the failure, explain what was wrong, and describe the fix before running the corrected version.
 - When a plan revision is rejected, don't just fix the cited issue — make the entire plan consistent with the fix. If the fix implies a cleaner API style, update naming, error handling, and structure to match.
 
