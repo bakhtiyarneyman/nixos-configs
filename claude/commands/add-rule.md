@@ -12,7 +12,7 @@ Add a permission rule for a Bash command that the permission hook doesn't curren
 
 2. **Extract the program name** — the first word of the command.
 
-3. **Research the program.** Run `man <program>` (feel free to grep to find relevant sections to the arguments you have in mind, or read in entirety if you think that all of the program might be safe) and `<program> --help 2>&1` (some programs print help to stderr). From the output, determine:
+3. **Research the program.** Run `man <program>` (feel free to grep to find relevant sections to the arguments you have in mind, or read in entirety if you think that all of the program might be safe). If `man` has no entry for the program, fall back to `<program> --help 2>&1` (some programs print help to stderr). From the output, determine:
    - What the program does
    - Which flags/modes have side effects (write files, delete, execute other commands, modify system state)
    - Which flags/modes are purely read-only or output-only
