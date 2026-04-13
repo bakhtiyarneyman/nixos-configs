@@ -127,6 +127,7 @@ commandRules =
     , "diff" ~> allow "compares files, no write capability"
     , "file" ~> allow "identifies file types, no write capability"
     , "stat" ~> allow "displays file metadata, no write capability"
+    , "ldd" ~> allow "prints shared library dependencies, all flags are read-only"
     , "md5sum" ~> allow "computes checksums, no write capability"
     , "sha256sum" ~> allow "computes checksums, no write capability"
     , "readlink" ~> allow "resolves symlinks, no write capability"
