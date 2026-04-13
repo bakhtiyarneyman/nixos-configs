@@ -94,6 +94,7 @@ in {
         # Development
         claude-permission-hook
         unstable.claude-code
+        shfmt
         # Nix
         # nixd
         nil
