@@ -558,6 +558,53 @@ echo "-- Heredoc: in pipeline (body not consumed at pipe, conservative ask) --"
 assert_verdict $'cat << EOF | grep hello\nhello\nEOF' ask
 
 echo
+echo "-- Heredoc: inside command substitution (should allow) --"
+assert_verdict $'echo "$(cat <<\'EOF\'\nhello\nEOF\n)"' allow
+assert_verdict $'echo "$(cat <<EOF\nhello\nEOF\n)"' allow
+
+echo
+echo "-- Heredoc: in command substitution with special chars in body --"
+assert_verdict $'echo "$(cat <<\'EOF\'\nit\'s got quotes\nEOF\n)"' allow
+assert_verdict $'echo "$(cat <<\'EOF\'\nparens ) ( here\nEOF\n)"' allow
+assert_verdict $'echo "$(cat <<\'EOF\'\nangles <foo@bar.com>\nEOF\n)"' allow
+
+echo
+echo "-- Heredoc: in command substitution chained with other commands --"
+assert_verdict $'git commit -m "$(cat <<\'EOF\'\nmessage\nEOF\n)" && git status' allow
+
+echo
+echo "-- Heredoc: in command substitution with unsafe chained command --"
+assert_verdict $'echo "$(cat <<\'EOF\'\nhello\nEOF\n)" && rm foo' ask
+
+echo
+echo "-- ANSI-C quoting: basic (should allow) --"
+assert_verdict "echo \$'hello'" allow
+assert_verdict "echo \$'hello world'" allow
+
+echo
+echo "-- ANSI-C quoting: with backslash escapes --"
+assert_verdict "echo \$'it\\'s'" allow
+assert_verdict "echo \$'line1\\nline2'" allow
+assert_verdict "echo \$'tab\\there'" allow
+
+echo
+echo "-- ANSI-C quoting: inside double quotes --"
+assert_verdict "echo \"prefix \$'it\\'s' suffix\"" allow
+
+echo
+echo "-- ANSI-C quoting: inside command substitution --"
+assert_verdict "echo \$(echo \$'hello')" allow
+
+echo
+echo "-- ANSI-C quoting: chained with other commands --"
+assert_verdict "echo \$'hello' && echo \$'world'" allow
+assert_verdict "echo \$'hello' && rm foo" ask
+
+echo
+echo "-- ANSI-C quoting: in unsafe context --"
+assert_verdict "rm \$'some file'" ask
+
+echo
 echo "-- Strace: safe tracing of safe commands (should allow) --"
 assert_verdict "strace ls" allow
 assert_verdict "strace -f -e trace=open cat /etc/passwd" allow

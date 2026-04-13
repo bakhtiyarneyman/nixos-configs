@@ -103,6 +103,9 @@ commandGroup = do
                   inner <- parenBlock
                   let subFrags = parseSubcommand inner
                   go (cmdParts ++ ["$(" <> inner <> ")"]) (extraFrags ++ subFrags) heredocs
+                Just '\'' -> do
+                  s <- dollarSingleQuoted
+                  go (cmdParts ++ [s]) extraFrags heredocs
                 _ -> do
                   -- Regular $variable
                   rest <- takeWhile1 isVarChar <|> pure ""
@@ -245,6 +248,39 @@ consumeHeredocLines delim = do
     unless (T.strip line == delim) $
       consumeHeredocLines delim
 
+-- | Parse heredoc delimiter, returning (raw text with quotes, bare delimiter).
+heredocDelimPair :: Parser (Text, Text)
+heredocDelimPair =
+  (do _ <- char '\''
+      inner <- takeTill (== '\'')
+      _ <- char '\''
+      pure ("\'" <> inner <> "\'", inner))
+  <|> (do _ <- char '"'
+          inner <- takeTill (== '"')
+          _ <- char '"'
+          pure ("\"" <> inner <> "\"", inner))
+  <|> (do w <- word
+          pure (w, w))
+
+-- | Consume heredoc body lines returning raw text.
+-- Called after the preceding newline has already been consumed.
+consumeHeredocLinesRaw :: Text -> Parser Text
+consumeHeredocLinesRaw delim = do
+  end <- atEnd
+  if end then pure ""
+  else do
+    line <- takeTill (== '\n')
+    if T.strip line == delim
+      then pure line
+      else do
+        next <- peekChar
+        case next of
+          Just '\n' -> do
+            _ <- char '\n'
+            rest <- consumeHeredocLinesRaw delim
+            pure (line <> "\n" <> rest)
+          Nothing -> pure line
+
 -- Parse single-quoted string (no escaping inside)
 singleQuoted :: Parser Text
 singleQuoted = do
@@ -252,6 +288,22 @@ singleQuoted = do
   content <- takeTill (== '\'')
   _ <- char '\''
   pure ("\'" <> content <> "\'")
+
+-- Parse ANSI-C quoted string $'...' (backslash escapes inside)
+-- The leading $ has already been consumed by the caller.
+dollarSingleQuoted :: Parser Text
+dollarSingleQuoted = do
+  _ <- char '\''
+  content <- T.concat <$> many' dollarSingleQuotedPart
+  _ <- char '\''
+  pure ("$\'" <> content <> "\'")
+
+dollarSingleQuotedPart :: Parser Text
+dollarSingleQuotedPart =
+  (do _ <- char '\\'
+      c <- anyChar
+      pure ("\\" <> T.singleton c))
+  <|> takeWhile1 (\c -> c /= '\'' && c /= '\\')
 
 -- Parse double-quoted string (backslash escaping)
 doubleQuoted :: Parser Text
@@ -277,6 +329,7 @@ doubleQuotedPart =
             Just '(' -> do
               inner <- parenBlock
               pure ("$(" <> inner <> ")")
+            Just '\'' -> dollarSingleQuoted
             _ -> do
               rest <- takeWhile1 isVarChar <|> pure ""
               pure ("$" <> rest))
@@ -290,37 +343,59 @@ doubleQuotedPart =
 parenBlock :: Parser Text
 parenBlock = do
   _ <- char '('
-  content <- parenContent 1
+  content <- parenContent 1 []
   pure content
 
-parenContent :: Int -> Parser Text
-parenContent 0 = pure ""
-parenContent depth = do
+parenContent :: Int -> [Text] -> Parser Text
+parenContent 0 _ = pure ""
+parenContent depth pending = do
   c <- anyChar
   case c of
     ')' | depth == 1 -> pure ""
         | otherwise -> do
-            rest <- parenContent (depth - 1)
+            rest <- parenContent (depth - 1) pending
             pure (")" <> rest)
     '(' -> do
-      rest <- parenContent (depth + 1)
+      rest <- parenContent (depth + 1) pending
       pure ("(" <> rest)
+    '<' -> do
+      next <- peekChar
+      case next of
+        Just '<' -> do
+          _ <- char '<'
+          dashPart <- option "" (T.singleton <$> char '-')
+          spacePart <- option "" (takeWhile1 (\x -> x == ' ' || x == '\t'))
+          mDelim <- option Nothing (Just <$> heredocDelimPair)
+          case mDelim of
+            Just (rawDelim, bareDelim) -> do
+              rest <- parenContent depth (pending ++ [bareDelim])
+              pure ("<" <> "<" <> dashPart <> spacePart <> rawDelim <> rest)
+            Nothing -> do
+              rest <- parenContent depth pending
+              pure ("<" <> "<" <> dashPart <> spacePart <> rest)
+        _ -> do
+          rest <- parenContent depth pending
+          pure ("<" <> rest)
+    '\n' -> do
+      bodyTexts <- forM pending consumeHeredocLinesRaw
+      rest <- parenContent depth []
+      pure ("\n" <> T.concat bodyTexts <> rest)
     '\'' -> do
       inner <- takeTill (== '\'')
       _ <- char '\''
-      rest <- parenContent depth
+      rest <- parenContent depth pending
       pure ("\'" <> inner <> "\'" <> rest)
     '"' -> do
       inner <- doubleQuotedContent
       _ <- char '"'
-      rest <- parenContent depth
+      rest <- parenContent depth pending
       pure ("\"" <> inner <> "\"" <> rest)
     '\\' -> do
       next <- anyChar
-      rest <- parenContent depth
+      rest <- parenContent depth pending
       pure ("\\" <> T.singleton next <> rest)
     _ -> do
-      rest <- parenContent depth
+      rest <- parenContent depth pending
       pure (T.singleton c <> rest)
 
 -- Parse backtick block
@@ -357,6 +432,9 @@ extractSubPart =
         Just '(' -> do
           inner <- parenBlock
           pure (parseSubcommand inner)
+        Just '\'' -> do
+          _ <- dollarSingleQuoted
+          pure []
         _ -> do
           _ <- takeWhile1 isVarChar <|> pure ""
           pure [])

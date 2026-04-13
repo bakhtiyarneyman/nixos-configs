@@ -26,7 +26,7 @@ import Data.Text.Encoding qualified as TE
 import System.Environment (getEnvironment)
 import System.Exit (ExitCode (..))
 import System.Process (CreateProcess (..), readCreateProcessWithExitCode, shell)
-import Text.Regex.PCRE.Light (Regex, captureNames, compileM)
+import Text.Regex.PCRE.Light (Regex, captureNames, compileM, dotall)
 import Text.Regex.PCRE.Light qualified as PCRE
 
 import Shell (Fragment (..), FragmentType (..), parseFragments)
@@ -163,7 +163,7 @@ matchCases root depth env subject = \case
 compileRegex :: Text -> Either [Char] Regex
 compileRegex pattern =
   let anchored = "\\A(?:" <> TE.encodeUtf8 pattern <> ")\\z"
-  in case compileM anchored [] of
+  in case compileM anchored [dotall] of
        Left err -> Left err
        Right regex -> Right regex
 

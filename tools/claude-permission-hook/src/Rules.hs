@@ -102,7 +102,7 @@ rules =
 commandRules :: Node
 commandRules =
   match
-    (Process Stdout [r|printenv COMMAND | awk '{print $1}'|])
+    (Process Stdout [r|printenv COMMAND | awk 'NR==1{print $1}'|])
     -- Catastrophic: deny unconditionally.
     [ "rm" ~> rmRules
     , "mkfs" ~> deny "formats filesystems, destroys all data on device"
