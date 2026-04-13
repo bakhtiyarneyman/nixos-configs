@@ -12,7 +12,7 @@
 - Don't mitigate failure modes you haven't observed.
 - Question the necessity of every piece of proposed code and remove what you can't justify with evidence.
 - Write minimal, elegant and maintainable code: don't duplicate logic that already exists elsewhere.
-- Optimize for the simplest possible end state, not the simplest modification. No compat shims, no parallel representations of concepts already modeled, no indirection through mechanisms that duplicate existing capabilities.
+- When comparing solutions, prioritize in this order: (1) correctness, (2) efficiency, (3) lowest complexity of the resulting solution. Judge complexity by the end state, not the diff. No compat shims, no parallel representations of concepts already modeled, no indirection through mechanisms that duplicate existing capabilities.
 - When you can't observe full input, probe for the property you need. Don't give up or pretend you have complete information — find a way to test the relevant property indirectly.
 - Use self-documenting names. When a value's purpose isn't obvious from context, the name should make it self-evident to the reader.
 - When naming a pair of related things (client/server, source/sink, request/response), choose names from an established dual pair. Don't mix metaphors across the pair.
