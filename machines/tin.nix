@@ -456,6 +456,7 @@ in {
       MemoryMax = "1G";
       Restart = "on-failure";
     };
+    ntopng.path = [pkgs.gawk pkgs.iproute2];
     influxdb2-ntopng-v1-auth = {
       description = "Set up InfluxDB2 v1 compatibility for ntopng";
       after = ["influxdb2.service"];
