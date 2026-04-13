@@ -129,6 +129,34 @@ assert_verdict "nix store delete /nix/store/foo" ask
 assert_verdict "nix flake init" ask
 
 echo
+echo "-- Nix-shell: -p with --run safe subcommand (should allow) --"
+assert_verdict "nix-shell -p gcc --run ls" allow
+assert_verdict "nix-shell -p gcc --run 'cat /etc/passwd'" allow
+assert_verdict 'nix-shell -p gcc --run "cat /etc/passwd"' allow
+
+echo
+echo "-- Nix-shell: -p with --run unsafe/unknown subcommand (should ask) --"
+assert_verdict "nix-shell -p gcc --run make" ask
+assert_verdict 'nix-shell -p gcc curl.dev --run "cmake .."' ask
+
+echo
+echo "-- Nix-shell: -p with --run catastrophic subcommand (should deny) --"
+assert_verdict 'nix-shell -p gcc --run "rm -rf /"' deny
+
+echo
+echo "-- Nix-shell: no -p (shellHook risk, should ask) --"
+assert_verdict "nix-shell --run ls" ask
+assert_verdict "nix-shell" ask
+
+echo
+echo "-- Nix-shell: -p without --run (interactive shell, should ask) --"
+assert_verdict "nix-shell -p gcc" ask
+
+echo
+echo "-- Nix-shell: flags before -p (should still allow safe subcommand) --"
+assert_verdict "nix-shell --pure -p gcc --run ls" allow
+
+echo
 echo "-- Nix-store: safe operations (should allow) --"
 assert_verdict "nix-store -q --references /nix/store/foo" allow
 assert_verdict "nix-store -r /nix/store/foo.drv" allow
