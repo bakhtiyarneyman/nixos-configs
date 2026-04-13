@@ -66,7 +66,7 @@ function send_notification
             --argjson actions "$actions_json" \
             --argjson focus_on "$focus_json" \
             '{body:$body, window_pid:$window_pid, actions:$actions, focus_on:$focus_on}' \
-            | socat - UNIX-CONNECT:$sock)
+            | socat -t -1 - UNIX-CONNECT:$sock)
         set action (echo $response | jq -r '.action')
     else if test -n "$body"
         set -l out (mktemp)
