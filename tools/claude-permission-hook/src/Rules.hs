@@ -171,6 +171,7 @@ commandRules =
     , "nil" ~> allow "nix language server, read-only"
     , -- Version control: read-only queries and local-only writes.
       "git" ~> gitRules
+    , "gh" ~> ghRules
     , -- System management: safe subcommands only.
       "nixos-rebuild" ~> nixosRebuildRules
     , "systemctl" ~> systemctlRules
@@ -469,6 +470,34 @@ gitWorktreeRules =
         ~> allow "git worktree add with known-safe flags, no -B which can force-reset existing branches"
     , gitPrefix <> [r|worktree\s+(?:remove|move|prune|repair|unlock)(?:\s+.*)?|]
         ~> ask "git worktree mutation: may delete directories, move paths, remove safety guards, or modify administrative data"
+    ]
+
+-- | gh (GitHub CLI): allow read-only queries, ask for mutations.
+ghRules :: Node
+ghRules =
+  match
+    command
+    [ [r|gh\s+pr\s+(?:list|ls|view|diff|checks|status)(?:\s+.*)?|]
+        ~> allow "read-only GitHub PR query, all flags are filters or display options"
+    , [r|gh\s+issue\s+(?:list|view|status)(?:\s+.*)?|]
+        ~> allow "read-only GitHub issue query, all flags are filters or display options"
+    , [r|gh\s+run\s+(?:list|view)(?:\s+.*)?|]
+        ~> allow "read-only GitHub Actions run query, all flags are filters or display options"
+    , [r|gh\s+repo\s+(?:view|list)(?:\s+.*)?|]
+        ~> allow "read-only GitHub repository query, all flags are display options"
+    , [r|gh\s+search\s+(?:repos|issues|prs|commits|code)(?:\s+.*)?|]
+        ~> allow "read-only GitHub search, all flags are filters or display options"
+    , [r|gh\s+release\s+(?:list|view)(?:\s+.*)?|]
+        ~> allow "read-only GitHub release query, all flags are display options"
+    , [r|gh\s+status(?:\s+.*)?|]
+        ~> allow "read-only GitHub status overview, all flags are display options"
+    , -- Side-effect subcommands: explicit ask per principle #11.
+      [r|gh\s+pr\s+(?:create|close|merge|comment|review|edit|reopen|checkout|lock|unlock|update-branch|revert|ready)(?:\s+.*)?|]
+        ~> ask "gh pr mutation command"
+    , [r|gh\s+issue\s+(?:create|close|comment|edit|lock|unlock|delete|transfer|develop|pin|unpin|reopen)(?:\s+.*)?|]
+        ~> ask "gh issue mutation command"
+    , [r|gh\s+api(?:\s+.*)?|]
+        ~> ask "gh api can make arbitrary HTTP requests including mutations"
     ]
 
 -- | nixos-rebuild: allow non-persistent subcommands (test, build, dry-build,
