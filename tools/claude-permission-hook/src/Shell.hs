@@ -148,9 +148,10 @@ commandGroup = do
                       let subFrags = extractSubcommandFragments target
                       let fragType = if isAppend then Append else Overwrite
                       go cmdParts (extraFrags ++ [Fragment fragType target] ++ subFrags) heredocs
-                _ ->
-                  -- Just a number as part of a command
-                  go (cmdParts ++ [digits]) extraFrags heredocs
+                _ -> do
+                  -- Not a redirect — digits may be prefix of a word (e.g., IP address 10.0.0.1)
+                  rest <- option "" word
+                  go (cmdParts ++ [digits <> rest]) extraFrags heredocs
 
             -- Parenthesized subshell
             '(' -> do
