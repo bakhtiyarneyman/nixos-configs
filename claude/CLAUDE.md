@@ -19,6 +19,7 @@
 - Security documentation must articulate conditions, not just rules. "Don't do X" is insufficient — enumerate the conditions under which the approach is safe and what must hold for it to remain safe.
 - Review your own work in a loop until you find no more issues, before presenting it.
 - Articulate assumptions explicitly and verify them before building on them.
+- Before running a command that escalates privileges or changes execution context, trace what each step will run as and whether it can proceed non-interactively.
 - When generating text that will be embedded in another format (markup inside shell strings, HTML inside JSON, etc.), trace every escaping layer the text passes through before writing. Each layer may require its own escaping.
 - When building a feature that needs data, check what's already provided in the immediate context (stdin, arguments, environment) before reading external files or APIs.
 - When building UI-visible changes (notifications, markup, terminal output) that you cannot directly observe, ask the user to verify each individual change before moving on. Don't stack multiple untested changes.

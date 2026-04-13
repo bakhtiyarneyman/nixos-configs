@@ -114,3 +114,4 @@ nix-instantiate --parse-only file.nix
 - Modules are global for all machines, machines import mixins directly.
 - On NixOS, binaries are not in standard paths. Always use `/usr/bin/env` for shebangs and absolute paths for referencing scripts/binaries.
 - On GUI machines, use `pkexec nixos-rebuild ...`. Over SSH, use `sudo nixos-rebuild ...`.
+- When `nixos-rebuild` needs root from a worktree, build as the regular user first (`nix build .#nixosConfigurations.<machine>.config.system.build.toplevel`), then activate with `pkexec result/bin/switch-to-configuration test`. This avoids git safe.directory issues in worktrees and interactive sudo prompts.
