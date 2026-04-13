@@ -154,6 +154,7 @@ commandRules =
     , "rg" ~> allow "searches file contents, no write capability"
     , "sort" ~> sortRules
     , "sed" ~> sedRules
+    , "awk" ~> awkRules
     , -- Network inspection: safe scanning flags only.
       "nmap" ~> nmapRules
     , "ss" ~> ssRules
@@ -243,6 +244,20 @@ sedRules =
     command
     [ [r|sed(\s+(-[nErsuz]+(?=\s|$)|-[efl]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:quiet|silent|debug|posix|regexp-extended|separate|unbuffered|null-data|sandbox|follow-symlinks|help|version)(?=\s|$)|--(?:expression|file|line-length)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
         ~> allow "sed with only known-safe flags, no -i/--in-place; reads files/stdin and writes to stdout only"
+    ]
+
+-- | awk: text processing language. Allow known-safe flags only.
+-- Dangerous flags that fall through to ask:
+--   -l/--load (loads dynamic shared libraries)
+--   -d/--dump-variables, -D/--debug, -o/--pretty-print, -p/--profile (write files)
+-- Note: awk programs can contain system() and output redirection,
+-- but we don't parse program text (same approach as sedRules).
+awkRules :: Node
+awkRules =
+  match
+    command
+    [ [r|awk(\s+(-[bcCghIkMNnOPrsStV]+(?=\s|$)|-[Fv]\s*(?:'[^']*'|"[^"]*"|\S+)|-[efEi]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:characters-as-bytes|traditional|copyright|gen-pot|help|trace|csv|bignum|use-lc-numeric|non-decimal-data|optimize|posix|re-interval|no-optimize|sandbox|lint-old|version)(?=\s|$)|--(?:field-separator|assign|file|source|include|exec)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
+        ~> allow "awk with safe flags only; no -l/--load (dynamic extensions), no -d/-D/-o/-p (file-writing/debug flags); reads stdin/files to stdout"
     ]
 
 -- | nix: allow sandboxed builds and read-only queries.
