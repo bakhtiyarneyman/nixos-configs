@@ -158,6 +158,12 @@ commandGroup = do
               let subFrags = parseSubcommand inner
               go (cmdParts ++ ["(" <> inner <> ")"]) (extraFrags ++ subFrags) heredocs
 
+            -- Shell comment: # to end of line is ignored
+            '#' -> do
+              _ <- takeTill (== '\n')
+              mapM_ consumeHeredocLines heredocs
+              pure (emitCmd cmdParts extraFrags)
+
             -- Regular word
             _ -> do
               w <- word

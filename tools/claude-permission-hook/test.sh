@@ -29,6 +29,12 @@ echo "=== claude-permission-hook tests ==="
 echo "Binary: $BINARY"
 echo
 
+echo "-- Shell comments (should allow) --"
+assert_verdict $'# check config\ncat /etc/hosts' allow
+assert_verdict "echo hello # comment" allow
+assert_verdict "# comment ; rm -rf /" allow
+
+echo
 echo "-- Pure builtins (should allow) --"
 assert_verdict "echo hello" allow
 assert_verdict "printf '%s\n' foo" allow
