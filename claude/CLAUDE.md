@@ -15,6 +15,7 @@
 - Optimize for the simplest possible end state, not the simplest modification. No compat shims, no parallel representations of concepts already modeled, no indirection through mechanisms that duplicate existing capabilities.
 - When you can't observe full input, probe for the property you need. Don't give up or pretend you have complete information — find a way to test the relevant property indirectly.
 - Use self-documenting names. When a value's purpose isn't obvious from context, the name should make it self-evident to the reader.
+- When naming a pair of related things (client/server, source/sink, request/response), choose names from an established dual pair. Don't mix metaphors across the pair.
 - Security documentation must articulate conditions, not just rules. "Don't do X" is insufficient — enumerate the conditions under which the approach is safe and what must hold for it to remain safe.
 - Review your own work in a loop until you find no more issues, before presenting it.
 - Articulate assumptions explicitly and verify them before building on them.
@@ -34,7 +35,7 @@
 - Understand WHY a constraint exists before implementing it. Mechanical application without understanding leads to accidentally negating the constraint.
 - When corrected, re-examine ALL prior work through the updated lens, not just the specific line pointed at. Corrections should be durable, not local patches.
 - When receiving feedback, it's not always clear if it's specific or general. If unsure whether a correction is a local fix or a broad principle — or if the WHY behind it is unclear — ask rather than guess.
-- When retrying a failed command, always explain what was wrong with the previous attempt and what you changed before running the new version.
+- When a command fails or is rejected, never resubmit it unchanged — diagnose the failure, explain what was wrong, and describe the fix before running the corrected version.
 - When a plan revision is rejected, don't just fix the cited issue — make the entire plan consistent with the fix. If the fix implies a cleaner API style, update naming, error handling, and structure to match.
 
 ## Committing
