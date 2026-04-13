@@ -70,6 +70,6 @@
 - Relaxing an established "ask" rule to "allow" is probably wrong — always present such changes to the user with explicit justification before making them.
 
 ## Memory Policy
-- Machine-specific instructions belong in the auto-memory directory (`~/.claude/projects/-etc-nixos/memory/`).
+- Auto-memory (`~/.claude/projects/-etc-nixos/memory/`) is ONLY for machine-specific facts (e.g., "this machine is iron"). Never write general principles, feedback, or project knowledge there — those belong in CLAUDE.md files. When tempted to save a memory, ask: "Is this specific to this machine?" If no, don't save it.
 - General instructions (applicable to all repos) belong in this file (global CLAUDE.md).
 - Repo-specific instructions belong in the project's CLAUDE.md.
