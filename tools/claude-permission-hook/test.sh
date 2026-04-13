@@ -129,6 +129,33 @@ assert_verdict "nix store delete /nix/store/foo" ask
 assert_verdict "nix flake init" ask
 
 echo
+echo "-- Nix shell --command: safe subcommand (should allow via recurse) --"
+assert_verdict "nix shell nixpkgs#hello --command cat /etc/passwd" allow
+assert_verdict "nix shell nixpkgs#hello -c ls -la" allow
+assert_verdict "nix shell nixpkgs#hello nixpkgs#cowsay --command echo hi" allow
+assert_verdict "nix shell nixpkgs#hello --verbose --command cat /etc/passwd" allow
+assert_verdict "nix shell nixpkgs#hello -L --no-write-lock-file --command ls" allow
+
+echo
+echo "-- Nix shell --command: unsafe subcommand (should ask/deny via recurse) --"
+assert_verdict "nix shell nixpkgs#hello --command rm foo" ask
+assert_verdict "nix shell nixpkgs#hello --command rm -rf /" deny
+
+echo
+echo "-- Nix shell --command: unsafe nix flags (should ask) --"
+assert_verdict "nix shell --impure nixpkgs#hello --command ls" ask
+assert_verdict "nix shell --option sandbox false nixpkgs#hello --command ls" ask
+assert_verdict "nix shell --expr 'import <nixpkgs> {}' --command ls" ask
+assert_verdict "nix shell -f ./default.nix --command ls" ask
+assert_verdict "nix shell --override-input nixpkgs github:evil/nixpkgs --command ls" ask
+assert_verdict "nix shell -I nixpkgs=./evil --command ls" ask
+
+echo
+echo "-- Nix shell: no --command (interactive, should ask) --"
+assert_verdict "nix shell nixpkgs#hello" ask
+assert_verdict "nix shell nixpkgs#hello --verbose" ask
+
+echo
 echo "-- Nix-store: safe operations (should allow) --"
 assert_verdict "nix-store -q --references /nix/store/foo" allow
 assert_verdict "nix-store -r /nix/store/foo.drv" allow

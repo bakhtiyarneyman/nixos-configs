@@ -245,8 +245,10 @@ sedRules =
     ]
 
 -- | nix: allow sandboxed builds and read-only queries.
--- Host-execution subcommands (run, develop, shell, repl, fmt) and
+-- Host-execution subcommands (run, develop, repl, fmt) and
 -- destructive store operations fall through to ask.
+-- shell --command/-c recurses into the subcommand; nix shell
+-- without --command (interactive) still falls through to ask.
 nixRules :: Node
 nixRules =
   match
@@ -261,7 +263,23 @@ nixRules =
         ~> allow "nix derivation show — read-only"
     , [r|nix\s+nar\s+(?:cat|dump-path|ls)(?:\s+.*)?|]
         ~> allow "nix nar read-only inspection"
+    , [r|nix\s+shell|] <> safeNixShellArgs <> [r|\s+(?:--command|-c)\s+(?P<subcmd>.+)|]
+        ~> recurse [(Command, "$subcmd")]
     ]
+
+-- | Single safe nix-shell argument (flag or installable).
+-- Only clearly safe flags: logging/display, restrictive, env management,
+-- pure evaluation inputs, and installables.
+-- Excluded (fall through to ask): --impure, --repair, --debugger,
+-- --commit-lock-file, --recreate-lock-file, --update-input,
+-- --output-lock-file, --file/-f, --expr, --override-input,
+-- --override-flake, --include/-I, --inputs-from, --option.
+safeNixShellArg :: Text
+safeNixShellArg = [r|--(?:no-registries|no-use-registries|no-update-lock-file|no-write-lock-file|debug|print-build-logs|quiet|verbose|help|offline|version|ignore-env|refresh)(?=\s|$)|-[Lvi](?=\s|$)|--(?:log-format|keep-env-var|unset-env-var|reference-lock-file|eval-store|arg-from-stdin)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|-[ku]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:arg|argstr|arg-from-file|set-env-var)\s+(?:'[^']*'|"[^"]*"|\S+)\s+(?:'[^']*'|"[^"]*"|\S+)|-s\s+(?:'[^']*'|"[^"]*"|\S+)\s+(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)|]
+
+-- | Zero or more safe nix-shell arguments.
+safeNixShellArgs :: Text
+safeNixShellArgs = [r|(\s+(?:|] <> safeNixShellArg <> [r|))*|]
 
 -- | nix-store: allow read-only queries and sandboxed builds.
 -- Destructive operations (gc, delete) and store modifications fall
