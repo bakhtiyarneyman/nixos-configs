@@ -155,6 +155,8 @@ commandRules =
     , -- Network inspection: safe scanning flags only.
       "nmap" ~> nmapRules
     , "ss" ~> ssRules
+    , -- System tracing: observation-only flags allowed, subcommand recursed.
+      "strace" ~> straceRules
     , -- Network transfer: safe fetching flags only.
       "curl" ~> curlRules
     , -- Nix tooling: sandboxed builds and read-only queries allowed.
@@ -335,6 +337,41 @@ ssRules =
     , [r|ss(\s+(-[hVnralBoempiTsbEZz460tMSudwxHQO]+(?=\s|$)|-[NfAF]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:help|version|numeric|resolve|all|listening|bound-inactive|options|extended|memory|processes|threads|info|tipcinfo|summary|tos|cgroup|bpf|bpf-maps|events|context|contexts|ipv4|ipv6|packet|tcp|mptcp|sctp|udp|dccp|raw|unix|tipc|vsock|xdp|no-header|no-queues|oneline|inet-sockopt)(?=\s|$)|--(?:net|family|query|socket|filter|bpf-map-id)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
         ~> allow "ss with only known-safe socket inspection flags, no --kill or --diag"
     ]
+
+-- | strace: system call tracer. In command mode, executes and traces
+-- a command — recurse into the subcommand. In attach mode (-p PID),
+-- observes an existing process read-only.
+-- Dangerous flags fall through to ask:
+--   -e inject/fault, --inject/--fault (syscall tampering)
+--   --kill-on-exit (kills tracees)
+--   -o/--output (writes trace to file)
+--   -u/--user (runs as different user)
+straceRules :: Node
+straceRules =
+  match
+    command
+    [ [r|strace\s+.*(?:-e\s+(?:inject|fault)|--(?:inject|fault)=).*|]
+        ~> ask "strace syscall injection/fault tampering can modify traced process behavior"
+    , [r|strace\s+.*--kill-on-exit.*|]
+        ~> ask "strace --kill-on-exit kills all traced processes when strace exits"
+    , [r|strace\s+.*(?:-o\s|--output(?:=|\s)).*|]
+        ~> ask "strace -o/--output writes trace output to a file"
+    , [r|strace\s+.*(?:-u\s|--user(?:=|\s)).*|]
+        ~> ask "strace -u/--user runs the traced command as a different user"
+    , [r|strace\s+|] <> safeStraceFlags
+        ~> allow "strace with safe tracing/display flags only, no command execution"
+    , [r|strace\s+|] <> safeStraceFlags <> [r|(?P<subcmd>\S+(?:\s+.*)?)|]
+        ~> recurse [(Command, "$subcmd")]
+    , "strace" ~> allow "strace with no arguments shows usage help"
+    ]
+
+-- | Single safe strace flag alternation.
+safeStraceFlag :: Text
+safeStraceFlag = [r|-[ACcdfhiknNqrtTvVwxyYzZ]+(?=\s|$)|-D{1,3}(?=\s|$)|-[abIOPsSUX]\s+(?:'[^']*'|"[^"]*"|\S+)|-E\s+(?:'[^']*'|"[^"]*"|\S+)|-e\s+(?!inject|fault)(?:'[^']*'|"[^"]*"|\S+)|-p\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:follow-forks|output-separately|output-append-mode|seccomp-bpf|always-show-pid|no-abbrev|instruction-pointer|syscall-number|arg-names|successful-only|failed-only|summary-only|summary|summary-wall-clock|debug|help|version)(?=\s|$)|--(?:daemonize|stack-trace|quiet|relative-timestamps|absolute-timestamps|syscall-times|strings-in-hex|decode-fds|decode-pids|tips)(?:(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|--(?:stack-trace-frame-limit|syscall-limit|columns|string-limit|const-print-style|interruptible|summary-syscall-overhead|summary-sort-by|summary-columns|trace|signal|status|trace-fds|trace-path|abbrev|verbose|raw|read|write|kvm|namespace|detach-on|env|argv0|attach)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|]
+
+-- | Zero or more safe strace flags.
+safeStraceFlags :: Text
+safeStraceFlags = [r|(\s*(?:|] <> safeStraceFlag <> [r|))*\s*|]
 
 -- | curl: allow fetching with known-safe flags that cannot send data,
 -- authenticate, set custom headers, upload files, or write to disk.

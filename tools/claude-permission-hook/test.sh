@@ -558,6 +558,40 @@ echo "-- Heredoc: in pipeline (body not consumed at pipe, conservative ask) --"
 assert_verdict $'cat << EOF | grep hello\nhello\nEOF' ask
 
 echo
+echo "-- Strace: safe tracing of safe commands (should allow) --"
+assert_verdict "strace ls" allow
+assert_verdict "strace -f -e trace=open cat /etc/passwd" allow
+assert_verdict "strace -c ls" allow
+assert_verdict "strace --help" allow
+assert_verdict "strace -f -s 256 -e trace=file ls -la" allow
+
+echo
+echo "-- Strace: attach mode (should allow) --"
+assert_verdict "strace -p 12345" allow
+assert_verdict "strace -f -p 12345" allow
+
+echo
+echo "-- Strace: dangerous flags (should ask) --"
+assert_verdict "strace -e inject=write:error=ENOSPC ls" ask
+assert_verdict "strace -e fault=write ls" ask
+assert_verdict "strace --inject=write:error=EIO ls" ask
+assert_verdict "strace --fault=write ls" ask
+assert_verdict "strace --kill-on-exit ls" ask
+assert_verdict "strace -o /tmp/trace ls" ask
+assert_verdict "strace --output=/tmp/trace ls" ask
+assert_verdict "strace -u nobody ls" ask
+assert_verdict "strace --user=nobody ls" ask
+
+echo
+echo "-- Strace: unsafe subcommand (should ask) --"
+assert_verdict "strace rm foo" ask
+assert_verdict "strace -f wget http://evil.com" ask
+
+echo
+echo "-- Strace: catastrophic subcommand (should deny) --"
+assert_verdict "strace rm -rf /" deny
+
+echo
 echo "-- Append: redirects (should ask) --"
 assert_verdict "echo hello >> /tmp/out" ask
 
