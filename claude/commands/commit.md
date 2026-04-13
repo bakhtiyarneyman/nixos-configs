@@ -44,9 +44,7 @@ EOF
 ### 3. Merge into master
 
 ```bash
-git checkout master
-git merge <branch>                  # fast-forward if possible
-git checkout -                      # return to worktree branch
+git -C <main-tree> merge <branch>  # merge from main tree, no checkout needed
 git log --oneline -3 master         # verify
 ```
 
@@ -109,4 +107,5 @@ git status                          # confirm clean
 
 - **Never `git add` a modified file** — stages the entire file including concurrent changes. Only safe for new (untracked) files.
 - **Never pipe diff into apply** — inspect diffs, write only your hunks to a patch via Write tool.
+- **Chain apply+commit atomically** — join all `git apply --cached` calls and `git commit` in one `&&` chain to avoid partial staging.
 - **Never `git stash`** — disrupts concurrent sessions' working trees.
