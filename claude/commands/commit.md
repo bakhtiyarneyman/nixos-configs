@@ -1,12 +1,60 @@
 ---
-description: Use after completing a task to commit the session's changes before /analyze-mistakes. Enforces selective staging for concurrent session safety.
+description: Use after completing a task to commit the session's changes before /analyze-mistakes. Detects worktree vs shared tree and adapts.
 ---
 
 # Commit Session Changes
 
-Commit changes from the current session only. Other Claude sessions may have uncommitted changes in the same working tree — never stage their work.
+## Step 0: Detect worktree
 
-## Process
+```bash
+# If these differ, you're in a worktree
+git rev-parse --git-common-dir
+git rev-parse --git-dir
+```
+
+If in a **worktree** → follow the Worktree Path.
+If in a **shared tree** → follow the Shared Tree Path.
+
+---
+
+## Worktree Path
+
+The worktree is exclusive to this session — no concurrent changes to worry about.
+
+### 1. Survey
+
+Run in parallel:
+- `git status` — all modified/untracked files
+- `git diff` — read the actual diffs
+- `git log --oneline -5 master` — match commit message style
+
+### 2. Stage and commit
+
+```bash
+git add -A                          # safe — exclusive worktree
+git diff --cached --stat            # review what's staged
+git commit -m "$(cat <<'EOF'
+Message here.
+
+Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
+EOF
+)"
+```
+
+### 3. Merge into master
+
+```bash
+git checkout master
+git merge <branch>                  # fast-forward if possible
+git checkout -                      # return to worktree branch
+git log --oneline -3 master         # verify
+```
+
+---
+
+## Shared Tree Path
+
+Other Claude sessions may have uncommitted changes in the same working tree — never stage their work.
 
 ### 1. Survey
 
@@ -37,7 +85,7 @@ Safe because untracked files have no concurrent changes.
 
 ```bash
 git diff --cached --stat            # confirm only your changes staged
-git commit -m "$(cat <<'EOF'        # HEREDOC for formatting
+git commit -m "$(cat <<'EOF'
 Message here.
 
 Co-Authored-By: Claude Opus 4.6 (1M context) <noreply@anthropic.com>
@@ -46,13 +94,19 @@ EOF
 git status                          # confirm clean
 ```
 
-Substitute your actual model name in the Co-Authored-By trailer.
+---
 
-## Rules
+## Rules (both paths)
+
+- **Never stage secrets** — skip .env, credentials, key files.
+- **Never amend** — create new commits.
+- **Never push** unless the user explicitly asks.
+- Commit message: 1-2 sentences on WHY, not WHAT. Use HEREDOC.
+- Before committing, scan CLAUDE.md files for stale references to behavior you changed.
+- Substitute your actual model name in the Co-Authored-By trailer.
+
+### Shared tree only
 
 - **Never `git add` a modified file** — stages the entire file including concurrent changes. Only safe for new (untracked) files.
 - **Never pipe diff into apply** — inspect diffs, write only your hunks to a patch via Write tool.
 - **Never `git stash`** — disrupts concurrent sessions' working trees.
-- **Never amend** — create new commits.
-- **Never stage secrets** — skip .env, credentials, key files.
-- Commit message: 1-2 sentences on WHY, not WHAT. Use HEREDOC.

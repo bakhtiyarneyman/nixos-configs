@@ -40,7 +40,8 @@
 - When a plan revision is rejected, don't just fix the cited issue — make the entire plan consistent with the fix. If the fix implies a cleaner API style, update naming, error handling, and structure to match.
 
 ## Committing
-- When asked to commit, only stage changes made in the current session. Do not stage other changes that happen to be in the same files from concurrent sessions. Use selective staging (e.g., `git apply --cached` with extracted patches).
+- In a worktree (`git rev-parse --git-common-dir` differs from `--git-dir`), `git add -A` is safe — the worktree is exclusive. Merge into master after committing.
+- In a shared tree, only stage changes made in the current session. Do not stage other changes that happen to be in the same files from concurrent sessions. Use selective staging (e.g., `git apply --cached` with extracted patches).
 - Never use `git stash` — other Claude sessions may be working off the same directory concurrently. Stashing would disrupt their working tree.
 - After implementation, before committing, scan CLAUDE.md files and instructions for stale references to the behavior you changed.
 
