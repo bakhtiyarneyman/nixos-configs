@@ -453,6 +453,8 @@ in {
       Group = "ntopng";
       AmbientCapabilities = "CAP_NET_RAW CAP_NET_ADMIN";
       CapabilityBoundingSet = "CAP_NET_RAW CAP_NET_ADMIN";
+      MemoryMax = "1G";
+      Restart = "on-failure";
     };
     influxdb2-ntopng-v1-auth = {
       description = "Set up InfluxDB2 v1 compatibility for ntopng";
