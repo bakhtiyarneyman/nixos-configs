@@ -4,3 +4,4 @@ vscode/**
 secrets
 ndpi-protos.txt
 dist-newstyle
+.claude
