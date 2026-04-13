@@ -179,6 +179,8 @@ commandRules =
       "nixos-rebuild" ~> nixosRebuildRules
     , "systemctl" ~> systemctlRules
     , "journalctl" ~> journalctlRules
+    , -- Database clients: read-only queries allowed.
+      "redis-cli" ~> redisCliRules
     , -- Commands that execute subcommands — must recurse.
       "pkexec" ~> pkexecRules
     , "sudo" ~> sudoRules
@@ -595,6 +597,36 @@ journalctlRules =
     , [r|journalctl(\s+(-[aefklmqrxhN]+(?=\s|$)|-(?:c|D|g|i|n|o|p|S|t|T|u|U|M|F)\s+(?:'[^']*'|"[^"]*"|\S+)|-[bI](?:\s+(?:'[^']*'|"[^"]*"|[^-\s]\S*))?(?=\s|$)|--(?:system|user|merge|no-pager|no-full|full|no-tail|no-hostname|utc|show-cursor|truncate-newline|reverse|catalog|all|follow|quiet|pager-end|dmesg|fields|list-boots|list-invocations|disk-usage|verify|header|version|help)(?=\s|$)|--case-sensitive(?:=\S+)?(?=\s|$)|--boot(?:(?:=(?:'[^']*'|"[^"]*"|\S+)|\s+(?:'[^']*'|"[^"]*"|[^-\s]\S*)))?(?=\s|$)|--(?:since|until|cursor|after-cursor|unit|user-unit|identifier|exclude-identifier|facility|priority|grep|invocation|namespace|directory|file|root|image|image-policy|output|output-fields|lines|machine|field|verify-key)(?:=|\s+)(?:'[^']*'|"[^"]*"|\S+)|--(?:list-catalog|dump-catalog)(?:\s+(?:'[^']*'|"[^"]*"|\S+))?(?=\s|$)|(?:'[^']*'|"[^"]*"|[^-\s]\S*)))*\s*|]
         ~> allow "journalctl with only known-safe read-only flags"
     ]
+
+-- | redis-cli: Redis command-line client. Allow known read-only Redis
+-- commands and read-only monitoring/analysis modes. Ask for flags that
+-- execute scripts (--eval, --ldb), write files (--rdb), send raw protocol
+-- (--pipe), manage clusters (--cluster), or simulate loads (--replica,
+-- --lru-test). Interactive mode (no command) falls through to ask.
+redisCliRules :: Node
+redisCliRules =
+  match
+    command
+    [ -- Dangerous flags: explicitly ask per principle #11
+      [r|redis-cli\s+.*(?:--pipe|--eval|--ldb|--ldb-sync-mode|--rdb|--functions-rdb|--cluster|--replica|--lru-test)(?:\s|$).*|]
+        ~> ask "redis-cli with flag that can execute scripts, dump data to files, or modify cluster/server state"
+    , -- Read-only analysis/monitoring modes
+      [r|redis-cli|] <> safeRedisCliOpts <> [r|\s+--(?:scan|bigkeys|memkeys|keystats|hotkeys|stat|latency|latency-history|latency-dist|intrinsic-latency)(?:\s+.*)?|]
+        ~> allow "redis-cli read-only analysis or monitoring mode"
+    , -- Known read-only Redis commands
+      [r|redis-cli|] <> safeRedisCliOpts <> [r|\s+(?:get|mget|exists|type|ttl|pttl|keys|scan|dbsize|info|ping|echo|time|randomkey|strlen|getrange|llen|lrange|lindex|scard|smembers|sismember|srandmember|sunion|sinter|sdiff|hget|hgetall|hkeys|hvals|hlen|hexists|hmget|zcard|zcount|zrange|zrangebyscore|zrangebylex|zrank|zrevrank|zscore|zrevrange|zrevrangebyscore|zrevrangebylex|xlen|xrange|xrevrange|xinfo|dump|object|command|pubsub|geopos|geodist|geohash|geosearch|bitcount|bitpos|getbit|lpos|smismember|zlexcount|zmscore|substr|pfcount|sintercard)(?:\s+.*)?|]
+        ~> allow "redis-cli with known read-only Redis command"
+    ]
+
+-- | Single safe redis-cli connection/formatting flag.
+-- Excluded (fall through to ask): --pipe, --eval, --ldb, --ldb-sync-mode,
+-- --rdb, --functions-rdb, --cluster, --replica, --lru-test.
+safeRedisCliOpt :: Text
+safeRedisCliOpt = [r|-[2346cex](?=\s|$)|-[ahDdinprstuX]\s+(?:'[^']*'|"[^"]*"|\S+)|--(?:raw|no-raw|csv|json|quoted-json|verbose|no-auth-warning|tls|insecure|quoted-input|askpass|help|version)(?=\s|$)|--(?:user|pass|sni|cacert|cacertdir|cert|key|tls-ciphers|tls-ciphersuites|show-pushes|pattern|quoted-pattern|count|cursor|top|memkeys-samples|keystats-samples)(?:\s+(?:'[^']*'|"[^"]*"|\S+))|]
+
+-- | Zero or more safe redis-cli flags.
+safeRedisCliOpts :: Text
+safeRedisCliOpts = [r|(\s+(?:|] <> safeRedisCliOpt <> [r|))*|]
 
 -- | cabal: allow compile-only and read-only subcommands.
 -- test/bench/run/exec/repl/clean/install fall through to default ask.

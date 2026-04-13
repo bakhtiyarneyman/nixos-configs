@@ -666,6 +666,95 @@ echo "-- ANSI-C quoting: in unsafe context --"
 assert_verdict "rm \$'some file'" ask
 
 echo
+echo "-- Redis-cli: read-only commands (should allow) --"
+assert_verdict 'redis-cli -s /run/redis-ntopng/redis.sock get "ntopng.cache.ts_setup_ok"' allow
+assert_verdict "redis-cli get mykey" allow
+assert_verdict "redis-cli -h localhost -p 6379 info" allow
+assert_verdict "redis-cli --json keys '*'" allow
+assert_verdict "redis-cli -n 0 dbsize" allow
+assert_verdict "redis-cli ping" allow
+assert_verdict "redis-cli ttl mykey" allow
+assert_verdict "redis-cli hgetall myhash" allow
+assert_verdict "redis-cli exists mykey" allow
+assert_verdict "redis-cli -s /tmp/redis.sock --raw mget key1 key2" allow
+
+echo
+echo "-- Redis-cli: read-only analysis modes (should allow) --"
+assert_verdict "redis-cli --scan" allow
+assert_verdict "redis-cli --bigkeys" allow
+assert_verdict "redis-cli --stat" allow
+assert_verdict "redis-cli --latency" allow
+assert_verdict "redis-cli -h localhost --scan --pattern 'user:*'" allow
+assert_verdict "redis-cli --memkeys --memkeys-samples 100" allow
+
+echo
+echo "-- Redis-cli: dangerous flags (should ask) --"
+assert_verdict "redis-cli --pipe" ask
+assert_verdict "redis-cli --eval script.lua" ask
+assert_verdict "redis-cli --ldb --eval script.lua" ask
+assert_verdict "redis-cli --ldb-sync-mode --eval script.lua" ask
+assert_verdict "redis-cli --rdb /tmp/dump.rdb" ask
+assert_verdict "redis-cli --functions-rdb /tmp/funcs.rdb" ask
+assert_verdict "redis-cli --cluster help" ask
+assert_verdict "redis-cli --replica" ask
+assert_verdict "redis-cli --lru-test 1000" ask
+
+echo
+echo "-- Redis-cli: complex option combinations (should allow) --"
+assert_verdict "redis-cli -h 10.0.0.1 -p 6380 -a secret -n 2 get mykey" allow
+assert_verdict "redis-cli --tls --cert /tmp/c.pem --key /tmp/k.pem --cacert /tmp/ca.pem get mykey" allow
+assert_verdict "redis-cli -s /run/redis.sock --json --no-auth-warning hgetall config:app" allow
+assert_verdict "redis-cli -u redis://localhost:6379/0 --csv keys 'sess:*'" allow
+assert_verdict "redis-cli -x -s /run/redis.sock exists" allow
+assert_verdict "redis-cli -r 5 -i 1 -h localhost info" allow
+assert_verdict "redis-cli -2 --raw -s /run/redis.sock lrange mylist 0 -1" allow
+assert_verdict "redis-cli -c -h cluster.local zrangebyscore myset 0 100" allow
+assert_verdict "redis-cli --user admin --pass secret -h db.local smembers myset" allow
+assert_verdict "redis-cli -X tag -s /run/redis.sock getrange mykey 0 10" allow
+
+echo
+echo "-- Redis-cli: complex analysis modes (should allow) --"
+assert_verdict "redis-cli -h 10.0.0.1 -p 6380 --scan --pattern 'user:*' --count 1000" allow
+assert_verdict "redis-cli --tls -h db.local --bigkeys" allow
+assert_verdict "redis-cli -s /run/redis.sock --keystats --keystats-samples 50 --cursor 100 --top 20" allow
+assert_verdict "redis-cli -h localhost --latency-history -i 5" allow
+assert_verdict "redis-cli --intrinsic-latency 10" allow
+
+echo
+echo "-- Redis-cli: dangerous flags mixed with safe options (should ask) --"
+assert_verdict "redis-cli -h localhost --pipe" ask
+assert_verdict "redis-cli -s /run/redis.sock --eval myscript.lua" ask
+assert_verdict "redis-cli --tls -h db.local --rdb /tmp/dump.rdb" ask
+assert_verdict "redis-cli -n 0 --cluster info 10.0.0.1:6379" ask
+assert_verdict "redis-cli -h localhost --replica" ask
+
+echo
+echo "-- Redis-cli: write commands (should ask) --"
+assert_verdict "redis-cli set mykey myvalue" ask
+assert_verdict "redis-cli del mykey" ask
+assert_verdict "redis-cli flushall" ask
+assert_verdict "redis-cli flushdb" ask
+assert_verdict "redis-cli shutdown" ask
+assert_verdict "redis-cli config set maxmemory 100mb" ask
+assert_verdict "redis-cli -s /run/redis.sock set foo bar" ask
+assert_verdict "redis-cli -h localhost expire mykey 300" ask
+assert_verdict "redis-cli lpush mylist value" ask
+assert_verdict "redis-cli sadd myset member" ask
+
+echo
+echo "-- Redis-cli: interactive mode (should ask) --"
+assert_verdict "redis-cli" ask
+assert_verdict "redis-cli -h localhost" ask
+assert_verdict "redis-cli -s /run/redis.sock" ask
+assert_verdict "redis-cli --tls -h db.local -p 6380" ask
+
+echo
+echo "-- Redis-cli: via sudo/pkexec (should allow read-only) --"
+assert_verdict "sudo redis-cli get mykey" allow
+assert_verdict "pkexec redis-cli -s /run/redis.sock info" allow
+assert_verdict "sudo redis-cli set mykey val" ask
+
+echo
 echo "-- Strace: safe tracing of safe commands (should allow) --"
 assert_verdict "strace ls" allow
 assert_verdict "strace -f -e trace=open cat /etc/passwd" allow
