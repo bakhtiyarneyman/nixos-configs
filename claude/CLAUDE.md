@@ -20,6 +20,7 @@
 - Review your own work in a loop until you find no more issues, before presenting it.
 - Articulate assumptions explicitly and verify them before building on them. In particular, verify file paths exist (via glob or ls) before embedding them in plans or commands.
 - Before running a command that escalates privileges or changes execution context, trace what each step will run as and whether it can proceed non-interactively.
+- When a command launches a process via a compositor, daemon, or service manager (swaymsg exec, systemd, etc.), trace the working directory and environment that process inherits — it is not the caller's.
 - When generating text that will be embedded in another format (markup inside shell strings, HTML inside JSON, etc.), trace every escaping layer the text passes through before writing. Each layer may require its own escaping.
 - When building a feature that needs data, check what's already provided in the immediate context (stdin, arguments, environment) and what already flows through the system's internal layers, before adding new plumbing or reading external sources.
 - When building UI-visible changes (notifications, markup, terminal output) that you cannot directly observe, ask the user to verify each individual change before moving on. Don't stack multiple untested changes.
@@ -60,6 +61,7 @@
 - In Haskell, never make unnecessary states representable. Each sum type constructor should carry exactly the data it needs — don't add shared fields only used by one variant.
 - When propagating data through layers, preserve structural representation (types, lists, records) until the final output stage. String concatenation is lossy — structure first, format last.
 - When working in a git worktree, always use worktree-relative paths for file reads and edits. Never reference the original repo path (e.g., use `./tools/foo` not `/etc/nixos/tools/foo` when CWD is a worktree).
+- When launching GUI programs (alacritty, etc.) from scripts, check how they're invoked in sway.conf or other existing launch points — they may require flags like `--config-file` that aren't part of the default behavior.
 
 ## Claude Setup
 - `~/.claude/settings.json` and `~/.claude/commands/` are symlinked to `/etc/nixos/claude/settings.json` and `/etc/nixos/claude/commands/` via `systemd.tmpfiles.rules` in `mixins/core.nix`.
