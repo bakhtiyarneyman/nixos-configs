@@ -166,6 +166,7 @@ commandRules =
       "nix" ~> nixRules
     , "nix-build" ~> allow "nix build tooling, executes in Nix sandbox"
     , "nix-instantiate" ~> allow "pure Nix evaluation, no host execution"
+    , "nix-prefetch-url" ~> allow "downloads URL into Nix store and prints hash, all flags control download/hashing only, no host execution"
     , "nixos-option" ~> allow "inspects NixOS configuration options, all flags are read-only queries"
     , "nix-shell" ~> nixShellRules
     , "nix-store" ~> nixStoreRules
