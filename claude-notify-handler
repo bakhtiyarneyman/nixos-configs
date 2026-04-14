@@ -25,4 +25,10 @@ for focus_action in (echo $request | jq -r '.focus_on // [] | .[]')
 end
 
 set selected_action (send_notification $args -- "$body")
+
+if string match -q 'allow-always:*' -- "$selected_action"
+    set -l program (string replace 'allow-always:' '' -- "$selected_action")
+    swaymsg exec -- "alacritty --config-file /etc/nixos/alacritty.toml -e fish -c 'cd /etc/nixos; claude --worktree -- \"/add-rule $program\"'"
+end
+
 jq -n --arg action "$selected_action" '{action:$action}'
