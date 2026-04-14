@@ -11,13 +11,13 @@
 }:
 stdenv.mkDerivation rec {
   pname = "ndpi";
-  version = "5.0-dev";
+  version = "5.1.0-unstable";
 
   src = fetchFromGitHub {
     owner = "ntop";
     repo = "nDPI";
-    rev = "411b3ad202b15e6780a11d18c44cc3008104ad6f";
-    hash = "sha256-mAXAO+Yg69yXdoJ/NuwVlIZbFG5zaj2GdOuQ6LyyWII=";
+    rev = "9eb914d587336d16116f4149965701f3cfbb74fe";
+    hash = "sha256-YZJIX4kQNuQ1PkFlX49wk3R1hkm2N19KA/Sapih6VyE=";
   };
 
   nativeBuildInputs = [

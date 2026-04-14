@@ -30,15 +30,23 @@
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "ntopng";
-  version = "6.6";
+  version = "6.7-unstable";
 
   src = fetchFromGitHub {
-    owner = "ntop";
+    owner = "bakhtiyarneyman";
     repo = "ntopng";
-    rev = "374493e444afebac939752696801354506e183a1";
-    hash = "sha256-dMoX3OSWF0g4tpMnyhwtWNjLy6XAyzvgrS9xzoqiE0Q=";
+    rev = "f5281f6780b08507bed7265d1d8c0d57e8dc0a5d";
+    hash = "sha256-Te4r97nuxafNNoqxZvgYwHUVI7bddmwduGuPURPrsqU=";
     fetchSubmodules = true;
   };
+
+  # Guard Pro-only functions that the open-source build doesn't have.
+  postPatch = ''
+    sed -i 's/interface.getFlowDevices()/(interface.getFlowDevices or function() return {} end)()/' \
+      scripts/lua/inc/menu.lua
+    sed -i 's/interface.getSFlowDevices()/(interface.getSFlowDevices or function() return {} end)()/' \
+      scripts/lua/inc/menu.lua
+  '';
 
   preConfigure = ''
     substituteInPlace Makefile.in \
@@ -72,7 +80,10 @@ stdenv.mkDerivation (finalAttrs: {
     zeromq
   ];
 
-  autoreconfPhase = "bash autogen.sh";
+  autoreconfPhase = ''
+    sed -i '/^git submodule/d' autogen.sh
+    bash autogen.sh
+  '';
 
   configureFlags = [
     "--with-ndpi-includes=${ndpi}/include/ndpi"
