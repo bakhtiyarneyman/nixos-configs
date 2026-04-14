@@ -252,6 +252,7 @@ in {
       extraConfig = ''
         --local-networks=192.168.10.1/24
         --ndpi-protocols=/etc/nixos/ndpi-protos.txt
+        --pid=/run/ntopng/ntopng.pid
       '';
     };
     prowlarr.enable = true;
@@ -453,6 +454,7 @@ in {
       Group = "ntopng";
       AmbientCapabilities = "CAP_NET_RAW CAP_NET_ADMIN";
       CapabilityBoundingSet = "CAP_NET_RAW CAP_NET_ADMIN";
+      RuntimeDirectory = "ntopng";
       MemoryMax = "1G";
       Restart = "on-failure";
     };
