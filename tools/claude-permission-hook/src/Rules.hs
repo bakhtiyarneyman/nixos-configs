@@ -487,6 +487,7 @@ gitRules =
     , gitPrefix <> [r|tag(?:\s+.*)?|] ~> gitTagRules
     , gitPrefix <> [r|remote(?:\s+.*)?|] ~> gitRemoteRules
     , gitPrefix <> [r|worktree(?:\s+.*)?|] ~> gitWorktreeRules
+    , gitPrefix <> [r|submodule(?:\s+.*)?|] ~> gitSubmoduleRules
     , gitPrefix <> [r|(?:add|commit)(?:\s+.*)?|]
         ~> allow "local staging/commit, fully reversible and does not affect remotes"
     ]
@@ -545,6 +546,26 @@ gitWorktreeRules =
         ~> allow "git worktree add with known-safe flags, no -B which can force-reset existing branches"
     , gitPrefix <> [r|worktree\s+(?:remove|move|prune|repair|unlock)(?:\s+.*)?|]
         ~> ask "git worktree mutation: may delete directories, move paths, remove safety guards, or modify administrative data"
+    ]
+
+-- | git submodule: allow read-only status/summary, ask for everything else.
+-- foreach executes arbitrary shell commands; update can execute custom
+-- commands via submodule.<name>.update config; other mutation subcommands
+-- modify .gitmodules, .git/config, or submodule working trees.
+gitSubmoduleRules :: Node
+gitSubmoduleRules =
+  match
+    command
+    [ gitPrefix <> [r|submodule(?:\s+(?:--quiet|-q|--cached))*\s*|]
+        ~> allow "bare git submodule is equivalent to status, read-only display"
+    , gitPrefix <> [r|submodule(?:\s+(?:--quiet|-q))*\s+(?:status|summary)(?:\s+.*)?|]
+        ~> allow "git submodule status/summary, read-only display of submodule state"
+    , gitPrefix <> [r|submodule(?:\s+(?:--quiet|-q))*\s+foreach(?:\s+.*)?|]
+        ~> ask "git submodule foreach executes arbitrary shell commands in each submodule"
+    , gitPrefix <> [r|submodule(?:\s+(?:--quiet|-q))*\s+update(?:\s+.*)?|]
+        ~> ask "git submodule update can execute custom commands via submodule.<name>.update config"
+    , gitPrefix <> [r|submodule(?:\s+(?:--quiet|-q))*\s+(?:add|init|deinit|set-branch|set-url|sync|absorbgitdirs)(?:\s+.*)?|]
+        ~> ask "git submodule mutation: modifies .gitmodules, .git/config, or submodule working trees"
     ]
 
 -- | gh (GitHub CLI): allow read-only queries, ask for mutations.

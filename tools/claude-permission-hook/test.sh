@@ -508,6 +508,40 @@ assert_verdict "git worktree repair" ask
 assert_verdict "git worktree unlock /tmp/wt" ask
 
 echo
+echo "-- Git: submodule read-only (should allow) --"
+assert_verdict "git submodule" allow
+assert_verdict "git submodule --quiet" allow
+assert_verdict "git submodule --cached" allow
+assert_verdict "git submodule -q --cached" allow
+assert_verdict "git submodule status" allow
+assert_verdict "git submodule status --cached --recursive" allow
+assert_verdict "git submodule --quiet status -- path/to/sub" allow
+assert_verdict "git submodule summary" allow
+assert_verdict "git submodule summary --cached -n 5" allow
+assert_verdict "git -C /etc/nixos submodule status" allow
+
+echo
+echo "-- Git: submodule foreach (should ask) --"
+assert_verdict "git submodule foreach 'echo \$sm_path'" ask
+assert_verdict "git submodule --quiet foreach --recursive 'git pull'" ask
+
+echo
+echo "-- Git: submodule update (should ask) --"
+assert_verdict "git submodule update" ask
+assert_verdict "git submodule update --init --recursive" ask
+assert_verdict "git submodule --quiet update --remote" ask
+
+echo
+echo "-- Git: submodule mutation (should ask) --"
+assert_verdict "git submodule add https://example.com/repo.git" ask
+assert_verdict "git submodule init" ask
+assert_verdict "git submodule deinit --all" ask
+assert_verdict "git submodule set-branch -b main -- path" ask
+assert_verdict "git submodule set-url -- path https://example.com" ask
+assert_verdict "git submodule sync --recursive" ask
+assert_verdict "git submodule absorbgitdirs" ask
+
+echo
 echo "-- Git: remote/destructive (should ask) --"
 assert_verdict "git push" ask
 assert_verdict "git reset --hard" ask
