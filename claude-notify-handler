@@ -7,7 +7,7 @@
 source /etc/nixos/claude-notify.fish
 
 set request (cat)
-set body (echo $request | jq -r '.body')
+set body (echo $request | jq -r '.body' | string collect)
 set window_pid (echo $request | jq -r '.window_pid // empty')
 
 set -l args
