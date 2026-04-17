@@ -117,6 +117,34 @@ assert_verdict "nix-build ." allow
 assert_verdict "alejandra ." allow
 
 echo
+echo "-- Devenv: read-only subcommands (should allow) --"
+assert_verdict "devenv version" allow
+assert_verdict "devenv help" allow
+assert_verdict "devenv changelogs" allow
+assert_verdict "devenv search hello" allow
+assert_verdict "devenv info" allow
+assert_verdict "devenv direnvrc" allow
+assert_verdict "devenv" allow
+
+echo
+echo "-- Devenv: code execution / state modification (should ask) --"
+assert_verdict "devenv shell" ask
+assert_verdict "devenv up" ask
+assert_verdict "devenv test" ask
+assert_verdict "devenv tasks run foo" ask
+assert_verdict "devenv init" ask
+assert_verdict "devenv generate" ask
+assert_verdict "devenv update" ask
+assert_verdict "devenv gc" ask
+assert_verdict "devenv container build" ask
+assert_verdict "devenv repl" ask
+assert_verdict "devenv mcp" ask
+assert_verdict "devenv lsp" ask
+assert_verdict "devenv build" ask
+assert_verdict "devenv eval" ask
+assert_verdict "devenv processes up" ask
+
+echo
 echo "-- Nix: host execution / destructive (should ask) --"
 assert_verdict "nix run .#foo" ask
 assert_verdict "nix develop" ask

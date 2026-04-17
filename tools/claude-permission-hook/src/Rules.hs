@@ -172,6 +172,7 @@ commandRules =
     , "nix-shell" ~> nixShellRules
     , "nix-store" ~> nixStoreRules
     , "alejandra" ~> allow "nix formatter, only rewrites formatting"
+    , "devenv" ~> devenvRules
     , -- Haskell build tooling: safe subcommands/flags only.
       "cabal" ~> cabalRules
     , "ghc" ~> ghcRules
@@ -351,6 +352,19 @@ nixStoreRules =
         ~> allow "nix-store read-only query or export"
     , [r|nix-store\s+(?:-r|--realise)(?:\s+.*)?|]
         ~> allow "nix-store realise — builds in Nix sandbox"
+    ]
+
+-- | devenv: developer environment tool. Allow read-only query subcommands.
+-- Subcommands that execute project code (shell, up, processes, tasks, test,
+-- repl), modify files (init, generate, update, gc), start servers (mcp, lsp),
+-- or build containers fall through to ask.
+devenvRules :: Node
+devenvRules =
+  match
+    command
+    [ [r|devenv\s+(?:version|help|changelogs|search|info|direnvrc)(?:\s+.*)?|]
+        ~> allow "devenv read-only query subcommand, no code execution or state modification"
+    , "devenv" ~> allow "devenv with no subcommand shows usage help"
     ]
 
 -- | ghc: allow compilation with known-safe flags only.
