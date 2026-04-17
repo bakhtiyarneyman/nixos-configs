@@ -266,10 +266,10 @@ awkRules =
     ]
 
 -- | nix: allow sandboxed builds and read-only queries.
--- Host-execution subcommands (run, develop, repl, fmt) and
--- destructive store operations fall through to ask.
--- shell --command/-c recurses into the subcommand; nix shell
--- without --command (interactive) still falls through to ask.
+-- Host-execution subcommands (run, repl, fmt) and destructive store
+-- operations fall through to ask.
+-- shell/develop --command/-c recurses into the subcommand; without
+-- --command (interactive shell) still falls through to ask.
 nixRules :: Node
 nixRules =
   match
@@ -285,6 +285,8 @@ nixRules =
     , [r|nix\s+nar\s+(?:cat|dump-path|ls)(?:\s+.*)?|]
         ~> allow "nix nar read-only inspection"
     , [r|nix\s+shell|] <> safeNixShellArgs <> [r|\s+(?:--command|-c)\s+(?P<subcmd>.+)|]
+        ~> recurse [(Command, "$subcmd")]
+    , [r|nix\s+develop|] <> safeNixShellArgs <> [r|\s+(?:--command|-c)\s+(?P<subcmd>.+)|]
         ~> recurse [(Command, "$subcmd")]
     ]
 
