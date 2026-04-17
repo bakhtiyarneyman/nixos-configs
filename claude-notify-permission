@@ -45,21 +45,22 @@ else
 end
 
 set -l actions -A allow=Allow
+set -l cmd_args
 if test "$tool" = Bash
-    set -l program (echo $input | jq -r '.tool_input.command' | string split -m 1 ' ')[1]
-    set -a actions -A "allow-always:$program=Allow Always"
+    set -a actions -A allow-always="Allow Always"
+    set cmd_args --command (echo $input | jq -r '.tool_input.command')
 end
 set -a actions -A deny=Deny -A default=Focus
 
 set action (send_notification --window-pid "$window_pid" \
     --focus-on deny --focus-on default \
-    $actions -- "$body")
+    $cmd_args $actions -- "$body")
 
-if test "$action" = allow; or string match -q 'allow-always:*' -- "$action"
+if test "$action" = allow; or test "$action" = allow-always
     echo '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"allow"}}}'
-    if string match -q 'allow-always:*' -- "$action"; and test -n "$window_pid"
-        set -l program (string replace 'allow-always:' '' -- "$action")
-        swaymsg exec -- "alacritty --config-file /etc/nixos/alacritty.toml -e fish -c 'cd /etc/nixos; claude --worktree -- \"/add-rule $program\"'"
+    if test "$action" = allow-always; and test -n "$window_pid"
+        set -l b64 (echo $input | jq -r '.tool_input.command | @base64')
+        swaymsg exec -- "alacritty --config-file /etc/nixos/alacritty.toml -e fish -c 'cd /etc/nixos; set -l cmd (echo $b64 | base64 -d); claude --worktree -- \"/add-rule \$cmd\"'" >/dev/null 2>&1
     end
 else if test "$action" = deny
     echo '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","decision":{"behavior":"deny","message":"Rejected via notification"}}}'
