@@ -97,6 +97,7 @@ in {
         shfmt
         # Nix
         # nixd
+        nixos-shell
         nil
         alejandra
         # Shell packages
