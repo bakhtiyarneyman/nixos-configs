@@ -25,7 +25,7 @@ function send_notification
     # Sends a desktop notification with auto-dismiss when the given window gets focus.
     # Usage: send_notification --window-pid PID [--focus-on ACTION]... [-A action=Label]... [--] BODY
     # Outputs the selected action key, or nothing if dismissed.
-    argparse 'window-pid=' 'focus-on=+' 'A=+' -- $argv
+    argparse 'window-pid=' 'focus-on=+' 'A=+' 'command=' -- $argv
     or return 1
 
     set -l body "$argv"
@@ -65,7 +65,8 @@ function send_notification
             --arg window_pid "$CLAUDE_NOTIFY_WINDOW_PID" \
             --argjson actions "$actions_json" \
             --argjson focus_on "$focus_json" \
-            '{body:$body, window_pid:$window_pid, actions:$actions, focus_on:$focus_on}' \
+            --arg command "$_flag_command" \
+            '{body:$body, window_pid:$window_pid, actions:$actions, focus_on:$focus_on, command:$command}' \
             | socat -t 999999999 - UNIX-CONNECT:$sock)
         set action (echo $response | jq -r '.action')
     else if test -n "$body"

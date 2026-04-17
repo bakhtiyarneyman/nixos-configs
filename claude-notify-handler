@@ -26,9 +26,9 @@ end
 
 set selected_action (send_notification $args -- "$body")
 
-if string match -q 'allow-always:*' -- "$selected_action"
-    set -l program (string replace 'allow-always:' '' -- "$selected_action")
-    swaymsg exec -- "alacritty --config-file /etc/nixos/alacritty.toml -e fish -c 'cd /etc/nixos; claude --worktree -- \"/add-rule $program\"'"
+if test "$selected_action" = allow-always
+    set -l b64 (echo $request | jq -r '.command | @base64')
+    swaymsg exec -- "alacritty --config-file /etc/nixos/alacritty.toml -e fish -c 'cd /etc/nixos; set -l cmd (echo $b64 | base64 -d); claude --worktree -- \"/add-rule \$cmd\"'" >/dev/null 2>&1
 end
 
 jq -n --arg action "$selected_action" '{action:$action}'
