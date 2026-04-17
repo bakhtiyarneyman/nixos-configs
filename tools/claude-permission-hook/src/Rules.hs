@@ -132,6 +132,7 @@ commandRules =
     , "sha256sum" ~> allow "computes checksums, no write capability"
     , "readlink" ~> allow "resolves symlinks, no write capability"
     , "mktemp" ~> allow "creates temporary files/directories with unique random names, no flags can overwrite existing files, delete, or execute commands"
+    , "mkdir" ~> allow "creates directories only, no flags can overwrite existing files, delete, or execute commands"
     , -- Read-only system queries: no flags can make these write.
       "ls" ~> allow "lists directory contents, no write capability"
     , "which" ~> allow "locates executables, no write capability"
