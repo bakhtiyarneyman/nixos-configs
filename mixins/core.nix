@@ -95,6 +95,7 @@ in {
         claude-permission-hook
         unstable.claude-code
         shfmt
+        devenv
         # Nix
         # nixd
         nixos-shell
@@ -423,6 +424,7 @@ in {
       };
       overlays = [
         (self: super: {
+          devenv = self.unstable.devenv;
           journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
           github-cli = super.unstable.pkgs.github-cli;
           home-assistant = super.unstable.home-assistant.override {
