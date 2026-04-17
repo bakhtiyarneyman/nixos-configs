@@ -175,6 +175,7 @@ commandRules =
     , -- Haskell build tooling: safe subcommands/flags only.
       "cabal" ~> cabalRules
     , "ghc" ~> ghcRules
+    , "cargo" ~> cargoRules
     , "nil" ~> allow "nix language server, read-only"
     , -- Version control: read-only queries and local-only writes.
       "git" ~> gitRules
@@ -383,6 +384,15 @@ safeGhcFlag = [r|-X\S+|-W\S*|-w(?=\s|$)|-d\S+|-f(?!plugin)\S+|-opt\S+|-O[012]?(?
 -- | Zero or more safe GHC flags.
 safeGhcFlags :: Text
 safeGhcFlags = [r|(\s*(?:|] <> safeGhcFlag <> [r|))*\s*|]
+
+-- | cargo: allow clippy (linter). Other subcommands fall through to ask.
+cargoRules :: Node
+cargoRules =
+  match
+    command
+    [ [r|cargo\s+clippy(?:\s+.*)?|]
+        ~> allow "cargo clippy is a linter that analyzes code without executing project binaries"
+    ]
 
 -- | nmap: allow known-safe scanning/display flags, ask for script
 -- execution (-sC, -A, --script) and file output (-oN, -oX, etc.).
