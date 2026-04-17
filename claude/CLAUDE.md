@@ -9,10 +9,10 @@
 - Gather facts about the system before researching solutions.
 - When command output contains values you cannot trace to a known source, investigate their origin before theorizing. Unexplained data is the fastest path to the real cause.
 - Verify behavioral claims from logs/tests, not documentation.
-- Don't mitigate failure modes you haven't observed.
+- Don't mitigate failure modes you haven't observed. Example: when passing data through multiple layers (shell → IPC → subprocess), don't add encoding infrastructure for hypothetical special characters — pass the data directly until a real input breaks.
 - Question the necessity of every piece of proposed code and remove what you can't justify with evidence.
 - Write minimal, elegant and maintainable code: don't duplicate logic that already exists elsewhere.
-- When comparing solutions, prioritize in this order: (1) correctness, (2) efficiency, (3) lowest complexity of the resulting solution. Judge complexity by the end state, not the diff. No compat shims, no parallel representations of concepts already modeled, no indirection through mechanisms that duplicate existing capabilities.
+- When comparing solutions, prioritize in this order: (1) correctness, (2) efficiency, (3) lowest complexity of the resulting solution. Judge complexity by the end state, not the diff. No compat shims, no parallel representations of concepts already modeled, no indirection through mechanisms that duplicate existing capabilities. Example: when modifying a data consumer, trace back to producers — extraction or embedding that nothing reads anymore is dead complexity in the end state.
 - When you can't observe full input, probe for the property you need. Don't give up or pretend you have complete information — find a way to test the relevant property indirectly.
 - Use self-documenting names. When a value's purpose isn't obvious from context, the name should make it self-evident to the reader.
 - When naming a pair of related things (client/server, source/sink, request/response), choose names from an established dual pair. Don't mix metaphors across the pair.
