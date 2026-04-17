@@ -71,7 +71,6 @@
 - Security principles are documented as a comment block at the top of `src/Rules.hs` — read them before modifying rules.
 - `nix-build` runs `test.sh` integration tests automatically — no need to run them separately.
 - Never propose catch-all `.*` allow patterns. Always enumerate known-safe patterns explicitly. If a tool has too many safe flags to enumerate, that's a signal to find a different decomposition — not to use a catch-all.
-- When a Bash command triggers "ask" from the permission hook and the user approves it, spawn a background agent running `/add-rule` to analyze the command and propose a rule for future auto-allowing.
 - Don't auto-allow git subcommands that can delete commits, branches, or uncommitted changes — "local" ≠ "safe".
 - Never auto-allow subcommands that execute project code or delete files (test, bench, run, clean) in permission rules.
 - Relaxing an established "ask" rule to "allow" is probably wrong — always present such changes to the user with explicit justification before making them.
