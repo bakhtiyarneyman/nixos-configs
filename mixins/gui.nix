@@ -300,6 +300,11 @@ in {
       firefox = {
         enable = true;
         nativeMessagingHosts.packages = [pkgs.firefoxpwa];
+        policies = {
+          Extensions.Install = [
+            "${pkgs.claude-search-firefox}/claude-search@extension.xpi"
+          ];
+        };
         preferences = {
           "media.ffmpeg.vaapi.enabled" = true;
           "media.navigator.mediadatadecoder_vpx_enabled" = true;
@@ -505,6 +510,7 @@ in {
       overlays = [
         (self: super: {
           adwaita-one-dark = pkgs.callPackage ../pkgs/adwaita-one-dark.nix {};
+          claude-search-firefox = pkgs.callPackage ../pkgs/claude-search-firefox.nix {};
           blender = super.blender.override {
             ffmpeg_7 = pkgs.ffmpeg_7-full;
             hipSupport = true;
