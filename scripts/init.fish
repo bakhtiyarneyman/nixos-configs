@@ -258,6 +258,77 @@ function recode
     or return 1
 end
 
+function list_audio_nodes -d "List PipeWire audio nodes of a media class by id with friendly names, marking the default"
+    pw-dump | jq -r --arg class $argv[1] --arg def $argv[2] '
+        .[]
+        | select(.info.props["media.class"] == $class)
+        | "  \(if .info.props["node.name"] == $def then "*" else " " end) \(.id)\t\(.info.props["node.description"] // .info.props["node.name"])"'
+end
+
+function audio_node_name -d "node.name of a PipeWire node, restricted to a media class (empty if no match)"
+    pw-dump | jq -r --arg class $argv[1] --argjson id $argv[2] '
+        .[] | select(.id == $id and .info.props["media.class"] == $class) | .info.props["node.name"]'
+end
+
+function record_audio -d "Record a mic source + speaker sink monitor to a timestamped flac mkv"
+    set -l default_sink (pactl get-default-sink)
+    echo "Sinks (speakers to capture, * = default):"
+    list_audio_nodes Audio/Sink $default_sink
+    read -l -P "Sink id [Enter = default]: " sink_id; or return
+    if test -n "$sink_id"
+        set sink (audio_node_name Audio/Sink $sink_id)
+        if test -z "$sink"
+            print_error "No sink with id $sink_id"
+            return 1
+        end
+    else
+        set sink $default_sink
+    end
+
+    set -l default_source (pactl get-default-source)
+    echo "Sources (microphone, * = default):"
+    list_audio_nodes Audio/Source $default_source
+    read -l -P "Source id [Enter = default]: " src_id; or return
+    if test -n "$src_id"
+        set src (audio_node_name Audio/Source $src_id)
+        if test -z "$src"
+            print_error "No source with id $src_id"
+            return 1
+        end
+    else
+        set src $default_source
+    end
+
+    read -l -P "Recording suffix: " suffix; or return
+    set -l name (date "+%Y-%m-%d_%H-%M-%S")
+    if test -n "$suffix"
+        set name {$name}_$suffix
+    end
+
+    set -l output_dir $HOME/dump/recordings/audio
+    mkdir -p $output_dir; or return 1
+
+    ffmpeg -f pulse -i "$src" -f pulse -i "$sink.monitor" \
+        -map 0:a -map 1:a \
+        -c:a flac \
+        -metadata:s:a:0 title=Microphone \
+        -metadata:s:a:1 title=Speakers \
+        $output_dir/$name.mkv
+end
+
+function play_recording -d "Play a dual-stream recording, mixing the microphone and speaker tracks"
+    set -l input $argv[1]
+    if test -z "$input"
+        print_error "Usage: play_recording <file>"
+        return 1
+    end
+    if not test -e "$input"
+        print_error "No such file: $input"
+        return 1
+    end
+    ffplay -f lavfi "amovie=$input:si=0[a0];amovie=$input:si=1[a1];[a0][a1]amix=inputs=2"
+end
+
 function move_to_cache -d "Move to cache"
     argparse --name='move_to_cache' f/force h/help -- $argv
     or return
