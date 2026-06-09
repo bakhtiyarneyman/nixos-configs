@@ -31,11 +31,13 @@ in {
     environment = {
       systemPackages = with pkgs; [
         # System
+        android-tools
+        brightnessctl
         gparted
         monitorets # Chart temperature.
         # Utilities
         libsecret # For gnome-keyring.
-        xorg.xdpyinfo
+        xdpyinfo
         udiskie # USB disk automounting.
         qbittorrent
         libreoffice
@@ -185,7 +187,6 @@ in {
     systemd.services.polkit.serviceConfig.ExecStartPost = "-+${pkgs.systemd}/bin/systemctl --machine=bakhtiyar@.host --user restart polkit-soteria.service";
 
     services = {
-      dbus.implementation = "broker";
       desktopManager.gnome.extraGSettingsOverrides = ''
         [org.gnome.desktop.interface]
         gtk-theme='Adwaita-One-Dark'
@@ -224,6 +225,7 @@ in {
 
       # localtime.enable = true; // This doesn't work and only generates errors.
 
+      bentopdf.enable = true;
       blueman.enable = true; # Bluetooth applet.
       pcscd.enable = true;
       printing = {
@@ -313,9 +315,7 @@ in {
         };
       };
       gnome-disks.enable = true; # GUI USB disk mounting.
-      light.enable = true; # Brightness management.
       nm-applet.enable = true; # Wi-fi management.
-      adb.enable = true;
       seahorse.enable = true;
       gnupg.agent = {
         enable = true;
@@ -513,8 +513,16 @@ in {
           claude-search-firefox = pkgs.callPackage ../pkgs/claude-search-firefox.nix {};
           blender = super.blender.override {
             ffmpeg_7 = pkgs.ffmpeg_7-full;
-            hipSupport = true;
           };
+          firefoxpwa = super.firefoxpwa.overrideAttrs (old: {
+            buildCommand = builtins.replaceStrings
+              [''touch "$out/lib/firefoxpwa/is-packaged-app"'']
+              [''
+                mkdir -p "$out/lib/firefoxpwa"
+                touch "$out/lib/firefoxpwa/is-packaged-app"
+              '']
+              old.buildCommand;
+          });
           dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix {
             inherit config;
             dimSeconds = dimToLockSecs;

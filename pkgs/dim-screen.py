@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
 import os, signal, time, argparse, subprocess
+from enum import Enum
 from typing import Any
-from enum import Enum  # New import
 
 parser = argparse.ArgumentParser(
   description='Dim screen and lock it after some time'
@@ -17,31 +17,51 @@ args = parser.parse_args()
 
 current_notification_id = None
 
-# Declare enum for light commands
-class LightCommand(Enum):
-    SAVE    = "-O"  # Save brightness
-    RESTORE = "-I"  # Restore brightness
-    SET     = "-S"  # Set brightness
-    GET     = "-G"  # Get brightness
+class BrightnessOption(Enum):
+  SAVE = "--save"
+  RESTORE = "--restore"
+
+
+class BrightnessOperation(Enum):
+  GET = "get"
+  SET = "set"
 
 
 class Brightness:
+  @staticmethod
+  def command(
+    operation: BrightnessOperation,
+    *values: str,
+    options: tuple[BrightnessOption, ...] = (),
+  ) -> list[str]:
+    return [
+      "brightnessctl",
+      *(option.value for option in options),
+      operation.value,
+      *values,
+    ]
 
   @staticmethod
-  def get() -> float:
-    return float(os.popen(f"light {LightCommand.GET.value}").read())
+  def get(*options: BrightnessOption) -> float:
+    output = subprocess.check_output(
+      [
+        "brightnessctl",
+        "--machine-readable",
+        *(option.value for option in options),
+        BrightnessOperation.GET.value,
+      ],
+      text=True,
+    ).strip()
+    percent = output.split(",")[3].removesuffix("%")
+    return float(percent)
 
   @staticmethod
   def set(brightness: float):
-    os.system(f"light {LightCommand.SET.value} {brightness}")
-
-  @staticmethod
-  def save():
-    os.system(f"light {LightCommand.SAVE.value}")
+    subprocess.run(Brightness.command(BrightnessOperation.SET, f"{brightness}%"), check=False)
 
   @staticmethod
   def restore():
-    os.system(f"light {LightCommand.RESTORE.value}")
+    subprocess.run(Brightness.command(BrightnessOperation.GET, options=(BrightnessOption.RESTORE,)), check=False)
 
 class Notification:
   @staticmethod
@@ -89,8 +109,7 @@ def restore(sig: signal.Signals, frame: Any):
 signal.signal(signal.SIGTERM, restore)
 signal.signal(signal.SIGINT, restore)
 
-Brightness.save()
-initial_brightness = Brightness.get()
+initial_brightness = Brightness.get(BrightnessOption.SAVE)
 min_brightness = args.min_brightness_percents
 total_time = args.dim_seconds
 

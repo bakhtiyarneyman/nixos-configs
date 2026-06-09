@@ -183,9 +183,7 @@
       };
 
       # Alternatively, resolved could have been configured to start after dnsmasq.
-      resolved.extraConfig = ''
-        DNSStubListener=no
-      '';
+      resolved.settings.Resolve.DNSStubListener = false;
     };
 
     systemd.network = {

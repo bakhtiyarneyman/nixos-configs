@@ -408,5 +408,3 @@ function ssh --wraps ssh
         command ssh $argv
     end
 end
-
-atuin init fish --disable-up-arrow | source

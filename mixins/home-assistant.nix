@@ -10,7 +10,7 @@
       home-assistant = {
         enable = true;
         customComponents = let
-          callPackage = config.services.home-assistant.package.python.pkgs.callPackage;
+          callPackage = config.services.home-assistant.package.python3Packages.callPackage;
         in
           builtins.attrValues {
             openrgb-ha = callPackage ../pkgs/home-assistant/openrgb-ha.nix {};
@@ -139,8 +139,6 @@
             extraArgs = [
               "--debug"
             ];
-            # Temporary, until the module is fixed. Right now there's no such flag.
-            streaming = false;
           };
         };
       };

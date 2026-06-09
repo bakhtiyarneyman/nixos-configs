@@ -96,9 +96,7 @@
         }
       ];
 
-      sleep.extraConfig = ''
-        HibernateDelaySec=60min
-      '';
+      sleep.settings.Sleep.HibernateDelaySec = "60min";
     };
 
     # This value determines the NixOS release with which your system is to be

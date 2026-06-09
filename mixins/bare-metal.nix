@@ -7,7 +7,6 @@
   config = {
     boot = {
       initrd.systemd = {
-        enable = true;
         emergencyAccess = config.users.users.root.hashedPassword;
         network.enable = true;
       };

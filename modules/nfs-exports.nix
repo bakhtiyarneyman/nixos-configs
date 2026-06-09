@@ -21,6 +21,7 @@
       mkExport = name: device: {
         "/exports/${name}" = {
           inherit device;
+          fsType = "none";
           options = ["bind"];
         };
       };

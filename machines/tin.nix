@@ -195,7 +195,6 @@ in {
       machine-learning = {
         environment = {
           IMMICH_LOG_LEVEL = "debug"; # Doesn't seem to work.
-          MPLCONFIGDIR = "/var/lib/immich/mplconfig";
           LD_LIBRARY_PATH = let
             onnxruntime-openvino = pkgs.python312Packages.callPackage ../pkgs/onnxruntime-openvino.nix {};
           in
@@ -211,7 +210,6 @@ in {
       };
     };
     jellyfin.enable = true;
-    jellyseerr.enable = true;
     logind.settings.Login = {
       HandlePowerKey = lib.mkForce "reboot";
     };
@@ -256,7 +254,9 @@ in {
       '';
     };
     prowlarr.enable = true;
+    qui.enable = true;
     radarr.enable = true;
+    seerr.enable = true;
     sonarr.enable = true;
     tailscale.enable = true;
     vscode-server.enable = true;

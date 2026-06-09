@@ -64,7 +64,6 @@ in {
         parted
         smem
         # Utilities
-        atuin
         wget
         lnav
         mkpasswd
@@ -223,7 +222,11 @@ in {
         enable = true;
         settings = {
           AllowAgentForwarding = true;
-          AcceptEnv = "COLORTERM CLAUDE_NOTIFY_SOCKET CLAUDE_NOTIFY_WINDOW_PID";
+          AcceptEnv = [
+            "COLORTERM"
+            "CLAUDE_NOTIFY_SOCKET"
+            "CLAUDE_NOTIFY_WINDOW_PID"
+          ];
           StreamLocalBindUnlink = true;
         };
       };
@@ -258,17 +261,17 @@ in {
       };
     };
 
-    systemd.user.services.atuin-daemon = {
-      description = "Atuin daemon for shell history sync";
-      wantedBy = ["default.target"];
-      serviceConfig = {
-        ExecStart = "${pkgs.atuin}/bin/atuin daemon";
-        Restart = "always";
-        RestartSec = 5;
-      };
-    };
-
     programs = {
+      atuin = {
+        enable = true;
+        daemon.enable = true;
+        flags = ["--disable-up-arrow"];
+        settings = {
+          auto_sync = true;
+          sync_frequency = "5m";
+          sync_address = "https://api.atuin.sh";
+        };
+      };
       direnv.enable = true;
 
       fish = {
@@ -379,6 +382,8 @@ in {
           '';
       };
 
+      whois.enable = true;
+
       wireshark.enable = true;
     };
 
@@ -427,9 +432,7 @@ in {
           devenv = self.unstable.devenv;
           journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
           github-cli = super.unstable.pkgs.github-cli;
-          home-assistant = super.unstable.home-assistant.override {
-            python314 = super.unstable.python314;
-          };
+          home-assistant = super.unstable.home-assistant;
           discord = super.unstable.discord;
           telegram-desktop = super.unstable.telegram-desktop;
           wyoming-openwakeword = self.unstable.wyoming-openwakeword;

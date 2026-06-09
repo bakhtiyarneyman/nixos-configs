@@ -5,6 +5,7 @@
   libsForQt5,
   openrgb,
   glib,
+  hidapi,
   openal,
   pkg-config,
 }:
@@ -24,6 +25,30 @@ stdenv.mkDerivation (finalAttrs: {
     # Use the source of openrgb from nixpkgs instead of the submodule
     rm -r OpenRGB
     ln -s ${openrgb.src} OpenRGB
+
+    substituteInPlace OpenRGBHttpHookPlugin.pro \
+      --replace-fail "OpenRGB/dependencies/json" "OpenRGB/dependencies/json \\
+    OpenRGB/dependencies/json/nlohmann \\
+    OpenRGB/SPDAccessor \\
+    ${lib.getDev hidapi}/include/hidapi"
+
+    substituteInPlace OpenRGBHttpHookPlugin.h \
+      --replace-fail "Load(bool dark_theme, ResourceManager* resource_manager_ptr)" "Load(ResourceManagerInterface* resource_manager_ptr)" \
+      --replace-fail "static ResourceManager* RMPointer" "static ResourceManagerInterface* RMPointer"
+
+    substituteInPlace OpenRGBHttpHookPlugin.cpp \
+      --replace-fail "ResourceManager* OpenRGBHttpHookPlugin::RMPointer = nullptr" "ResourceManagerInterface* OpenRGBHttpHookPlugin::RMPointer = nullptr" \
+      --replace-fail "void OpenRGBHttpHookPlugin::Load(bool dark_theme, ResourceManager* resource_manager_ptr)" "void OpenRGBHttpHookPlugin::Load(ResourceManagerInterface* resource_manager_ptr)" \
+      --replace-fail "    DarkTheme                = dark_theme;" ""
+
+    substituteInPlace HttpHook.cpp \
+      --replace-fail '#include "HookActions.h"' '#include "HookActions.h"
+#include "ProfileManager.h"
+#include "RGBController.h"'
+
+    substituteInPlace EditHookAction.cpp \
+      --replace-fail '#include "OpenRGBHttpHookPlugin.h"' '#include "OpenRGBHttpHookPlugin.h"
+#include "ProfileManager.h"'
   '';
 
   nativeBuildInputs = with libsForQt5; [
@@ -35,6 +60,7 @@ stdenv.mkDerivation (finalAttrs: {
   buildInputs = with libsForQt5; [
     qtbase
     glib
+    hidapi
     openal
   ];
 

@@ -188,7 +188,7 @@ in {
 
       ollama = {
         enable = true;
-        acceleration = "rocm";
+        package = pkgs.ollama-rocm;
         rocmOverrideGfx = "10.3.2";
       };
       nextjs-ollama-llm-ui = {
@@ -294,8 +294,8 @@ in {
         ];
         dpi = 175;
         displayManager.setupCommands = ''
-          ${pkgs.xorg.xrandr}/bin/xrandr --setprovideroutputsource "modesetting" NVIDIA-0
-          ${pkgs.xorg.xrandr}/bin/xrandr --output DP-1 --auto --primary --output DP-3 --auto --right-of DP-1
+          ${pkgs.xrandr}/bin/xrandr --setprovideroutputsource "modesetting" NVIDIA-0
+          ${pkgs.xrandr}/bin/xrandr --output DP-1 --auto --primary --output DP-3 --auto --right-of DP-1
         '';
       };
 

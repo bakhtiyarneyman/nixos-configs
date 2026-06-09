@@ -25,7 +25,7 @@ pkgs.stdenv.mkDerivation {
       builtins.attrValues {
         inherit
           (pkgs)
-          light
+          brightnessctl
           libnotify
           upower
           swaynotificationcenter
