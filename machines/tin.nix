@@ -300,6 +300,7 @@ in {
             name = "snap";
             filesystems = {
               "slow/crypt/var/lib<" = true;
+              "slow/crypt/var/lib/frigate/recordings<" = false;
               "slow/crypt/var/lib/hass<" = false;
               "slow/crypt/var/lib/monero<" = false;
               "slow/crypt/var/lib/redis-immich" = false;
