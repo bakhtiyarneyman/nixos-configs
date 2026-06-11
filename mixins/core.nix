@@ -392,6 +392,16 @@ in {
       polkit = {
         enable = true;
         adminIdentities = ["unix-user:bakhtiyar"];
+        extraConfig = ''
+          polkit.addRule(function(action, subject) {
+            if (
+              action.id == "org.freedesktop.fwupd.refresh-remote" &&
+              subject.user == "fwupd-refresh"
+            ) {
+              return polkit.Result.YES;
+            }
+          });
+        '';
       };
     };
 
