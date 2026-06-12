@@ -167,6 +167,23 @@ in {
               MESSAGE = ["/Bluetooth: hci0: .*/"];
               SYSLOG_IDENTIFIER = ["kernel"];
             }
+            # Corrected ECC/MCE reports are useful for long-term trend monitoring, but
+            # should not page through journst or journal-brief. The generic context
+            # lines are suppressed too; uncorrectable events should still have explicit
+            # "uncorrected"/UE lines that remain visible.
+            {
+              MESSAGE = [
+                "/^mce: \\[Hardware Error\\]: Machine check events logged$/"
+                "/^\\[Hardware Error\\]: Corrected error, no action required\\.$/"
+                "/^\\[Hardware Error\\]: CPU:[0-9]+ \\([0-9A-Fa-f]+:[0-9A-Fa-f]+:[0-9A-Fa-f]+\\) MC[0-9]+_STATUS\\[[^]]*\\bCE\\b[^]]*\\bCECC\\b[^]]*\\]: 0x[0-9A-Fa-f]+$/"
+                "/^\\[Hardware Error\\]: Error Addr: 0x[0-9A-Fa-f]+$/"
+                "/^\\[Hardware Error\\]: IPID: 0x[0-9A-Fa-f]+, Syndrome: 0x[0-9A-Fa-f]+$/"
+                "/^\\[Hardware Error\\]: Unified Memory Controller Ext\\. Error Code: 0$/"
+                "/^\\[Hardware Error\\]: cache level: [^,]+, tx: [^,]+, mem-tx: [^,]+$/"
+                "/^EDAC MC[0-9]+: [0-9]+ CE on .*$/"
+              ];
+              SYSLOG_IDENTIFIER = ["kernel"];
+            }
             {
               SYSLOG_IDENTIFIER = ["bluetoothd"];
             }
