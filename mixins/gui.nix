@@ -336,6 +336,10 @@ in {
       wireshark.package = pkgs.wireshark;
     };
 
+    systemd.tmpfiles.rules = [
+      "d /run/journst-boot 0755 bakhtiyar users -"
+    ];
+
     systemd.user.targets = {
       sway-session = {
         enable = true;
@@ -361,22 +365,37 @@ in {
           then {
             flags = "--boot --no-pager";
             restart = "no";
+            wantedBy = ["sway-session.target"];
+            after = ["sway-session.target" "swaync.service"];
+            restartIfChanged = false;
+            unitConfig.ConditionPathExists = "!/run/journst-boot/bakhtiyar";
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+              ExecStartPost = ["${pkgs.coreutils}/bin/touch /run/journst-boot/bakhtiyar"];
+            };
           }
           else if phase == "run"
           then {
             flags = "--follow --lines=0";
             restart = "on-failure";
+            wantedBy = ["sway-session.target"];
+            after = ["swaync.service"];
+            restartIfChanged = true;
+            unitConfig = {};
+            serviceConfig = {};
           }
           else throw "Phase ${phase} is not supported";
       in {
         "journst-${phase}" = {
-          wantedBy = ["sway-session.target"];
+          inherit (cfg) wantedBy after restartIfChanged unitConfig;
           requires = ["swaync.service"];
-          after = ["swaync.service"];
-          serviceConfig = {
-            ExecStart = ["${pkgs.journst}/bin/journst ${cfg.flags}"];
-            Restart = cfg.restart;
-          };
+          serviceConfig =
+            cfg.serviceConfig
+            // {
+              ExecStart = ["${pkgs.journst}/bin/journst ${cfg.flags}"];
+              Restart = cfg.restart;
+            };
         };
       };
     in
