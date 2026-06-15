@@ -185,6 +185,10 @@ in {
               SYSLOG_IDENTIFIER = ["kernel"];
             }
             {
+              MESSAGE = ["/memory corrected error report/"];
+              SYSLOG_IDENTIFIER = ["rasdaemon"];
+            }
+            {
               SYSLOG_IDENTIFIER = ["bluetoothd"];
             }
             {
