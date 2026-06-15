@@ -91,6 +91,7 @@ in {
         perf
         openssl
         # Development
+        codex
         claude-permission-hook
         unstable.claude-code
         shfmt
