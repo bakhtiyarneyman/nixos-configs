@@ -234,7 +234,10 @@ in {
       '';
     };
     prowlarr.enable = true;
-    qui.enable = true;
+    qui = {
+      enable = true;
+      secretFile = "/etc/nixos/secrets/qui.secret";
+    };
     radarr.enable = true;
     seerr.enable = true;
     sonarr.enable = true;
