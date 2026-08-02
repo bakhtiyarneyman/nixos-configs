@@ -150,6 +150,8 @@ in {
         openFirewall = true;
       };
 
+      chrony.enable = true;
+
       gvfs.enable = true;
 
       iperf3.enable = true;
