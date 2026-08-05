@@ -1,4 +1,7 @@
 {
+  config,
+  lib,
+  machines,
   pkgs,
   machineName,
   ...
@@ -49,6 +52,17 @@
 
     programs = {
       _1password.enable = true;
+      ssh.extraConfig = let
+        toHost = name: machine: let
+          hostNames = config.programs.ssh.knownHosts.${name}.hostNames;
+          aliases = hostNames ++ lib.optional machine.config.services.tailscale.enable "${name}.orkhon-mohs.ts.net";
+        in ''
+          Host ${lib.concatStringsSep " " aliases}
+            HostName ${builtins.head hostNames}
+            ForwardAgent yes
+        '';
+      in
+        builtins.concatStringsSep "\n" (lib.mapAttrsToList toHost (lib.filterAttrs (_: machine: machine.config.security.pam.sshAgentAuth.enable) machines));
     };
 
     security.pam = {

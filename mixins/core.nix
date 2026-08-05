@@ -7,7 +7,6 @@
   hostKeys,
   lib,
   machineName,
-  machines,
   pkgs,
   ...
 }: let
@@ -392,18 +391,10 @@ in {
             publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFWtgyWNQ//nFGPEwdsUizf08UOL+EtFnergd2HgAkqy";
           };
         };
-        extraConfig = let
-          toHost = host: _config: ''
-            Host ${host} ${host}.orkhon-mohs.ts.net
-              HostName ${host}
-              ForwardAgent yes
-          '';
-        in
-          builtins.concatStringsSep "\n" (builtins.attrValues (builtins.mapAttrs toHost machines))
-          + ''
-            Host *
-              SendEnv COLORTERM CLAUDE_NOTIFY_SOCKET CLAUDE_NOTIFY_WINDOW_PID
-          '';
+        extraConfig = ''
+          Host *
+            SendEnv COLORTERM CLAUDE_NOTIFY_SOCKET CLAUDE_NOTIFY_WINDOW_PID
+        '';
       };
 
       whois.enable = true;
