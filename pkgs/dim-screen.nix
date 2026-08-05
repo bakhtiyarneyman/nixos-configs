@@ -4,7 +4,7 @@
   pkgs,
   dimSeconds ? 10,
   dimStepSeconds ? 0.25,
-  minBrightnessPercents ? 1,
+  minBrightness ? 1,
 }:
 pkgs.stdenv.mkDerivation {
   name = "dim-screen";
@@ -35,7 +35,7 @@ pkgs.stdenv.mkDerivation {
       --add-flags "\
       --dim-seconds ${builtins.toString dimSeconds} \
       --dim-step-seconds ${builtins.toString dimStepSeconds} \
-      --min-brightness-percents ${builtins.toString minBrightnessPercents} \
+      --min-brightness ${builtins.toString minBrightness} \
     ${
       if builtins.elem "nohibernate" config.boot.kernelParams
       then ""

@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument('--dim-seconds', type=int, default=10, help='Time in seconds to dim the screen')
 parser.add_argument('--dim-step-seconds', type=float, default=0.025, help='Time in seconds to wait between each step')
-parser.add_argument('--min-brightness-percents', type=int, default=1, help='Minimum brightness in percents')
+parser.add_argument('--min-brightness', type=int, default=1, help='Minimum brightness in native device units')
 parser.add_argument('--hibernate', action='store_true', help='Invoke `suspend-then-hibernate` on battery discharge, instead of `suspend`')
 
 args = parser.parse_args()
@@ -42,22 +42,15 @@ class Brightness:
     ]
 
   @staticmethod
-  def get(*options: BrightnessOption) -> float:
-    output = subprocess.check_output(
-      [
-        "brightnessctl",
-        "--machine-readable",
-        *(option.value for option in options),
-        BrightnessOperation.GET.value,
-      ],
+  def get(*options: BrightnessOption) -> int:
+    return int(subprocess.check_output(
+      Brightness.command(BrightnessOperation.GET, options=options),
       text=True,
-    ).strip()
-    percent = output.split(",")[3].removesuffix("%")
-    return float(percent)
+    ).strip())
 
   @staticmethod
-  def set(brightness: float):
-    subprocess.run(Brightness.command(BrightnessOperation.SET, f"{brightness}%"), check=False)
+  def set(brightness: int):
+    subprocess.run(Brightness.command(BrightnessOperation.SET, str(brightness)), check=False)
 
   @staticmethod
   def restore():
@@ -110,7 +103,7 @@ signal.signal(signal.SIGTERM, restore)
 signal.signal(signal.SIGINT, restore)
 
 initial_brightness = Brightness.get(BrightnessOption.SAVE)
-min_brightness = args.min_brightness_percents
+min_brightness = args.min_brightness
 total_time = args.dim_seconds
 
 start_time = time.time()
@@ -124,7 +117,7 @@ while True:
   # Cubic curve: drops faster at the start, slower at the end,
   # compensating for logarithmic human brightness perception.
   fraction = remaining_time / total_time
-  brightness = min_brightness + (initial_brightness - min_brightness) * fraction ** 3
+  brightness = round(min_brightness + (initial_brightness - min_brightness) * fraction ** 3)
 
   Brightness.set(brightness)
   if round(remaining_time) != last_notification_time:
@@ -133,7 +126,7 @@ while True:
 
   time.sleep(args.dim_step_seconds)
 
-Brightness.set(args.min_brightness_percents)
+Brightness.set(min_brightness)
 Notification.close("Screen locked")
 
 if os.system(f"upower --dump | grep 'online.*no'") == 0:
