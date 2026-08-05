@@ -463,17 +463,17 @@ in {
       };
       overlays = [
         (self: super: {
+          claude-permission-hook = self.callPackage ../pkgs/claude-permission-hook.nix {};
           devenv = self.unstable.devenv;
-          journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
+          discord = super.unstable.discord;
           github-cli = super.unstable.pkgs.github-cli;
           home-assistant = super.unstable.home-assistant;
-          discord = super.unstable.discord;
-          telegram-desktop = super.unstable.telegram-desktop;
-          wyoming-openwakeword = self.unstable.wyoming-openwakeword;
-          wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
-          wyoming-piper = self.unstable.wyoming-piper;
+          journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
           ntopng = self.callPackage ../pkgs/ntopng.nix {};
-          claude-permission-hook = self.callPackage ../pkgs/claude-permission-hook.nix {};
+          telegram-desktop = super.unstable.telegram-desktop;
+          wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
+          wyoming-openwakeword = self.unstable.wyoming-openwakeword;
+          wyoming-piper = self.unstable.wyoming-piper;
         })
       ];
     };
