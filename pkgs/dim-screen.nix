@@ -3,7 +3,7 @@
   lib,
   pkgs,
   dimSeconds ? 10,
-  dimStepSeconds ? 0.25,
+  dimStepSeconds ? 0.05,
   minBrightness ? 1,
 }:
 pkgs.stdenv.mkDerivation {

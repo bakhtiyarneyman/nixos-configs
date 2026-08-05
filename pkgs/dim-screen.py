@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument('--dim-seconds', type=int, default=10, help='Time in seconds to dim the screen')
-parser.add_argument('--dim-step-seconds', type=float, default=0.025, help='Time in seconds to wait between each step')
+parser.add_argument('--dim-step-seconds', type=float, default=0.05, help='Time in seconds between scheduled brightness updates')
 parser.add_argument('--min-brightness', type=int, default=1, help='Minimum brightness in native device units')
 parser.add_argument('--hibernate', action='store_true', help='Invoke `suspend-then-hibernate` on battery discharge, instead of `suspend`')
 
@@ -50,7 +50,11 @@ class Brightness:
 
   @staticmethod
   def set(brightness: int):
-    subprocess.run(Brightness.command(BrightnessOperation.SET, str(brightness)), check=False)
+    subprocess.run(
+      Brightness.command(BrightnessOperation.SET, str(brightness)),
+      check=False,
+      stdout=subprocess.DEVNULL,
+    )
 
   @staticmethod
   def restore():
@@ -106,13 +110,13 @@ initial_brightness = Brightness.get(BrightnessOption.SAVE)
 min_brightness = args.min_brightness
 total_time = args.dim_seconds
 
-start_time = time.time()
+start_time = time.monotonic()
+next_step_time = start_time
+end_time = start_time + total_time
 last_notification_time = 0
-while True:
-  elapsed_time = time.time() - start_time
-  remaining_time = total_time - elapsed_time
-  if remaining_time <= 0:
-    break
+while next_step_time < end_time:
+  time.sleep(max(0, next_step_time - time.monotonic()))
+  remaining_time = end_time - next_step_time
 
   # Cubic curve: drops faster at the start, slower at the end,
   # compensating for logarithmic human brightness perception.
@@ -124,8 +128,12 @@ while True:
     last_notification_time = round(remaining_time)
     Notification.send(f"Screen will be locked in {last_notification_time} seconds")
 
-  time.sleep(args.dim_step_seconds)
+  next_step_time = max(
+    next_step_time + args.dim_step_seconds,
+    time.monotonic(),
+  )
 
+time.sleep(max(0, end_time - time.monotonic()))
 Brightness.set(min_brightness)
 Notification.close("Screen locked")
 
