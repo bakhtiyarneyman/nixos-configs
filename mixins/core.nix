@@ -464,6 +464,7 @@ in {
       overlays = [
         (self: super: {
           claude-permission-hook = self.callPackage ../pkgs/claude-permission-hook.nix {};
+          codex = self.unstable.codex;
           devenv = self.unstable.devenv;
           discord = super.unstable.discord;
           github-cli = super.unstable.pkgs.github-cli;
