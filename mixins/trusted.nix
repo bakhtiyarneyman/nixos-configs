@@ -18,18 +18,11 @@
 
     networking = {
       firewall = {
-        trustedInterfaces = [
-          "tailscale0"
-        ];
         extraCommands = ''
           iptables --append nixos-fw \
             --source 172.28.14.0/24 \
             --jump ACCEPT
         '';
-      };
-      hosts = {
-        "100.65.77.115" = ["iron-tailscale" "iron-initrd"];
-        "100.126.205.61" = ["mercury-tailscale"];
       };
       wireguard.interfaces.mullvad = {
         interfaceNamespace = "protected";
@@ -79,11 +72,6 @@
     };
 
     services = {
-      tailscale = {
-        enable = true;
-        # TODO: Remove after Tailscale 1.92, which routes service IPs without --accept-routes.
-        extraSetFlags = ["--accept-routes"];
-      };
       i2p.enable = true;
       syncthing = {
         enable = true;

@@ -18,14 +18,15 @@ in {
     (modulesPath + "/installer/scan/not-detected.nix")
     ../mixins/always-on.nix
     ../mixins/bare-metal.nix
-    ../mixins/intel.nix
-    ../mixins/home-assistant.nix
     ../mixins/frigate.nix
+    ../mixins/home-assistant.nix
+    ../mixins/intel.nix
     ../mixins/mullvad.nix
     ../mixins/on-battery.nix
+    ../mixins/router.nix
+    ../mixins/tailscale.nix
     ../mixins/untrusted.nix
     ../mixins/zfs.nix
-    ../mixins/router.nix
   ];
 
   surveillance.cameras.human_camera = {
@@ -258,7 +259,6 @@ in {
     radarr.enable = true;
     seerr.enable = true;
     sonarr.enable = true;
-    tailscale.enable = true;
     vscode-server.enable = true;
     xserver.videoDrivers = ["intel"];
     zrepl = {

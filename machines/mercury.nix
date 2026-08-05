@@ -4,6 +4,7 @@
     ../mixins/gui.nix
     ../mixins/intel.nix
     ../mixins/on-battery.nix
+    ../mixins/tailscale.nix
     ../mixins/trusted.nix
     ../mixins/virtualization.nix
   ];
