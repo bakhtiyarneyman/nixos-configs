@@ -12,13 +12,13 @@ in {
 
     upCommand = mkOption {
       type = types.str;
-      default = "${pkgs.brightnessctl}/bin/brightnessctl set 10%+";
+      default = "${pkgs.brightnessctl}/bin/brightnessctl --exponent=3 set 10%+";
       description = "Command to increase brightness";
     };
 
     downCommand = mkOption {
       type = types.str;
-      default = "${pkgs.brightnessctl}/bin/brightnessctl set 10%-";
+      default = "${pkgs.brightnessctl}/bin/brightnessctl --exponent=3 set 10%-";
       description = "Command to decrease brightness";
     };
   };
