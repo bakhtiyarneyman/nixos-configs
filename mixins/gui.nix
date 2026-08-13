@@ -251,7 +251,19 @@ in {
 
       corectrl.enable = true;
 
-      dconf.enable = true; # For gnome-keyring. See: https://github.com/NixOS/nixpkgs/issues/161224
+      dconf = {
+        enable = true; # For gnome-keyring. See: https://github.com/NixOS/nixpkgs/issues/161224
+        profiles.user.databases = [
+          {
+            settings."org/gnome/desktop/interface" = {
+              gtk-theme = gtkTheme.themes."3.0";
+              icon-theme = gtkTheme.icon;
+              font-name = gtkTheme.font;
+              color-scheme = gtkTheme.colorScheme;
+            };
+          }
+        ];
+      };
 
       git.config = {
         diff = {
