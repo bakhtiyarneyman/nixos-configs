@@ -470,8 +470,11 @@ in {
       ];
     };
 
-    fonts.packages = with pkgs; [
-      powerline-fonts
-    ];
+    fonts = {
+      fontDir.enable = true;
+      packages = with pkgs; [
+        powerline-fonts
+      ];
+    };
   };
 }
