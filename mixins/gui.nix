@@ -1,9 +1,33 @@
 {
   pkgs,
   config,
+  lib,
   ...
 }: let
   dimToLockSecs = 15;
+  gtkTheme = {
+    themes = {
+      "3.0" = "adw-gtk3-dark";
+      "4.0" = "Default";
+    };
+    icon = "kora";
+    font = "Fira Sans";
+    colorScheme = "prefer-dark";
+    css = "${pkgs.adwaita-one-dark}/share/themes/Adwaita-One-Dark/colors/gtk-dark.css";
+  };
+  mkGtkSettings = name:
+    lib.generators.toINI {} {
+      Settings = {
+        "gtk-theme-name" = name;
+        "gtk-application-prefer-dark-theme" = true;
+        "gtk-icon-theme-name" = gtkTheme.icon;
+      };
+    };
+  gtkSettings = lib.mapAttrs' (version: name:
+    lib.nameValuePair "xdg/gtk-${version}/settings.ini" {
+      text = mkGtkSettings name;
+    })
+  gtkTheme.themes;
   yubioath-flutter-launcher = pkgs.writeShellScriptBin "yubioath-flutter-launcher" ''
     if ${pkgs.sway}/bin/swaymsg '[app_id="yubioath-flutter"]' focus 2>/dev/null; then
       exit 0
@@ -107,20 +131,16 @@ in {
         quickemu
       ];
 
-      etc = {
-        "xdg/mimeapps.list".text = ''
-          [Default Applications]
-          video/mp4=vlc.desktop;
-          video/mkv=vlc.desktop;
-        '';
-        "xdg/gtk-3.0/settings.ini".text = ''
-          [Settings]
-          gtk-theme-name = Adwaita-One-Dark
-          gtk-application-prefer-dark-theme = true
-          gtk-icon-theme-name = kora
-        '';
-        "avahi/services/unused".text = "";
-      };
+      etc =
+        {
+          "xdg/mimeapps.list".text = ''
+            [Default Applications]
+            video/mp4=vlc.desktop;
+            video/mkv=vlc.desktop;
+          '';
+          "avahi/services/unused".text = "";
+        }
+        // gtkSettings;
       sessionVariables = {
         NIXOS_OZONE_WL = "1";
         SSH_AUTH_SOCK = "/home/bakhtiyar/.1password/agent.sock";
@@ -187,12 +207,6 @@ in {
     systemd.services.polkit.serviceConfig.ExecStartPost = "-+${pkgs.systemd}/bin/systemctl --machine=bakhtiyar@.host --user restart polkit-soteria.service";
 
     services = {
-      desktopManager.gnome.extraGSettingsOverrides = ''
-        [org.gnome.desktop.interface]
-        gtk-theme='Adwaita-One-Dark'
-        icon-theme='kora'
-        font-name='Fira Sans'
-      '';
       displayManager = {
         enable = true;
         defaultSession = "sway";
@@ -351,6 +365,11 @@ in {
     systemd.tmpfiles.rules = [
       "d /run/journst-boot 0755 bakhtiyar users -"
     ];
+
+    systemd.user.tmpfiles.rules = lib.concatMap (version: [
+      "d %h/.config/gtk-${version} 0700 - - -"
+      "L+ %h/.config/gtk-${version}/gtk.css - - - - ${gtkTheme.css}"
+    ]) (builtins.attrNames gtkTheme.themes);
 
     systemd.user.targets = {
       sway-session = {
@@ -546,12 +565,15 @@ in {
             ffmpeg_7 = pkgs.ffmpeg_7-full;
           };
           firefoxpwa = super.firefoxpwa.overrideAttrs (old: {
-            buildCommand = builtins.replaceStrings
+            buildCommand =
+              builtins.replaceStrings
               [''touch "$out/lib/firefoxpwa/is-packaged-app"'']
-              [''
-                mkdir -p "$out/lib/firefoxpwa"
-                touch "$out/lib/firefoxpwa/is-packaged-app"
-              '']
+              [
+                ''
+                  mkdir -p "$out/lib/firefoxpwa"
+                  touch "$out/lib/firefoxpwa/is-packaged-app"
+                ''
+              ]
               old.buildCommand;
           });
           dim-screen = pkgs.callPackage ../pkgs/dim-screen.nix {
