@@ -38,9 +38,6 @@ in {
     #   };
     # };
 
-    # This workaround is necessary even if service.localtime is enabled.
-    time.timeZone = "America/Los_Angeles";
-
     users = {
       mutableUsers = false;
       defaultUserShell = pkgs.fish;
@@ -141,6 +138,8 @@ in {
     };
 
     services = {
+      automatic-timezoned.enable = true;
+
       avahi = {
         enable = true;
         # Important to resolve .local domains of printers, otherwise you get an error
