@@ -20,6 +20,13 @@
           bypassWorkqueues = true;
           device = "/dev/disk/by-uuid/74cf5bcb-f6a5-4410-8247-4a04ffe30826";
         };
+        # The hibernation image is on a separate, unencrypted swap partition, so
+        # resuming does not require the root volume. Wait for resume before asking
+        # for the root passphrase; After= does not pull this service into cold boots.
+        systemd.services."systemd-cryptsetup@crypted" = {
+          after = ["systemd-hibernate-resume.service"];
+          overrideStrategy = "asDropin";
+        };
       };
       supportedFilesystems = ["nfs"];
     };
