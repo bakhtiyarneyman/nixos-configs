@@ -133,11 +133,6 @@ in {
 
       etc =
         {
-          "xdg/mimeapps.list".text = ''
-            [Default Applications]
-            video/mp4=vlc.desktop;
-            video/mkv=vlc.desktop;
-          '';
           "avahi/services/unused".text = "";
         }
         // gtkSettings;
@@ -368,6 +363,8 @@ in {
 
     systemd.tmpfiles.rules = [
       "d /run/journst-boot 0755 bakhtiyar users -"
+      # Override mutable user defaults with the defaults declared in xdg.mime.
+      "L+ /home/bakhtiyar/.config/sway-mimeapps.list - bakhtiyar users - /etc/xdg/mimeapps.list"
     ];
 
     systemd.user.tmpfiles.rules = lib.concatMap (version: [
@@ -634,15 +631,24 @@ in {
       spiceUSBRedirection.enable = true;
     };
 
-    xdg.portal = {
-      enable = true;
-      wlr = {
+    xdg = {
+      mime.defaultApplications = {
+        "text/html" = "firefox.desktop";
+        "video/mkv" = "vlc.desktop";
+        "video/mp4" = "vlc.desktop";
+        "x-scheme-handler/http" = "firefox.desktop";
+        "x-scheme-handler/https" = "firefox.desktop";
+      };
+      portal = {
         enable = true;
-        settings = {
-          screencast = {
-            max_fps = 30;
-            exec_before = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-add xdg-desktop-portal-wlr";
-            exec_after = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-remove xdg-desktop-portal-wlr";
+        wlr = {
+          enable = true;
+          settings = {
+            screencast = {
+              max_fps = 30;
+              exec_before = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-add xdg-desktop-portal-wlr";
+              exec_after = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-remove xdg-desktop-portal-wlr";
+            };
           };
         };
       };
