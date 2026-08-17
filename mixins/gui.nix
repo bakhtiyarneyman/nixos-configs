@@ -228,7 +228,14 @@ in {
         enable = true;
         alsa.enable = true;
         pulse.enable = true;
-        wireplumber.enable = true;
+        wireplumber = {
+          enable = true;
+          extraConfig."10-disable-bluetooth-headset-autoswitch" = {
+            "wireplumber.settings" = {
+              "bluetooth.autoswitch-to-headset-profile" = false;
+            };
+          };
+        };
       };
 
       gnome = {
