@@ -61,7 +61,6 @@
     programs.i3status-rust.temperature = {};
 
     services = {
-      iio.enable = true;
       rpcbind.enable = true;
       xserver = {
         videoDrivers = ["modesetting"];
