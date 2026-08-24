@@ -134,13 +134,22 @@ in {
       etc =
         {
           "avahi/services/unused".text = "";
+          "xdg/easyeffects/db/easyeffectsrc".text = ''
+            [Style]
+            forceBreezeTheme=false
+          '';
         }
         // gtkSettings;
       sessionVariables = {
         NIXOS_OZONE_WL = "1";
+        QT_QPA_PLATFORMTHEME = "gtk3";
+        QT_QUICK_CONTROLS_STYLE = "Fusion";
         SSH_AUTH_SOCK = "/home/bakhtiyar/.1password/agent.sock";
       };
     };
+
+    # Make Qt applications consume the GTK palette, font, and icon theme.
+    qt.enable = true;
 
     networking.firewall = {
       allowedTCPPorts = [
