@@ -29,6 +29,8 @@
         "nix-colors"
         "--update-input"
         "lanzaboote"
+        "--update-input"
+        "nixos-hardware"
         "--option"
         "extra-binary-caches"
         ''"${(builtins.concatStringsSep " " (builtins.attrValues (builtins.mapAttrs (mn: _cfg: "http://${mn}:${builtins.toString nixServePort}") machines)))}"''

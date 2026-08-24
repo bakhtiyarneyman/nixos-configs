@@ -1,5 +1,6 @@
-{pkgs, ...}: {
+{nixos-hardware, ...}: {
   imports = [
+    nixos-hardware.nixosModules.framework-11th-gen-intel
     ../mixins/bare-metal.nix
     ../mixins/gui.nix
     ../mixins/intel.nix
@@ -11,7 +12,6 @@
 
   config = {
     boot = {
-      kernelParams = [''acpi_osi="!Windows 2020"'' "nvme.noacpi=1"];
       loader.systemd-boot.enable = true;
       initrd = {
         availableKernelModules = ["xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" "rtsx_pci_sdmmc"];

@@ -11,6 +11,10 @@
       url = "github:nix-community/lanzaboote/v1.0.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Reminder: tend to `always-on.nix` when adding new inputs.
   };
 
@@ -21,6 +25,7 @@
     nix-colors,
     vscode-server,
     lanzaboote,
+    nixos-hardware,
     ...
   }: let
     system = "x86_64-linux";
@@ -59,9 +64,10 @@
       value = nixpkgs.lib.nixosSystem {
         inherit system;
         specialArgs = {
+          inherit hostKeys;
           inherit machineName;
           inherit machines;
-          inherit hostKeys;
+          inherit nixos-hardware;
           yubikeys = [
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIG1XG551t2Yb8ryQ/lGRJXhfnWwz3B/MmOjMoz7x3G9iAAAABHNzaDo= blue"
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAICDUZrPTStLzzGeHC+c81L4u1B47CwOW3N3HRfM/2tzvAAAABHNzaDo= green"
