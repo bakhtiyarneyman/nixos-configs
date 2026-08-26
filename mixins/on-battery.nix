@@ -7,6 +7,9 @@
   canHibernate = builtins.elem "nohibernate" config.boot.kernelParams;
 in {
   services = {
+    # Chrony's RTC tracking holds /dev/rtc0 exclusively, blocking rtcwake below.
+    chrony.enableRTCTrimming = false;
+
     logind.settings.Login = {
       HandleLidSwitch =
         if canHibernate
