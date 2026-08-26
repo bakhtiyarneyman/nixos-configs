@@ -7,6 +7,7 @@
     ../mixins/on-battery.nix
     ../mixins/tailscale.nix
     ../mixins/trusted.nix
+    ../mixins/two-factor-auth.nix
     ../mixins/virtualization.nix
   ];
 
