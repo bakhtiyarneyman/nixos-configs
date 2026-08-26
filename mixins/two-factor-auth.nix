@@ -4,131 +4,93 @@
   pkgs,
   ...
 }: let
-  localPasswordAndFingerprintServices = [
+  targetUser = "bakhtiyar";
+  yubicoAuthFile = "/etc/security/yubico/authorized_yubikeys";
+
+  protectedServices = [
     "login"
     "swaylock"
     "vlock"
+    "sudo"
+    "doas"
+    "polkit-1"
+    "systemd-run0"
+    "sshd"
+    "su"
     "passwd"
     "chfn"
     "chsh"
   ];
 
-  elevationServices = [
-    "sudo"
-    "doas"
-    "polkit-1"
-    "systemd-run0"
-  ];
+  isLocalSession = pkgs.writeShellScript "pam-is-local-session" ''
+    case "$PAM_SERVICE" in
+      sshd)
+        exit 1
+        ;;
+      login | gdm-password)
+        [ -z "$PAM_RHOST" ]
+        exit
+        ;;
+      swaylock | vlock | polkit-1)
+        exit 0
+        ;;
+    esac
 
-  servicesWithoutBuiltInFingerprint = [
-    "chpasswd"
-    "cups"
-    "doas"
-    "gdm-autologin"
-    "gdm-fingerprint"
-    "gdm-launch-environment"
-    "gdm-password"
-    "groupadd"
-    "groupdel"
-    "groupmems"
-    "groupmod"
-    "other"
-    "polkit-1"
-    "runuser"
-    "runuser-l"
-    "sshd"
-    "su"
-    "sudo"
-    "systemd-run0"
-    "systemd-user"
-    "useradd"
-    "userdel"
-    "usermod"
-  ];
-
-  yubicoAuthFile = "/etc/security/yubico/authorized_yubikeys";
-
-  isRemoteSession = pkgs.writeShellScript "pam-is-remote-session" ''
     remote="$(${pkgs.coreutils}/bin/timeout 2s ${config.systemd.package}/bin/loginctl show-session self --property=Remote --value 2>/dev/null)" || exit 1
-    [ "$remote" = yes ]
+    [ "$remote" = no ]
   '';
 
-  mkLocalPasswordAndFingerprint = serviceName: {
-    fprintAuth = lib.mkForce true;
+  mkUserSpecificAuth = serviceName: let
+    unixOrder = config.security.pam.services.${serviceName}.rules.auth.unix.order;
+  in {
+    # Disable inherited alternatives. The explicit rules below require the
+    # password first and add a second factor only for targetUser.
+    fprintAuth = lib.mkForce false;
+    yubicoAuth = lib.mkForce false;
 
     rules.auth = {
       unix.control = lib.mkForce "requisite";
-      fprintd = {
-        control = lib.mkForce "sufficient";
-        order = config.security.pam.services.${serviceName}.rules.auth.unix.order + 1;
+
+      target-user = {
+        order = unixOrder + 1;
+        control = "[success=1 default=ignore]";
+        modulePath = "${config.security.pam.package}/lib/security/pam_succeed_if.so";
+        settings.quiet = true;
+        args = ["user" "=" targetUser];
       };
-    };
-  };
 
-  mkElevationService = serviceName: let
-    service = config.security.pam.services.${serviceName};
-    firstOrder = service.rules.auth.fprintd.order;
-  in {
-    fprintAuth = lib.mkForce false;
+      other-user-success = {
+        order = unixOrder + 2;
+        control = "sufficient";
+        modulePath = "${config.security.pam.package}/lib/security/pam_permit.so";
+      };
 
-    rules.auth = {
-      # Replace the built-in password, fingerprint, YubiOTP, and final deny
-      # rules with one explicit local/remote branch. Other PAM phases retain
-      # the NixOS defaults.
-      fprintd.enable = lib.mkForce false;
-      unix.enable = lib.mkForce false;
-      yubico.enable = lib.mkForce false;
-      deny.enable = lib.mkForce false;
-
-      remote-session = {
-        order = firstOrder;
-        control = "[success=3 default=ignore]";
+      local-session = {
+        order = unixOrder + 3;
+        # Remote or unclassified sessions skip both local-only rules.
+        control = "[success=ignore default=2]";
         modulePath = "${config.security.pam.package}/lib/security/pam_exec.so";
         settings = {
           quiet = true;
           quiet_log = true;
         };
-        args = ["${isRemoteSession}"];
-      };
-
-      local-password = {
-        order = firstOrder + 1;
-        control = "requisite";
-        modulePath = "${config.security.pam.package}/lib/security/pam_unix.so";
-        settings = {
-          nullok = service.allowNullPassword;
-          inherit (service) nodelay;
-          likeauth = true;
-          try_first_pass = true;
-        };
+        args = ["${isLocalSession}"];
       };
 
       local-fingerprint = {
-        order = firstOrder + 2;
+        order = unixOrder + 4;
         control = "sufficient";
         modulePath = "${config.services.fprintd.package}/lib/security/pam_fprintd.so";
       };
 
       local-deny = {
-        order = firstOrder + 3;
+        order = unixOrder + 5;
         control = "requisite";
         modulePath = "${config.security.pam.package}/lib/security/pam_deny.so";
       };
 
-      remote-password = {
-        order = firstOrder + 4;
-        control = "requisite";
-        modulePath = "${config.security.pam.package}/lib/security/pam_unix.so";
-        settings = {
-          nullok = service.allowNullPassword;
-          inherit (service) nodelay;
-          likeauth = true;
-          try_first_pass = true;
-        };
-      };
-
       remote-yubico = {
-        order = firstOrder + 5;
+        order = unixOrder + 6;
         control = "sufficient";
         modulePath = "${pkgs.yubico-pam}/lib/security/pam_yubico.so";
         settings = {
@@ -137,31 +99,17 @@
           id = lib.mkIf (config.security.pam.yubico.mode == "client") config.security.pam.yubico.id;
         };
       };
-
-      remote-deny = {
-        order = firstOrder + 6;
-        control = "requisite";
-        modulePath = "${config.security.pam.package}/lib/security/pam_deny.so";
-      };
     };
   };
-
-  enabledFingerprintServices = lib.attrNames (
-    lib.filterAttrs (_: service: service.enable && service.fprintAuth) config.security.pam.services
-  );
-
-  unexpectedFingerprintServices = lib.subtractLists localPasswordAndFingerprintServices enabledFingerprintServices;
 in {
   config = {
-    assertions = [
-      {
-        assertion = unexpectedFingerprintServices == [];
-        message = ''
-          Fingerprint authentication was enabled for unexpected PAM services:
-          ${lib.concatStringsSep ", " unexpectedFingerprintServices}
-        '';
-      }
-    ];
+    # The Framework module enables fprintd globally, which makes fingerprint
+    # authentication sufficient for almost every PAM service. Keep the daemon
+    # available without enabling that blanket PAM default.
+    services.fprintd.enable = lib.mkForce false;
+    services.dbus.packages = [config.services.fprintd.package];
+    systemd.packages = [config.services.fprintd.package];
+    environment.systemPackages = [config.services.fprintd.package];
 
     environment.etc."security/yubico/authorized_yubikeys" = {
       text = "bakhtiyar:cccccbijujci:cccccbijuinh\n";
@@ -170,6 +118,8 @@ in {
       group = "root";
     };
 
+    # GDM must use gdm-password's login substack. Its separate fingerprint
+    # conversation would otherwise allow fingerprint-only authentication.
     programs.dconf.profiles.gdm.databases = lib.mkBefore [
       {
         settings."org/gnome/login-screen".enable-fingerprint-authentication = false;
@@ -178,31 +128,9 @@ in {
     ];
 
     security.pam.services = lib.mkMerge [
-      (lib.genAttrs localPasswordAndFingerprintServices mkLocalPasswordAndFingerprint)
-      (lib.genAttrs servicesWithoutBuiltInFingerprint (_: {
-        fprintAuth = lib.mkForce false;
-      }))
-      (lib.genAttrs elevationServices mkElevationService)
+      (lib.genAttrs protectedServices mkUserSpecificAuth)
       {
-        # GDM must use gdm-password's login substack. Its separate fingerprint
-        # service authenticates with a fingerprint alone.
-        gdm-fingerprint.enable = false;
-
-        # SSH cannot use the laptop's fingerprint reader. Retain the existing
-        # YubiOTP policy, but use the root-owned system mapping above.
-        sshd.rules.auth.yubico.settings.authfile = yubicoAuthFile;
-
-        # Preserve pam_rootok for callers already running as root, then reject
-        # every non-root caller before any authentication method can run.
-        su.rules.auth = {
-          fprintd.enable = lib.mkForce false;
-          unix.enable = lib.mkForce false;
-          non-root-deny = {
-            order = config.security.pam.services.su.rules.auth.rootok.order + 1;
-            control = "requisite";
-            modulePath = "${config.security.pam.package}/lib/security/pam_deny.so";
-          };
-        };
+        gdm-fingerprint.enable = lib.mkForce false;
       }
     ];
   };
