@@ -391,6 +391,9 @@ in {
     systemd.user.targets = {
       sway-session = {
         enable = true;
+        # Sway starts this readiness latch after importing its environment. Disable
+        # its implicit After= on wanted units so they can use After=/Requisite= on it.
+        unitConfig.DefaultDependencies = false;
         bindsTo = ["graphical-session.target"];
         wants = ["graphical-session-pre.target"];
         after = ["graphical-session-pre.target"];
