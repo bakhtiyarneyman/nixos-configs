@@ -191,9 +191,9 @@ in {
               block = "keyboard_layout";
               driver = "sway";
               mappings = {
-                "English (US)" = "EN";
-                "Russian (N/A)" = "RU";
-                "Azerbaijani (N/A)" = "AZ";
+                "English (US)" = "🇺🇸";
+                "Russian (N/A)" = "🇷🇺";
+                "Azerbaijani (N/A)" = "🇦🇿";
               };
             }
             {
