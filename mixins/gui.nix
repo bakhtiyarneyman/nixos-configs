@@ -206,9 +206,9 @@ in {
 
     security.soteria.enable = true;
 
-    # Restart soteria after polkitd restarts (e.g. nixos-rebuild switch),
-    # otherwise soteria's agent registration is lost and auth prompts silently fail.
-    systemd.services.polkit.serviceConfig.ExecStartPost = "-+${pkgs.systemd}/bin/systemctl --machine=bakhtiyar@.host --user restart polkit-soteria.service";
+    # Refresh an existing agent after polkitd restarts without starting it at boot,
+    # before Sway has exported XDG_SESSION_ID to the user manager.
+    systemd.services.polkit.serviceConfig.ExecStartPost = "-+${pkgs.systemd}/bin/systemctl --machine=bakhtiyar@.host --user try-restart polkit-soteria.service";
 
     # Restart blueman after bluetoothd restarts (e.g. after a crash). Blueman 2.4.6
     # can fail to re-register its BlueZ agent, leaving pairing confirmations unavailable.
