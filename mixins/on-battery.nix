@@ -11,6 +11,12 @@ in {
     chrony.enableRTCTrimming = false;
 
     logind.settings.Login = {
+      # Experiment: after resume, logind's default 30-second lid-switch holdoff
+      # coincided with repeated PrepareForSleep cycles that re-ran swayidle's
+      # before-sleep locker.  Disabling the holdoff tests that correlation while
+      # retaining logind's normal lid-close actions.  It is not yet evidence that
+      # the holdoff itself is the root cause.
+      HoldoffTimeoutSec = 0;
       HandleLidSwitch =
         if canHibernate
         then "suspend"
