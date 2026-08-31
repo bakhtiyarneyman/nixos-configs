@@ -143,8 +143,6 @@ in {
         "fc00:bbbb:bbbb:bb01::1:898c/128"
       ];
     };
-    nix.gc.automatic = lib.mkForce false;
-
     programs = {
       i3status-rust = {
         batteries = [
