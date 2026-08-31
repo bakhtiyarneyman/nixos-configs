@@ -126,7 +126,7 @@ in {
       foldl' insertBootFilesystem fss [1 2];
 
     hardware.graphics.extraPackages = [
-      pkgs.rocmPackages.clr
+      pkgs.rocmPackages.clr.icd
     ];
 
     networking = {
