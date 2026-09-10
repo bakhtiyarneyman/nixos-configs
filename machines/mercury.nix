@@ -2,6 +2,7 @@
   imports = [
     nixos-hardware.nixosModules.framework-11th-gen-intel
     ../mixins/bare-metal.nix
+    ../mixins/build-on-iron.nix
     ../mixins/gui.nix
     ../mixins/intel.nix
     ../mixins/on-battery.nix

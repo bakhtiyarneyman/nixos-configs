@@ -18,6 +18,7 @@ in {
     (modulesPath + "/installer/scan/not-detected.nix")
     ../mixins/always-on.nix
     ../mixins/bare-metal.nix
+    ../mixins/build-on-iron.nix
     ../mixins/frigate.nix
     ../mixins/home-assistant.nix
     ../mixins/intel.nix
@@ -140,28 +141,6 @@ in {
       fwMark = "51820";
       ips = ["10.67.21.121/32" "fc00:bbbb:bbbb:bb01::4:1578/128"];
     };
-  };
-
-  nix = {
-    buildMachines = [
-      {
-        hostName = "iron";
-        system = "x86_64-linux";
-        protocol = "ssh-ng";
-        sshUser = "nix-remote-builder";
-        sshKey = "/etc/ssh/ssh_host_ed25519_key";
-        maxJobs = 32;
-        speedFactor = 10;
-        supportedFeatures = [
-          "nixos-test"
-          "benchmark"
-          "big-parallel"
-          "kvm"
-        ];
-        mandatoryFeatures = [];
-      }
-    ];
-    distributedBuilds = true;
   };
 
   nixpkgs.hostPlatform = "x86_64-linux";
