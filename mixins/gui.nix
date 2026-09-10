@@ -317,7 +317,8 @@ in {
           obs-pipewire-audio-capture
           obs-source-clone
           obs-source-record
-          obs-source-switcher
+          # Disable temporarily, seems broken.
+          # obs-source-switcher
           obs-vaapi
           wlrobs
         ];
