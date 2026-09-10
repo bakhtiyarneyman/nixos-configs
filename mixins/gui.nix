@@ -409,6 +409,8 @@ in {
         wantedBy = ["sway-session.target"];
         serviceConfig.ExecStart = [cmd];
         environment."XDG_CONFIG_DIRS" = "/etc/xdg";
+
+        path = [config.system.path];
       };
       mkJournst = phase: let
         cfg =
