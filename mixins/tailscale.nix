@@ -3,7 +3,7 @@
     networking = {
       firewall.trustedInterfaces = ["tailscale0"];
       hosts = {
-        "100.65.77.115" = ["iron-tailscale" "iron-initrd"];
+        "100.119.39.82" = ["iron-tailscale" "iron-initrd"];
         "100.126.205.61" = ["mercury-tailscale"];
       };
       networkmanager.dns = "systemd-resolved";
