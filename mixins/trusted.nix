@@ -62,7 +62,7 @@
       yubico = {
         enable = false;
         control = "required";
-        debug = true;
+        debug = false;
         mode = "client";
         id = "99202";
       };
