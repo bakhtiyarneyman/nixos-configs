@@ -1,9 +1,16 @@
 {...}: {
   config = {
+    programs.ssh.extraConfig = ''
+      Host iron-builder
+        HostName iron-tailscale
+        HostKeyAlias iron-tailscale
+        ConnectTimeout 5
+    '';
+
     nix = {
       buildMachines = [
         {
-          hostName = "iron-tailscale";
+          hostName = "iron-builder";
           system = "x86_64-linux";
           protocol = "ssh-ng";
           sshUser = "nix-remote-builder";
