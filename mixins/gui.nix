@@ -654,11 +654,11 @@ in {
 
     xdg = {
       mime.defaultApplications = {
-        "text/html" = "firefox.desktop";
+        "text/html" = "re.sonny.Junction.desktop";
         "video/mkv" = "vlc.desktop";
         "video/mp4" = "vlc.desktop";
-        "x-scheme-handler/http" = "firefox.desktop";
-        "x-scheme-handler/https" = "firefox.desktop";
+        "x-scheme-handler/http" = "re.sonny.Junction.desktop";
+        "x-scheme-handler/https" = "re.sonny.Junction.desktop";
       };
       portal = {
         enable = true;
