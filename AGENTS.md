@@ -84,6 +84,10 @@ nix-instantiate --parse-only file.nix
 3. **Shared Configuration**: Add reusable features to `mixins/`, machine-specific config to `machines/`
 4. **Testing Changes**: Use `nixos-rebuild test` first, then `switch` after verification
 
+### Commit Messages
+
+Commit messages must explain why the change was made, with enough context to understand the reasoning without the conversation.
+
 ## Key Configuration Patterns
 
 - **Secrets**: Stored in `secrets/` directory, referenced with absolute paths
