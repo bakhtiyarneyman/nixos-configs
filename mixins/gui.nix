@@ -307,8 +307,7 @@ in {
       obs-studio = {
         enable = true;
         enableVirtualCamera = true;
-        package = pkgs.unstable.obs-studio;
-        plugins = with pkgs.unstable.obs-studio-plugins; [
+        plugins = with pkgs.obs-studio-plugins; [
           advanced-scene-switcher
           droidcam-obs
           input-overlay
@@ -317,8 +316,7 @@ in {
           obs-pipewire-audio-capture
           obs-source-clone
           obs-source-record
-          # Disable temporarily, seems broken.
-          # obs-source-switcher
+          obs-source-switcher
           obs-vaapi
           wlrobs
         ];
