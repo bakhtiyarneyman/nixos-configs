@@ -5,6 +5,10 @@
   ...
 }: let
   dimToLockSecs = 15;
+  # Use the target provided by the selected WM's nixpkgs integration. Shared
+  # service policy below only depends on this setting, not the WM's name.
+  desktopSessionTargetName = "sway-session";
+  desktopSessionTarget = "${desktopSessionTargetName}.target";
   gtkTheme = {
     themes = {
       "3.0" = "adw-gtk3-dark";
@@ -138,6 +142,13 @@ in {
             [Style]
             forceBreezeTheme=false
           '';
+          # Keep nixpkgs' config include and session target, but serialize its
+          # environment import and target startup: separate Sway execs race,
+          # particularly leaving Soteria without XDG_SESSION_ID.
+          "sway/config.d/nixos.conf".source = lib.mkForce (pkgs.writeText "nixos.conf" ''
+            exec "${pkgs.dbus}/bin/dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XDG_SESSION_ID && ${config.systemd.package}/bin/systemctl --user start ${desktopSessionTarget}"
+            exec ${pkgs.sway}/bin/swaymsg -t subscribe '["shutdown"]' && ${config.systemd.package}/bin/systemctl --user stop ${desktopSessionTarget}
+          '');
         }
         // gtkSettings;
       sessionVariables = {
@@ -387,38 +398,41 @@ in {
       "L+ %h/.config/gtk-${version}/gtk.css - - - - ${gtkTheme.css}"
     ]) (builtins.attrNames gtkTheme.themes);
 
-    systemd.user.targets = {
-      sway-session = {
-        enable = true;
-        # Sway starts this readiness latch after importing its environment. Disable
-        # its implicit After= on wanted units so they can use After=/Requisite= on it.
-        unitConfig.DefaultDependencies = false;
-        bindsTo = ["graphical-session.target"];
-        wants = ["graphical-session-pre.target"];
-        after = ["graphical-session-pre.target"];
-      };
-    };
+    # Extend the upstream target; don't duplicate its definition. Suppress its
+    # implicit After= on wanted units so they can use After=/Requisite= on it.
+    systemd.user.targets.${desktopSessionTargetName}.unitConfig.DefaultDependencies = false;
     systemd.user.services = let
-      autostart = cmd: {
-        enable = true;
-        # Won't start unless sway-session.target has been started.
-        requisite = ["sway-session.target"];
-        after = ["sway-session.target"];
-        # Will be started if sway-session is started.
-        wantedBy = ["sway-session.target"];
-        serviceConfig.ExecStart = [cmd];
-        environment."XDG_CONFIG_DIRS" = "/etc/xdg";
-
-        path = [config.system.path];
+      # GDM also starts graphical-session.target. These helpers belong to the
+      # user's desktop: wait for its environment and stop with it, even if SSH keeps
+      # the user's service manager alive after graphical logout.
+      desktopSession = {
+        requisite = [desktopSessionTarget];
+        after = [desktopSessionTarget];
+        partOf = [desktopSessionTarget];
       };
+      desktopAutostart =
+        desktopSession
+        // {
+          # Replace inherited default/graphical-session autostarts, not append.
+          wantedBy = lib.mkForce [desktopSessionTarget];
+        };
+      mkDesktopAutostart = cmd:
+        desktopAutostart
+        // {
+          enable = true;
+          serviceConfig.ExecStart = [cmd];
+          environment."XDG_CONFIG_DIRS" = "/etc/xdg";
+
+          path = [config.system.path];
+        };
       mkJournst = phase: let
         cfg =
           if phase == "boot"
           then {
             flags = "--boot --no-pager";
             restart = "no";
-            wantedBy = ["sway-session.target"];
-            after = ["sway-session.target" "swaync.service"];
+            wantedBy = [desktopSessionTarget];
+            after = [desktopSessionTarget "swaync.service"];
             restartIfChanged = false;
             unitConfig.ConditionPathExists = "!/run/journst-boot/bakhtiyar";
             serviceConfig = {
@@ -431,7 +445,7 @@ in {
           then {
             flags = "--follow --lines=0";
             restart = "on-failure";
-            wantedBy = ["sway-session.target"];
+            wantedBy = [desktopSessionTarget];
             after = ["swaync.service"];
             restartIfChanged = true;
             unitConfig = {};
@@ -452,40 +466,52 @@ in {
       };
     in
       {
-        blueman = autostart "${pkgs.blueman}/bin/blueman-applet";
+        polkit-soteria = desktopAutostart;
+        idle-inhibit-status-watch = desktopAutostart;
+        idle-inhibit-wayland-watch = desktopAutostart;
+        # User-triggered, never autostarted.
+        idle-inhibit-manual = desktopSession;
+
+        # This helper must also run for SSH-only logins, but not for GDM.
+        # !@system would miss the greeter accounts, whose UIDs start at 60578.
+        auto-fix-vscode-server.unitConfig.ConditionGroup = "!gdm";
+
+        blueman = mkDesktopAutostart "${pkgs.blueman}/bin/blueman-applet";
 
         # USB disk automounting.
-        udiskie = autostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
+        udiskie = mkDesktopAutostart "${pkgs.udiskie}/bin/udiskie -t -n -a --appindicator -f ${pkgs.krusader}/bin/krusader";
 
-        signal = autostart "${pkgs.signal-desktop}/bin/signal-desktop";
+        signal = mkDesktopAutostart "${pkgs.signal-desktop}/bin/signal-desktop";
 
-        telegram = autostart "${pkgs.telegram-desktop}/bin/Telegram";
+        telegram = mkDesktopAutostart "${pkgs.telegram-desktop}/bin/Telegram";
 
-        discord = autostart "${pkgs.discord}/bin/discord";
+        discord = mkDesktopAutostart "${pkgs.discord}/bin/discord";
 
-        easyeffects = autostart "${pkgs.easyeffects}/bin/easyeffects";
+        easyeffects = mkDesktopAutostart "${pkgs.easyeffects}/bin/easyeffects";
 
-        slack = autostart "${pkgs.slack}/bin/slack";
+        slack = mkDesktopAutostart "${pkgs.slack}/bin/slack";
 
-        nm-applet.environment."XDG_CONFIG_DIRS" = "/etc/xdg";
+        nm-applet =
+          desktopAutostart
+          // {environment."XDG_CONFIG_DIRS" = "/etc/xdg";};
 
         focus-urgent =
-          autostart "/etc/nixos/focus-urgent.sh"
+          mkDesktopAutostart "/etc/nixos/focus-urgent.sh"
           // {
             path = [pkgs.bash pkgs.sway pkgs.jq];
           };
 
         inactive-windows-transparency =
-          autostart
+          mkDesktopAutostart
           "${pkgs.inactive-windows-transparency}/bin/inactive-windows-transparency.py";
 
-        swaync = autostart "${pkgs.swaynotificationcenter}/bin/swaync --config /etc/nixos/swaync.conf --style /etc/nixos/swaync.css";
+        swaync = mkDesktopAutostart "${pkgs.swaynotificationcenter}/bin/swaync --config /etc/nixos/swaync.conf --style /etc/nixos/swaync.css";
 
         claude-notify = {
           enable = true;
           requires = ["swaync.service"];
           after = ["swaync.service"];
-          wantedBy = ["sway-session.target"];
+          wantedBy = [desktopSessionTarget];
           path = [pkgs.fish pkgs.jq pkgs.libnotify pkgs.socat pkgs.sway pkgs.swaynotificationcenter];
           serviceConfig = {
             ExecStart = ["${pkgs.socat}/bin/socat -t 999999999 UNIX-LISTEN:%t/claude-notification-server.socket,fork,unlink-early EXEC:/etc/nixos/claude-notify-handler"];
@@ -498,14 +524,14 @@ in {
             ${pkgs.wlsunset}/bin/wlsunset -t 3300 $(${pkgs.curl}/bin/curl -s http://ip-api.com/json | ${pkgs.jq}/bin/jq -r '"-l \(.lat) -L \(.lon)"')
           '';
         in
-          autostart ''${wlsunset-here}/bin/wlsunset-here'';
+          mkDesktopAutostart ''${wlsunset-here}/bin/wlsunset-here'';
 
         swayidle = let
           idleToDimSecs = 60;
           idleToLockSecs = idleToDimSecs + dimToLockSecs;
           idleToScreenOffSecs = idleToLockSecs + 10;
         in
-          autostart "${pkgs.writeShellScriptBin "autolock" ''
+          mkDesktopAutostart "${pkgs.writeShellScriptBin "autolock" ''
             ${pkgs.swayidle}/bin/swayidle -w \
               timeout ${builtins.toString idleToDimSecs} 'echo "Dimming..."; ${pkgs.dim-screen}/bin/dim-screen &' \
                 resume 'echo "Undim."; ${pkgs.procps}/bin/pkill dim-screen' \
@@ -517,18 +543,18 @@ in {
 
         # The flag might not be necessary after the fix:
         # https://nixpk.gs/pr-tracker.html?pr=278953
-        tutanota = autostart "${pkgs.tutanota-desktop}/bin/tutanota-desktop --password-store=gnome-libsecret";
+        tutanota = mkDesktopAutostart "${pkgs.tutanota-desktop}/bin/tutanota-desktop --password-store=gnome-libsecret";
 
-        wl-paste = autostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
+        wl-paste = mkDesktopAutostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
 
         # # Execute shell script that runs "env > /tmp/vars.systemd". Useful for finding discrepancies between systemd and shell environments.
-        # dump_vars = autostart "${pkgs.writeShellScriptBin "dump_vars" ''
+        # dump_vars = mkDesktopAutostart "${pkgs.writeShellScriptBin "dump_vars" ''
         #   env | sort > /tmp/vars.systemd
         # ''}/bin/dump_vars";
 
         yubikey-launch = {
-          after = ["sway-session.target"];
-          requisite = ["sway-session.target"];
+          after = [desktopSessionTarget];
+          requisite = [desktopSessionTarget];
           serviceConfig = {
             Type = "oneshot";
             RemainAfterExit = false;
@@ -542,31 +568,33 @@ in {
           };
         };
 
-        obs-virtual-audio = {
-          description = "Load OBS virtual audio devices";
-          after = ["pipewire.service"];
-          bindsTo = ["pipewire.service"];
-          serviceConfig = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-            ExecStart = pkgs.writeShellScript "obs-virtual-audio-setup" ''
-              # Wait for PipeWire to be fully ready
-              ${pkgs.coreutils}/bin/sleep 2
+        obs-virtual-audio = lib.mkMerge [
+          desktopAutostart
+          {
+            description = "Load OBS virtual audio devices";
+            after = ["pipewire.service"];
+            bindsTo = ["pipewire.service"];
+            serviceConfig = {
+              Type = "oneshot";
+              RemainAfterExit = true;
+              ExecStart = pkgs.writeShellScript "obs-virtual-audio-setup" ''
+                # Wait for PipeWire to be fully ready
+                ${pkgs.coreutils}/bin/sleep 2
 
-              # Load virtual sink for OBS
-              ${pkgs.pulseaudio}/bin/pactl load-module module-null-sink \
-                sink_name=OBS_VIRTUAL_SINK \
-                sink_properties=device.description="OBS Virtual Sink"
+                # Load virtual sink for OBS
+                ${pkgs.pulseaudio}/bin/pactl load-module module-null-sink \
+                  sink_name=OBS_VIRTUAL_SINK \
+                  sink_properties=device.description="OBS Virtual Sink"
 
-              # Load virtual microphone (remap source from sink monitor)
-              ${pkgs.pulseaudio}/bin/pactl load-module module-remap-source \
-                source_name=OBS_VIRTUAL_MIC \
-                master=OBS_VIRTUAL_SINK.monitor \
-                source_properties=device.description="OBS Virtual Microphone"
-            '';
-          };
-          wantedBy = ["default.target"];
-        };
+                # Load virtual microphone (remap source from sink monitor)
+                ${pkgs.pulseaudio}/bin/pactl load-module module-remap-source \
+                  source_name=OBS_VIRTUAL_MIC \
+                  master=OBS_VIRTUAL_SINK.monitor \
+                  source_properties=device.description="OBS Virtual Microphone"
+              '';
+            };
+          }
+        ];
       }
       // mkJournst "boot"
       // mkJournst "run";
