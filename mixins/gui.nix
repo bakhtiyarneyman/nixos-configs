@@ -431,8 +431,6 @@ in {
           then {
             flags = "--boot --no-pager";
             restart = "no";
-            wantedBy = [desktopSessionTarget];
-            after = [desktopSessionTarget "swaync.service"];
             restartIfChanged = false;
             unitConfig.ConditionPathExists = "!/run/journst-boot/bakhtiyar";
             serviceConfig = {
@@ -445,24 +443,28 @@ in {
           then {
             flags = "--follow --lines=0";
             restart = "on-failure";
-            wantedBy = [desktopSessionTarget];
-            after = ["swaync.service"];
             restartIfChanged = true;
             unitConfig = {};
             serviceConfig = {};
           }
           else throw "Phase ${phase} is not supported";
       in {
-        "journst-${phase}" = {
-          inherit (cfg) wantedBy after restartIfChanged unitConfig;
-          requires = ["swaync.service"];
-          serviceConfig =
-            cfg.serviceConfig
-            // {
-              ExecStart = ["${pkgs.journst}/bin/journst ${cfg.flags}"];
-              Restart = cfg.restart;
-            };
-        };
+        "journst-${phase}" =
+          desktopSession
+          // {
+            inherit (cfg) restartIfChanged unitConfig;
+            # Stop forwarding errors if swaync exits, including on failure.
+            # Start again with swaync; the boot marker still prevents replay.
+            bindsTo = ["swaync.service"];
+            after = desktopSession.after ++ ["swaync.service"];
+            wantedBy = ["swaync.service"];
+            serviceConfig =
+              cfg.serviceConfig
+              // {
+                ExecStart = ["${pkgs.journst}/bin/journst ${cfg.flags}"];
+                Restart = cfg.restart;
+              };
+          };
       };
     in
       {
