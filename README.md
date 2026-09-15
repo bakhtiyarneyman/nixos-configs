@@ -9,6 +9,12 @@ My NixOS configs shared across my machines. To image a new machine:
 7. Generate a  `/root/wpa_supplicant.conf` using `wpa_passphrase` (if the device needs to be unlocked via wifi).
 8. Run a `ssh-keygen -t ed25519 -N "" -f /etc/ssh/initrd_ssh_host_ed25519_key` (if the device needs to be unlocked via SSH).
 9. Run `nixos-install --flake /mnt/etc/nixos#<HOSTNAME>`.
+10. After booting the **installed system**, switch to a local console (Ctrl+Alt+F3) and
+log in as root. Run:
+
+```sh
+fprintd-enroll -f right-index-finger bakhtiyar
+```
 
 Code in this repo is subject to MIT license (see LICENSE file).
 
