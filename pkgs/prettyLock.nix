@@ -1,7 +1,11 @@
 {pkgs, ...}:
 with pkgs;
   writeShellScriptBin "prettyLock" ''
+    # swayidle -w holds its logind sleep-delay inhibitor until this command
+    # exits.  Fork only after the lock surface is ready so suspend cannot be
+    # delayed until the user authenticates.
     ${swaylock}/bin/swaylock \
+      --daemonize \
       --indicator-radius=40 \
       --show-failed-attempts \
       --image=${../wallpaper.jpg} \
