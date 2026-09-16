@@ -2,23 +2,6 @@
 
 source /etc/nixos/claude-notify.fish
 
-set window_pid (find_ancestor_window)
-if test -n "$window_pid"; and is_focused_window $window_pid
-    exit 0
-end
-
 # Extract the last assistant message from the hook input.
 set text (jq -r '.last_assistant_message // empty' | string collect)
-# Convert markdown bold/italic to Pango markup.
-set text (echo $text | sed -E 's/\*\*([^*]+)\*\*/<b>\1<\/b>/g; s/\*([^*]+)\*/<i>\1<\/i>/g' | string collect)
-
-if test -z "$text" -o "$text" = null
-    exit 0
-end
-
-# Run in background. Claude Code waits for the hook's stdout/stderr pipes to
-# close — background children inherit these fds. Redirecting all three fds on
-# the backgrounded child lets this script exit immediately.
-send_notification --window-pid "$window_pid" \
-    --focus-on default -A default=Open -- "$text" \
-    </dev/null >/dev/null 2>/dev/null &
+send_completion_notification 'Claude Code' "$text"

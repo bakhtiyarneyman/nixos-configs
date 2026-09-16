@@ -1,0 +1,6 @@
+notify = ["/etc/nixos/codex-notify-stop"]
+
+[tui]
+# Completion notifications come from the hook; terminal bells would mark the
+# window urgent and focus it before the notification is clicked.
+notifications = ["approval-requested"]

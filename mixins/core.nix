@@ -266,7 +266,11 @@ in {
         ]);
     };
 
-    environment.etc."claude-code/CLAUDE.md".source = ../claude/CLAUDE.md;
+    environment.etc = {
+      "claude-code/CLAUDE.md".source = ../claude/CLAUDE.md;
+
+      "codex/config.toml".source = ../codex/config.toml;
+    };
 
     systemd.tmpfiles.rules = [
       "L+ /home/bakhtiyar/.claude/commands - bakhtiyar users - /etc/nixos/claude/commands"

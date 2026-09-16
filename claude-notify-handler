@@ -10,7 +10,7 @@ set request (cat)
 set body (echo $request | jq -r '.body' | string collect)
 set window_pid (echo $request | jq -r '.window_pid // empty')
 
-set -l args
+set -l args --title (echo $request | jq -r '.title // "Claude Code"')
 if test -n "$window_pid"
     set -a args --window-pid "$window_pid"
 end

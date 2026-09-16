@@ -21,17 +21,50 @@ function is_focused_window -a window_pid
     test "$window_pid" = "$focused"
 end
 
+function send_completion_notification -a title text
+    if test -z "$text"
+        return
+    end
+
+    set -l window_pid (find_ancestor_window)
+    if test -n "$window_pid"
+        is_focused_window "$window_pid"; and return
+    else if not test -S "$CLAUDE_NOTIFY_SOCKET"
+        # A headless session needs SSH notification forwarding.
+        return
+    end
+
+    # Escape response text before adding the supported Pango markup.
+    # Encode backslashes too: notify-send interprets backslash escapes.
+    set -l body (printf '%s' "$text" | jq -Rrs @html \
+        | string replace -a -- \\ '&#92;' \
+        | sed -E 's/\*\*([^*]+)\*\*/<b>\1<\/b>/g; s/\*([^*]+)\*/<i>\1<\/i>/g' \
+        | string collect)
+
+    # Resolve the source window before detaching. Close inherited hook pipes
+    # so the caller can finish while notify-send waits for a click.
+    fish --no-config -c '
+        source /etc/nixos/claude-notify.fish
+        send_notification --title "$argv[1]" --window-pid "$argv[2]" \
+            --focus-on default -A default=Open -- "$argv[3]"
+    ' "$title" "$window_pid" "$body" </dev/null >/dev/null 2>/dev/null &
+end
+
 function send_notification
     # Sends a desktop notification with auto-dismiss when the given window gets focus.
-    # Usage: send_notification --window-pid PID [--focus-on ACTION]... [-A action=Label]... [--] BODY
+    # Usage: send_notification --window-pid PID [--title TITLE] [--focus-on ACTION]... [-A action=Label]... [--] BODY
     # Outputs the selected action key, or nothing if dismissed.
-    argparse 'window-pid=' 'focus-on=+' 'A=+' 'command=' -- $argv
+    argparse 'window-pid=' 'title=' 'focus-on=+' 'A=+' 'command=' -- $argv
     or return 1
 
     set -l body "$argv"
     set -l window_pid "$_flag_window_pid"
     set -l focus_actions $_flag_focus_on
     set -l sock "$CLAUDE_NOTIFY_SOCKET"
+    set -l title 'Claude Code'
+    if set -q _flag_title
+        set title "$_flag_title"
+    end
 
     if test -z "$body"
         return
@@ -62,16 +95,17 @@ function send_notification
 
         set -l response (jq -n \
             --arg body "$body" \
+            --arg title "$title" \
             --arg window_pid "$CLAUDE_NOTIFY_WINDOW_PID" \
             --argjson actions "$actions_json" \
             --argjson focus_on "$focus_json" \
             --arg command "$_flag_command" \
-            '{body:$body, window_pid:$window_pid, actions:$actions, focus_on:$focus_on, command:$command}' \
+            '{body:$body, title:$title, window_pid:$window_pid, actions:$actions, focus_on:$focus_on, command:$command}' \
             | socat -t 999999999 - UNIX-CONNECT:$sock)
         set action (echo $response | jq -r '.action')
     else if test -n "$body"
         set -l out (mktemp)
-        stdbuf -oL notify-send --print-id $action_args 'Claude Code' -- "$body" > $out &
+        stdbuf -oL notify-send --print-id $action_args "$title" -- "$body" > $out &
         set -l notify_pid $last_pid
 
         while not test -s $out

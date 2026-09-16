@@ -1,0 +1,9 @@
+#!/usr/bin/env fish
+
+source /etc/nixos/claude-notify.fish
+
+# Codex passes its notification payload as a single JSON argument.
+set text (printf '%s' "$argv[1]" | jq -r \
+    'select(.type == "agent-turn-complete") | .["last-assistant-message"] // empty' \
+    | string collect)
+send_completion_notification Codex "$text"
