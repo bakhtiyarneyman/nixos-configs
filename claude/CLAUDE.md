@@ -49,6 +49,7 @@
 - After implementation, before committing, scan CLAUDE.md files and instructions for stale references to the behavior you changed.
 
 ## Development Principles
+- When updating shared configuration, preserve compatibility with all machines that rely on it; changes for one machine must not break another.
 - Don't spawn exploration agents for simple, targeted edits — just read the file.
 - Do not remove temporary debugging facilities until proven working.
 - Use pkexec to execute privileged commands.
