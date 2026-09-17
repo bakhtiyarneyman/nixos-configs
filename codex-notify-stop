@@ -3,7 +3,11 @@
 source /etc/nixos/claude-notify.fish
 
 # Codex passes its notification payload as a single JSON argument.
+# Internal recap turns use a fixed prompt; their completion is not new work.
 set text (printf '%s' "$argv[1]" | jq -r \
-    'select(.type == "agent-turn-complete") | .["last-assistant-message"] // empty' \
+    'select(.type == "agent-turn-complete")
+     | select(any(.["input-messages"][]?;
+         startswith("Write a brief catch-up for a user returning to this Codex task.")) | not)
+     | .["last-assistant-message"] // empty' \
     | string collect)
 send_completion_notification Codex "$text"
