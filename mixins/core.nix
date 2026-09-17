@@ -464,6 +464,8 @@ in {
           github-cli = super.unstable.pkgs.github-cli;
           home-assistant = super.unstable.home-assistant;
           journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
+          # libfprint 1.94.100 adds support for the Microarray 3274:8012 reader.
+          libfprint = self.unstable.libfprint;
           ntopng = self.callPackage ../pkgs/ntopng.nix {};
           telegram-desktop = super.unstable.telegram-desktop;
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
