@@ -1,4 +1,10 @@
-notify = ["/etc/nixos/codex-notify-stop"]
+# Native hooks are disabled in Codex's internal title and recap threads.
+# The legacy notify command also runs for those threads.
+[[hooks.Stop]]
+[[hooks.Stop.hooks]]
+type = "command"
+command = "/etc/nixos/codex-notify-stop"
+timeout = 10
 
 [tui]
 # Completion notifications come from the hook; terminal bells would mark the
