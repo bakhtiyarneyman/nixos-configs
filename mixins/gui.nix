@@ -696,6 +696,9 @@ in {
           settings = {
             screencast = {
               max_fps = 30;
+              # Keep click-to-select even when an app requests multiple source types.
+              chooser_type = "simple";
+              chooser_cmd = "${pkgs.slurp}/bin/slurp -f 'Monitor: %o' -or";
               exec_before = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-add xdg-desktop-portal-wlr";
               exec_after = "${pkgs.swaynotificationcenter}/bin/swaync-client --inhibitor-remove xdg-desktop-portal-wlr";
             };
