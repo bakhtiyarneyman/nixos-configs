@@ -2,6 +2,14 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    claude-code = {
+      url = "github:sadjow/claude-code-nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    codex-cli = {
+      url = "github:sadjow/codex-cli-nix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -22,6 +30,8 @@
     self,
     nixpkgs,
     nixpkgs-unstable,
+    claude-code,
+    codex-cli,
     nix-colors,
     vscode-server,
     lanzaboote,
@@ -91,7 +101,13 @@
               nixpkgs.flake = nixpkgs;
               nixpkgs-unstable.flake = nixpkgs-unstable;
             };
-            nixpkgs.overlays = [overlay-unstable];
+            nixpkgs.overlays = [
+              overlay-unstable
+              (final: prev: {
+                claude-code = claude-code.packages.${system}.default;
+                codex = codex-cli.packages.${system}.default;
+              })
+            ];
             system.configurationRevision = self.rev or "dirty";
           }
         ];
