@@ -463,6 +463,7 @@ in {
           discord = super.unstable.discord;
           github-cli = super.unstable.pkgs.github-cli;
           home-assistant = super.unstable.home-assistant;
+          immich = super.unstable.immich;
           journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
           # libfprint 1.94.100 adds support for the Microarray 3274:8012 reader.
           libfprint = self.unstable.libfprint;
