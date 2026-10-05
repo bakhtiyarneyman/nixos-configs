@@ -71,6 +71,9 @@ in {
         libreoffice
         # UI
         alacritty
+        shpool
+        (writeTextDir "share/fish/vendor_completions.d/shpool.fish"
+          (builtins.readFile ../scripts/shpool-completions.fish))
         swaynotificationcenter
         prettyLock
         rofi
@@ -138,6 +141,34 @@ in {
       etc =
         {
           "avahi/services/unused".text = "";
+          # The daemon starts shells with a cleared environment; forward the
+          # desktop session's variables, but not per-window ones like
+          # ALACRITTY_WINDOW_ID, which go stale when a session is reattached.
+          # The daemon watches the symlink-resolved path for reloads; a copy
+          # (via mode) changes in place, while a store symlink target never does.
+          "shpool/config.toml".mode = "0444";
+          "shpool/config.toml".source = (pkgs.formats.toml {}).generate "shpool.toml" {
+            # Blank disables prompt injection, which waits ~10s for fish to start.
+            prompt_prefix = "";
+            forward_env = [
+              "COLORTERM"
+              "DBUS_SESSION_BUS_ADDRESS"
+              "DESKTOP_SESSION"
+              "GDK_PIXBUF_MODULE_FILE"
+              "I3SOCK"
+              "SWAYSOCK"
+              "WAYLAND_DISPLAY"
+              "XCURSOR_SIZE"
+              "XCURSOR_THEME"
+              "XDG_CURRENT_DESKTOP"
+              "XDG_SEAT"
+              "XDG_SESSION_CLASS"
+              "XDG_SESSION_DESKTOP"
+              "XDG_SESSION_ID"
+              "XDG_SESSION_TYPE"
+              "XDG_VTNR"
+            ];
+          };
           "xdg/easyeffects/db/easyeffectsrc".text = ''
             [Style]
             forceBreezeTheme=false
@@ -387,6 +418,10 @@ in {
       wireshark.package = pkgs.wireshark;
     };
 
+    # Socket-activated by the first `shpool attach`.
+    systemd.packages = [pkgs.shpool];
+    systemd.user.sockets.shpool.wantedBy = ["sockets.target"];
+
     systemd.tmpfiles.rules = [
       "d /run/journst-boot 0755 bakhtiyar users -"
       # Override mutable user defaults with the defaults declared in xdg.mime.
@@ -423,7 +458,9 @@ in {
           serviceConfig.ExecStart = [cmd];
           environment."XDG_CONFIG_DIRS" = "/etc/xdg";
 
-          path = [config.system.path];
+          # Not config.system.path: its hash changes on every rebuild, which
+          # would restart these apps each time.
+          path = ["/run/current-system/sw"];
         };
       mkJournst = phase: let
         cfg =
@@ -546,6 +583,9 @@ in {
         # The flag might not be necessary after the fix:
         # https://nixpk.gs/pr-tracker.html?pr=278953
         tutanota = mkDesktopAutostart "${pkgs.tutanota-desktop}/bin/tutanota-desktop --password-store=gnome-libsecret";
+
+        # Restarting the daemon kills every shell it holds.
+        shpool.restartIfChanged = false;
 
         wl-paste = mkDesktopAutostart "${pkgs.wl-clipboard}/bin/wl-paste -t text --watch ${pkgs.clipman}/bin/clipman store --max-items 1024";
 

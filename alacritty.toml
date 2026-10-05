@@ -35,7 +35,16 @@ family = "Fira Mono for Powerline"
 style = "Regular"
 
 [keyboard]
-bindings = [{ key = "N", mods = "Control", action = "SpawnNewInstance" }]
+# Detach from shpool: send its Ctrl-Space Ctrl-q bytes back to back. Typing
+# the keys doesn't work under the kitty keyboard protocol (fish, claude,
+# codex): they arrive as escape sequences, with key releases in between.
+bindings = [
+  { key = "N", mods = "Control", action = "SpawnNewInstance" },
+  { key = "Q", mods = "Control|Shift", chars = "\u0000\u0011" },
+]
 
 [scrolling]
 history = 100000
+
+[terminal.shell]
+program = "/etc/nixos/alacritty-shpool"

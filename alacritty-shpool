@@ -1,0 +1,4 @@
+#!/usr/bin/env fish
+# Alacritty's shell: each window gets a new shpool session that outlives it.
+# The PID keeps names unique when several windows open in the same second.
+exec shpool attach -d . (date +%m%d-%H%M%S)-$fish_pid
