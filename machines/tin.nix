@@ -432,16 +432,24 @@ in {
         RestartSec = "5";
       };
     };
-    ntopng.serviceConfig = {
-      User = "ntopng";
-      Group = "ntopng";
-      AmbientCapabilities = "CAP_NET_RAW CAP_NET_ADMIN";
-      CapabilityBoundingSet = "CAP_NET_RAW CAP_NET_ADMIN";
-      RuntimeDirectory = "ntopng";
-      MemoryMax = "1G";
-      Restart = "on-failure";
+    ntopng = {
+      # A USB WiFi reset leaves ntopng polling the removed interface at 100% CPU.
+      # Stop with the device and start a fresh capture when it reappears, after
+      # hostapd has brought the interface up. Restart= does not handle device stops.
+      bindsTo = config.systemd.services.hostapd.bindsTo;
+      after = ["hostapd.service"] ++ config.systemd.services.hostapd.bindsTo;
+      wantedBy = config.systemd.services.hostapd.bindsTo;
+      path = [pkgs.gawk pkgs.iproute2];
+      serviceConfig = {
+        User = "ntopng";
+        Group = "ntopng";
+        AmbientCapabilities = "CAP_NET_RAW CAP_NET_ADMIN";
+        CapabilityBoundingSet = "CAP_NET_RAW CAP_NET_ADMIN";
+        RuntimeDirectory = "ntopng";
+        MemoryMax = "1G";
+        Restart = "on-failure";
+      };
     };
-    ntopng.path = [pkgs.gawk pkgs.iproute2];
     influxdb2-ntopng-v1-auth = {
       description = "Set up InfluxDB2 v1 compatibility for ntopng";
       after = ["influxdb2.service"];
