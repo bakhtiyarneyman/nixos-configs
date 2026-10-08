@@ -87,6 +87,7 @@ in {
         perf
         openssl
         # Development
+        google-antigravity-cli
         codex
         claude-permission-hook
         claude-code

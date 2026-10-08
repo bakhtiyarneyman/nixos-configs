@@ -2,18 +2,35 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-lib.url = "github:nix-community/nixpkgs.lib";
+    systems.url = "github:nix-systems/default";
+    flake-utils = {
+      url = "github:numtide/flake-utils";
+      inputs.systems.follows = "systems";
+    };
+    antigravity-nix = {
+      url = "github:jacopone/antigravity-nix";
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     claude-code = {
       url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.systems.follows = "systems";
     };
     codex-cli = {
       url = "github:sadjow/codex-cli-nix";
+      inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
+      inputs.flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs-lib";
     };
-    nix-colors.url = "github:misterio77/nix-colors";
+    nix-colors = {
+      url = "github:misterio77/nix-colors";
+      inputs.nixpkgs-lib.follows = "nixpkgs-lib";
+    };
     lanzaboote = {
       url = "github:nix-community/lanzaboote/v1.0.0";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -29,6 +46,7 @@
     self,
     nixpkgs,
     nixpkgs-unstable,
+    antigravity-nix,
     claude-code,
     codex-cli,
     nix-colors,
@@ -103,6 +121,7 @@
             nixpkgs.overlays = [
               overlay-unstable
               (final: prev: {
+                google-antigravity-cli = antigravity-nix.packages.${system}.google-antigravity-cli;
                 claude-code = claude-code.packages.${system}.default;
                 codex = codex-cli.packages.${system}.default;
               })
