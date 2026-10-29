@@ -178,11 +178,12 @@ in {
     services = {
       hardware.openrgb = {
         enable = true;
-        package = with pkgs;
+        # OpenRGB 1.1 adds the RX 9070 XT Steel Legend controller.
+        package = with pkgs.unstable;
           openrgb.withPlugins [
             openrgb-plugin-effects
             openrgb-plugin-hardwaresync
-            (pkgs.callPackage ../pkgs/openrgb-plugin-httphook.nix {})
+            (pkgs.unstable.callPackage ../pkgs/openrgb-plugin-httphook.nix {})
           ];
       };
 
@@ -470,6 +471,7 @@ in {
     system = {
       stateVersion = "22.11";
       autoUpgrade = {
+        allowReboot = lib.mkForce false;
         dates = lib.mkForce "Mon *-*-* 03:40"; # An hour before the default, so that other machines can use this one as a cache.
         flags = [
           "--commit-lock-file"
