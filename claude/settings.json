@@ -1,4 +1,12 @@
 {
+  "permissions": {
+    "allow": [
+      "Read(/tmp/**)",
+      "Edit(/tmp/**)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "opus",
   "hooks": {
     "Stop": [
       {
@@ -27,16 +35,23 @@
     "superpowers@claude-plugins-official": true
   },
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high",
+      "autoCompactWindow": 1000000
+    }
+  },
+  "pluginConfigs": {
+    "cc-plugin-agents-md@builtin": {
+      "options": {
+        "instructionFiles": "claude-md-and-agents-md"
+      }
+    }
+  },
+  "timeFormat": "24-hour",
+  "autoCompactEnabled": true,
   "voiceEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 4102444800000
-  },
-  "permissions": {
-    "defaultMode": "plan",
-    "allow": [
-      "Read(/tmp/**)",
-      "Write(/tmp/**)",
-      "Edit(/tmp/**)"
-    ]
   }
 }
