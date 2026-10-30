@@ -9,6 +9,12 @@
     services = {
       home-assistant = {
         enable = true;
+        extraComponents = [
+          "default_config"
+          "esphome"
+          "lifx"
+          "met"
+        ];
         customComponents = let
           callPackage = config.services.home-assistant.package.python3Packages.callPackage;
         in
@@ -41,9 +47,6 @@
               (python3Packages)
               aiohomekit
               aiohttp-fast-zlib
-              aiolifx
-              aiolifx-effects
-              aiolifx-themes
               androidtvremote2
               brother
               colorlog
@@ -73,7 +76,8 @@
               ;
           }
           ++ python3Packages.aiohttp-fast-zlib.optional-dependencies.isal
-          ++ python3Packages.aiohttp-fast-zlib.optional-dependencies.zlib_ng;
+          ++ python3Packages.aiohttp-fast-zlib.optional-dependencies.zlib_ng
+          ++ python3Packages.samsungtvws.optional-dependencies.async;
         config = {
           default_config = {};
           automation = "!include automations.yaml";
