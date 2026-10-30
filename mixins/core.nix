@@ -217,8 +217,23 @@ in {
                 "/context canceled/"
               ];
             }
+            {
+              # gunicorn can't create its control socket in the read-only $HOME; harmless.
+              _SYSTEMD_UNIT = ["immich-machine-learning.service"];
+              MESSAGE = ["/.*Control server error: .*'/var/empty/\\.gunicorn'/"];
+            }
           ];
           inclusions = [
+            # These applications print ERROR in the message but journald records
+            # their stdout/stderr at info. Keep exceptions scoped to their units.
+            {
+              _SYSTEMD_UNIT = ["immich-server.service"];
+              MESSAGE = ["/.*Unable to run job handler \\(/"];
+            }
+            {
+              _SYSTEMD_UNIT = ["immich-machine-learning.service"];
+              MESSAGE = ["/.*\\[ERROR\\] /"];
+            }
             {
               PRIORITY = ["0" "1" "2" "3"];
               SYSLOG_IDENTIFIER = ["sshd"];

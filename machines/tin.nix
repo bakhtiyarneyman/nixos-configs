@@ -175,17 +175,6 @@ in {
       machine-learning = {
         environment = {
           IMMICH_LOG_LEVEL = "debug"; # Doesn't seem to work.
-          LD_LIBRARY_PATH = let
-            onnxruntime-openvino = pkgs.python312Packages.callPackage ../pkgs/onnxruntime-openvino.nix {};
-          in
-            builtins.concatStringsSep ":"
-            [
-              "${pkgs.python312Packages.openvino}/lib"
-              "${pkgs.python312Packages.openvino}/lib/python3.12/site-packages/openvino"
-              # Need to verify if openvino works.
-              "${onnxruntime-openvino}/lib"
-              "${onnxruntime-openvino}/lib/python3.12/site-packages/onnxruntime/capi"
-            ];
         };
       };
     };
