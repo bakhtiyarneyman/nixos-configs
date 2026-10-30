@@ -20,7 +20,7 @@
           "debug"
         ];
         default = "err";
-        description = "Priority level to match.";
+        description = "Baseline priority level to report, in addition to explicit inclusions.";
       };
       email = {
         from = mkOption {
@@ -45,12 +45,12 @@
       inclusions = mkOption {
         type = listOf (attrsOf (listOf str));
         default = [];
-        description = "List of inclusion rules.";
+        description = "Rules for entries to report in addition to those at `priority`. Values match literally: journal-brief supports regexes only in exclusions.";
       };
     };
   };
 
-  # If enabled run the script every day at 4:00AM via systemd.
+  # If enabled run the script every day at 6:00AM via systemd.
   config = lib.mkIf config.services.journal-brief.enable {
     systemd = {
       network.wait-online.enable = true;
@@ -68,12 +68,14 @@
             then "${pkgs.systemd}/lib/systemd/systemd-networkd-wait-online --timeout=30"
             else "${pkgs.coreutils-full}/bin/true"; # fall-back: do not block"
           ExecStart = let
-            yamlConfig =
-              lib.generators.toYAML {}
-              (config.services.journal-brief.settings
-                // {
-                  inclusions = [{}];
-                });
+            settings = config.services.journal-brief.settings;
+            # journal-brief ANDs `priority` into every inclusion and reports only
+            # entries matching some inclusion. Passing the priority as its own
+            # inclusion instead makes the configured inclusions additive.
+            yamlConfig = lib.generators.toYAML {} (removeAttrs settings ["priority"]
+              // {
+                inclusions = [{PRIORITY = settings.priority;}] ++ settings.inclusions;
+              });
             configFile = pkgs.writeText "journal-brief-config.yaml" yamlConfig;
           in [
             "${pkgs.journal-brief}/bin/journal-brief --conf=${configFile}"
