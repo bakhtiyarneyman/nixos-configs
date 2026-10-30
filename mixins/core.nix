@@ -476,7 +476,9 @@ in {
           immich = super.unstable.immich;
           journal-brief = self.python3Packages.callPackage ../pkgs/journal-brief.nix {};
           # libfprint 1.94.100 adds support for the Microarray 3274:8012 reader.
-          libfprint = self.unstable.libfprint;
+          # Build with stable dependencies so fprintd and its PAM module do not
+          # pull in a newer glibc from unstable.
+          libfprint = self.callPackage "${self.unstable.path}/pkgs/by-name/li/libfprint/package.nix" {};
           ntopng = self.callPackage ../pkgs/ntopng.nix {};
           telegram-desktop = super.unstable.telegram-desktop;
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;
