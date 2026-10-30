@@ -179,8 +179,12 @@ in {
       hardware.openrgb = {
         enable = true;
         # OpenRGB 1.1 adds the RX 9070 XT Steel Legend controller.
+        # The patch drives single-color updates through the controller's
+        # all-channel mode; its static mode flashes when updated often.
         package = with pkgs.unstable;
-          openrgb.withPlugins [
+          (openrgb.overrideAttrs (old: {
+            patches = old.patches ++ [../pkgs/openrgb-asrock-gpu-all-channels-mode.patch];
+          })).withPlugins [
             openrgb-plugin-effects
             openrgb-plugin-hardwaresync
             (pkgs.unstable.callPackage ../pkgs/openrgb-plugin-httphook.nix {})

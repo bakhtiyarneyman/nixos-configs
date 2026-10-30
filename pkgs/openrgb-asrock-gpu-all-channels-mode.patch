@@ -1,0 +1,137 @@
+From ff8e6c4d92aad9bd8e045534322d5824ad09fe7a Mon Sep 17 00:00:00 2001
+From: Bakhtiyar Neyman <bakhtiyarneyman@gmail.com>
+Date: Fri, 30 Oct 2026 15:30:23 -0700
+Subject: [PATCH] ASRock GPU: use all-channels mode for single-color updates
+
+Frequent updates make the LEDs of the RX 9070 XT Steel Legend flash
+random colors, about once per 25 writes. The controller firmware
+(APROM_VGA_250320_1D6A, shipped with ASRock Polychrome SYNC 1.0.50)
+re-renders static mode (0x01) continuously from its main loop by
+bit-banging the ARGB data with interrupts enabled. A color packet is
+processed inside the I2C interrupt, which busy-waits for several
+hundred microseconds, so a write that lands mid-frame stalls the
+bitstream past the LED latch time and shows a corrupted frame.
+
+Mode 0xE1 sets every channel to the packet's color, stops the main
+loop from rendering and renders one frame inside the I2C interrupt,
+where writes cannot interrupt it. Use it when all zones share a color.
+The render holds the bus for about 16 ms and writes sent within ~8 ms
+of the previous one fail, so wait 20 ms after each write.
+
+Verified with a camera on an RX 9070 XT Steel Legend, driving one
+color to all zones through the SDK at 60 updates per second: static
+mode flashed 82 times in 20 s; with this change two 20 s runs had none.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+---
+ .../ASRockGPUSMBusController.cpp              | 19 ++++++++++++++++++-
+ .../ASRockGPUSMBusController.h                | 11 +++++++++++
+ .../RGBController_ASRockGPUSMBus.cpp          | 12 ++++++++++++
+ 3 files changed, 41 insertions(+), 1 deletion(-)
+
+diff --git a/Controllers/ASRockSMBusController/ASRockGPUSMBusController/ASRockGPUSMBusController.cpp b/Controllers/ASRockSMBusController/ASRockGPUSMBusController/ASRockGPUSMBusController.cpp
+index 4147557..f068f26 100644
+--- a/Controllers/ASRockSMBusController/ASRockGPUSMBusController/ASRockGPUSMBusController.cpp
++++ b/Controllers/ASRockSMBusController/ASRockGPUSMBusController/ASRockGPUSMBusController.cpp
+@@ -175,6 +175,23 @@ bool ASRockGPUSMBusController::DetectChannels()
+ }
+ 
+ void ASRockGPUSMBusController::SetChannelColor(uint8_t channel_idx, uint8_t red, uint8_t green, uint8_t blue)
++{
++    WriteColor(channel_idx, ASROCK_GPU_MODE_STATIC, red, green, blue);
++}
++
++void ASRockGPUSMBusController::SetAllChannelsColor(uint8_t red, uint8_t green, uint8_t blue)
++{
++    /*-----------------------------------------------------*\
++    | The firmware renders this mode in its I2C interrupt   |
++    | and holds the bus for ~16 ms. Writes sent before it   |
++    | finishes time out, so wait for the render             |
++    \*-----------------------------------------------------*/
++    WriteColor(enabled_channels[0], ASROCK_GPU_MODE_ALL_CHANNELS, red, green, blue);
++
++    std::this_thread::sleep_for(20ms);
++}
++
++void ASRockGPUSMBusController::WriteColor(uint8_t channel_idx, uint8_t mode, uint8_t red, uint8_t green, uint8_t blue)
+ {
+     /*-----------------------------------------------------*\
+     | SignalRGB color packet                               |
+@@ -182,7 +199,7 @@ void ASRockGPUSMBusController::SetChannelColor(uint8_t channel_idx, uint8_t red,
+     \*-----------------------------------------------------*/
+     uint8_t data[8] =
+     {
+-        0x01,  // Mode: direct/static
++        mode,
+         red,
+         green,
+         blue,
+diff --git a/Controllers/ASRockSMBusController/ASRockGPUSMBusController/ASRockGPUSMBusController.h b/Controllers/ASRockSMBusController/ASRockGPUSMBusController/ASRockGPUSMBusController.h
+index cfeae49..022a8db 100644
+--- a/Controllers/ASRockSMBusController/ASRockGPUSMBusController/ASRockGPUSMBusController.h
++++ b/Controllers/ASRockSMBusController/ASRockGPUSMBusController/ASRockGPUSMBusController.h
+@@ -29,6 +29,15 @@ enum
+     ASROCK_GPU_CHANNEL_FAN          = 7,
+ };
+ 
++/*-----------------------------------------------------*\
++| ASRock GPU Modes                                      |
++\*-----------------------------------------------------*/
++enum
++{
++    ASROCK_GPU_MODE_STATIC          = 0x01, /* Rendered continuously by the firmware     */
++    ASROCK_GPU_MODE_ALL_CHANNELS    = 0xE1, /* Sets all channels, renders once per write */
++};
++
+ class ASRockGPUSMBusController
+ {
+ public:
+@@ -39,6 +48,7 @@ public:
+     std::string GetDeviceName();
+ 
+     void        SetChannelColor(uint8_t channel_idx, uint8_t red, uint8_t green, uint8_t blue);
++    void        SetAllChannelsColor(uint8_t red, uint8_t green, uint8_t blue);
+     bool        DetectChannels();
+ 
+     uint8_t     enabled_channels[16];
+@@ -50,6 +60,7 @@ private:
+     asrock_gpu_dev_id    dev;
+     std::string          device_name;
+ 
++    void        WriteColor(uint8_t channel_idx, uint8_t mode, uint8_t red, uint8_t green, uint8_t blue);
+     bool        WriteBlock(uint8_t command, uint8_t subcommand, const uint8_t* data, uint8_t len);
+     bool        ReadBlock(uint8_t* response, uint8_t len);
+ };
+diff --git a/Controllers/ASRockSMBusController/ASRockGPUSMBusController/RGBController_ASRockGPUSMBus.cpp b/Controllers/ASRockSMBusController/ASRockGPUSMBusController/RGBController_ASRockGPUSMBus.cpp
+index bbbaacb..a75eacf 100644
+--- a/Controllers/ASRockSMBusController/ASRockGPUSMBusController/RGBController_ASRockGPUSMBus.cpp
++++ b/Controllers/ASRockSMBusController/ASRockGPUSMBusController/RGBController_ASRockGPUSMBus.cpp
+@@ -9,6 +9,7 @@
+ |   SPDX-License-Identifier: GPL-2.0-or-later               |
+ \*---------------------------------------------------------*/
+ 
++#include <algorithm>
+ #include "RGBController_ASRockGPUSMBus.h"
+ 
+ /**------------------------------------------------------------------*\
+@@ -106,6 +107,17 @@ void RGBController_ASRockGPUSMBus::ResizeZone(int /*zone*/, int /*new_size*/)
+ 
+ void RGBController_ASRockGPUSMBus::DeviceUpdateLEDs()
+ {
++    /*-----------------------------------------------------*\
++    | Static mode is re-rendered continuously and flashes   |
++    | when a write interrupts a frame, so use the all-      |
++    | channels mode when every zone has the same color      |
++    \*-----------------------------------------------------*/
++    if(std::all_of(colors.begin(), colors.end(), [this](RGBColor color) { return(color == colors[0]); }))
++    {
++        controller->SetAllChannelsColor(RGBGetRValue(colors[0]), RGBGetGValue(colors[0]), RGBGetBValue(colors[0]));
++        return;
++    }
++
+     for(unsigned int i = 0; i < controller->num_channels; i++)
+     {
+         uint8_t channel_idx = controller->enabled_channels[i];
+-- 
+2.54.0
+
