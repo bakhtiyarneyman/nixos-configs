@@ -206,6 +206,16 @@ in {
       };
 
       journal-brief.settings.exclusions = [
+        # The iGPU repeats these handled LTTPR capability fallbacks on display wake.
+        # journst shares this exclusion list; keep other AMDGPU errors visible.
+        # TODO: fix this when upstream demotes the severity of this message error to info.
+        {
+          SYSLOG_IDENTIFIER = ["kernel"];
+          MESSAGE = [
+            "/^amdgpu [0-9a-f:.]+: \\[drm\\] \\*ERROR\\* lttpr_caps phy_repeater_cnt is 0x0, forcing it to 0x80\\.$/"
+            "/^amdgpu [0-9a-f:.]+: \\[drm\\] \\*ERROR\\* LTTPR count is nonzero but invalid lane count reported\\. Assuming no LTTPR present\\.$/"
+          ];
+        }
         # It's some USB hub internal to the ASRock B650E PG Riptide.
         {
           MESSAGE = ["hub 8-0:1.0: config failed, hub doesn't have any ports! (err -19)"];
