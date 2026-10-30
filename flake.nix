@@ -23,6 +23,10 @@
       inputs.flake-utils.follows = "flake-utils";
       inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
+    nixflix = {
+      url = "github:kiriwalawren/nixflix";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     vscode-server = {
       url = "github:nix-community/nixos-vscode-server";
       inputs.flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs-lib";
@@ -49,6 +53,7 @@
     antigravity-nix,
     claude-code,
     codex-cli,
+    nixflix,
     nix-colors,
     vscode-server,
     lanzaboote,
@@ -124,6 +129,7 @@
                 google-antigravity-cli = antigravity-nix.packages.${system}.google-antigravity-cli;
                 claude-code = claude-code.packages.${system}.default;
                 codex = codex-cli.packages.${system}.default;
+                maintainerr = nixflix.packages.${system}.maintainerr;
               })
             ];
             system.configurationRevision = self.rev or "dirty";

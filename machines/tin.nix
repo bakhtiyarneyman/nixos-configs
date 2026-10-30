@@ -341,6 +341,10 @@ in {
   users = {
     users = {
       immich.extraGroups = ["video" "render"];
+      maintainerr = {
+        isSystemUser = true;
+        group = "maintainerr";
+      };
       prowlarr = {
         isSystemUser = true;
         group = "prowlarr";
@@ -355,6 +359,7 @@ in {
     groups = let
       userOf = service: config.services."${service}".user;
     in {
+      maintainerr = {};
       prowlarr = {};
       qbittorrent = {};
       server.members =
@@ -393,6 +398,42 @@ in {
     };
     OMP_NUM_THREADS = "4";
   in {
+    # Not nixflix's maintainerr module: it requires nixflix to manage Jellyfin and
+    # the *arr services, and declaratively overwrites the rules configured in the UI.
+    maintainerr = {
+      description = "Maintainerr media library maintenance";
+      wantedBy = ["multi-user.target"];
+      wants = ["network-online.target"];
+      after = ["network-online.target"];
+      environment = {
+        DATA_DIR = "/var/lib/maintainerr";
+        # The router's input rules restrict access to the LAN and Tailscale.
+        UI_HOSTNAME = "0.0.0.0";
+        UI_PORT = "6246";
+      };
+      serviceConfig = {
+        Type = "exec";
+        ExecStart = lib.getExe pkgs.maintainerr;
+        WorkingDirectory = "/var/lib/maintainerr";
+        StateDirectory = "maintainerr";
+        StateDirectoryMode = "0700";
+        User = "maintainerr";
+        Group = "maintainerr";
+        Restart = "on-failure";
+        RestartSec = "5s";
+        UMask = "0077";
+        NoNewPrivileges = true;
+        PrivateTmp = true;
+        PrivateDevices = true;
+        ProtectSystem = "strict";
+        ProtectHome = true;
+        ProtectControlGroups = true;
+        ProtectKernelLogs = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        RestrictSUIDSGID = true;
+      };
+    };
     wyoming-faster-whisper-listener.environment = {
       inherit OMP_NUM_THREADS; # Doesn't seem to work.
     };
