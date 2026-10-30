@@ -67,7 +67,7 @@
           channel = 149; # The other channel that works is 36. Everything else requires radar detection. 149 also has better dBm.
           network = {
             authentication = {
-              saePasswordsFile = "/etc/nixos/secrets/yurdoba6.password";
+              saePasswordsFile = "/etc/nixos/secrets/yurdoba.password";
               pairwiseCiphers = [
                 "CCMP"
                 "CCMP-256"
@@ -75,7 +75,7 @@
                 "GCMP-256"
               ];
             };
-            ssid = "yurdoba6";
+            ssid = "yurdoba";
           };
         in {
           wlp0s13f0u2 = {
