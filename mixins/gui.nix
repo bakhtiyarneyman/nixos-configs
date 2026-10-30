@@ -122,6 +122,7 @@ in {
         swayimg
         # Audio
         audacity
+        sox
         # Video
         blender
         ffmpeg_7-full
