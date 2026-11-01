@@ -63,6 +63,7 @@ in {
           enable = true;
         };
       };
+      zfs.requestEncryptionCredentials = ["fast/nixos"];
     };
 
     environment = {
