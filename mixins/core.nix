@@ -10,6 +10,7 @@
   pkgs,
   ...
 }: let
+  sessionEnvironment = import ../lib/session-environment.nix;
   robotGoogleAccount = "n10614m";
   personalGoogleAccount = "bakhtiyarneyman";
   myEmail = atGmail personalGoogleAccount;
@@ -255,11 +256,7 @@ in {
         enable = true;
         settings = {
           AllowAgentForwarding = true;
-          AcceptEnv = [
-            "COLORTERM"
-            "CLAUDE_NOTIFY_SOCKET"
-            "CLAUDE_NOTIFY_WINDOW_PID"
-          ];
+          AcceptEnv = sessionEnvironment.ssh;
           StreamLocalBindUnlink = true;
         };
       };
@@ -407,7 +404,7 @@ in {
         };
         extraConfig = ''
           Host *
-            SendEnv COLORTERM CLAUDE_NOTIFY_SOCKET CLAUDE_NOTIFY_WINDOW_PID
+            SendEnv ${lib.concatStringsSep " " sessionEnvironment.ssh}
         '';
       };
 

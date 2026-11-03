@@ -4,6 +4,7 @@
   lib,
   ...
 }: let
+  sessionEnvironment = import ../lib/session-environment.nix;
   dimToLockSecs = 15;
   # Use the target provided by the selected WM's nixpkgs integration. Shared
   # service policy below only depends on this setting, not the WM's name.
@@ -179,7 +180,7 @@ in {
           # environment import and target startup: separate Sway execs race,
           # particularly leaving Soteria without XDG_SESSION_ID.
           "sway/config.d/nixos.conf".source = lib.mkForce (pkgs.writeText "nixos.conf" ''
-            exec "${pkgs.dbus}/bin/dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE XDG_SESSION_ID && ${config.systemd.package}/bin/systemctl --user start ${desktopSessionTarget}"
+            exec "${pkgs.dbus}/bin/dbus-update-activation-environment --systemd ${lib.concatStringsSep " " sessionEnvironment.desktop} XDG_SESSION_ID && ${config.systemd.package}/bin/systemctl --user start ${desktopSessionTarget}"
             exec ${pkgs.sway}/bin/swaymsg -t subscribe '["shutdown"]' && ${config.systemd.package}/bin/systemctl --user stop ${desktopSessionTarget}
           '');
         }
