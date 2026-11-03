@@ -15,7 +15,24 @@
   # - Completion describes sessions by host, directory, and latest/running command.
   # - Use stock shpool; load scripts and configuration only from the Nix store.
   # - Keep the feature small and independently revertible.
-  integration = pkgs.callPackage ../pkgs/shpool-integration.nix {};
+  # 0.11.5 restores mouse/input modes on reattach, so Codex can keep scrolling
+  # its conversation above a fixed prompt in a new terminal. Use the unpatched
+  # upstream release until our pinned nixpkgs supplies shpool >= 0.11.5;
+  # then remove this override and use pkgs.shpool again.
+  shpool = pkgs.shpool.overrideAttrs (final: _: {
+    version = "0.11.5";
+    src = pkgs.fetchFromGitHub {
+      owner = "shell-pool";
+      repo = "shpool";
+      rev = "v${final.version}";
+      hash = "sha256-AfuAGYgeGdbCTj0RA52xkxQ8ycrSXOnRJqRVTy85Buc=";
+    };
+    cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+      inherit (final) src pname version;
+      hash = "sha256-K27VE9IBvldouiYr0RjUn2aqkVJjPF/FipBNsG5Nba8=";
+    };
+  });
+  integration = pkgs.callPackage ../pkgs/shpool-integration.nix {inherit shpool;};
   sessionEnvironment = import ../lib/session-environment.nix;
 in {
   # All CLI attachments use the wrapper; the daemon below uses stock shpool.
@@ -53,7 +70,7 @@ in {
   };
 
   # Socket-activated by the first attach; never restart away running sessions.
-  systemd.packages = [pkgs.shpool];
+  systemd.packages = [shpool];
   systemd.user.sockets.shpool.wantedBy = ["sockets.target"];
   systemd.user.services.shpool.restartIfChanged = false;
 }

@@ -83,7 +83,7 @@ def main():
     lock_dir = runtime / "clients"
     lock_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
     key = hashlib.sha256((str(socket) + "\0" + name).encode()).hexdigest()
-    token = "SHPOOL_CLIENT_ID=" + uuid.uuid4().hex
+    token = uuid.uuid4().hex
     closing = 0
 
     def hangup(signum, frame):
@@ -100,12 +100,14 @@ def main():
 
     def owns_session():
         # Stock shpool writes this receipt only after a successful attachment.
+        # Accept old plain assignments and 0.11.5's quoted exports as data.
         # Explicit sockets use a hashed runtime subdirectory. Do not duplicate
         # Rust's hash algorithm or infer ownership from millisecond timestamps.
+        receipts = {f"SHPOOL_CLIENT_ID={token}", f"export SHPOOL_CLIENT_ID='{token}'"}
         matches = 0
         for sessions in [runtime / "sessions", *runtime.glob("*/sessions")]:
             try:
-                if token in (sessions / name / "forward.env").read_text().splitlines():
+                if receipts.intersection((sessions / name / "forward.env").read_text().splitlines()):
                     matches += 1
             except OSError:
                 pass
@@ -161,7 +163,7 @@ def main():
         if closing:
             return 128 + closing
 
-        client = subprocess.Popen([binary, *args], env=dict(os.environ, SHPOOL_CLIENT_ID=token.split("=", 1)[1]))
+        client = subprocess.Popen([binary, *args], env=dict(os.environ, SHPOOL_CLIENT_ID=token))
         while client.poll() is None and not closing:
             try:
                 client.wait(timeout=0.1)
