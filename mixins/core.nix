@@ -468,6 +468,7 @@ in {
       };
       overlays = [
         (self: super: {
+          chatgpt-desktop = self.callPackage ../pkgs/chatgpt-desktop.nix {};
           claude-permission-hook = self.callPackage ../pkgs/claude-permission-hook.nix {};
           devenv = self.unstable.devenv;
           discord = super.unstable.discord;

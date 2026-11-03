@@ -103,6 +103,7 @@ in {
         slack
         rofimoji
         # Development
+        chatgpt-desktop
         (unstable.vscode.override {isInsiders = false;})
         cachix
         meld
