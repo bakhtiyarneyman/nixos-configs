@@ -18,6 +18,7 @@
   hostEmailFrom = "${machineName} (${robotEmail})";
 in {
   imports = [
+    ./shpool.nix
     ../modules/auto-unlock.nix
     ../modules/journal-brief.nix
   ];

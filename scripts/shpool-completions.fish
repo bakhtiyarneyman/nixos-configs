@@ -1,7 +1,8 @@
-# Lists session names, optionally only those with the given status
-# (attached or disconnected).
+# Stable session IDs with host, working directory and latest command as Fish
+# descriptions. Query only the daemon; completing must not start a new one.
 function __shpool_sessions -a session_status
-    shpool list | awk -v "want=$session_status" 'NR > 1 && (want == "" || $3 == want) { print $1 }'
+    command shpool -D list --json 2>/dev/null \
+        | /etc/nixos/scripts/shpool-session-info complete "$session_status"
 end
 
 complete -c shpool -f
@@ -23,7 +24,7 @@ complete -c shpool -n "not __fish_seen_subcommand_from $commands" -a list -d 'li
 complete -c shpool -n "not __fish_seen_subcommand_from $commands" -a set-log-level -d 'Dynamically change daemon log level'
 complete -c shpool -n "not __fish_seen_subcommand_from $commands" -a help -d 'Print help or help of the given subcommand(s)'
 
-complete -c shpool -n '__fish_seen_subcommand_from attach; and __fish_is_nth_token 2' -a '(__shpool_sessions)'
+complete -c shpool -n '__fish_seen_subcommand_from attach' -a '(__shpool_sessions)'
 complete -c shpool -n '__fish_seen_subcommand_from attach' -s f -l force -d 'If a tty is already attached to the session, detach it first'
 complete -c shpool -n '__fish_seen_subcommand_from attach' -l ttl -rf -d 'Automatically kill the session after the given time'
 complete -c shpool -n '__fish_seen_subcommand_from attach' -s c -l cmd -rf -d "A command to run instead of the user's default shell"

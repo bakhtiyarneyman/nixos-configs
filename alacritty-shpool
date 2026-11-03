@@ -1,4 +1,31 @@
 #!/usr/bin/env fish
-# Alacritty's shell: each window gets a new shpool session that outlives it.
+# Alacritty's shell: start a session, then return to a plain shell on detach.
 # The PID keeps names unique when several windows open in the same second.
-exec shpool attach -d . (date +%m%d-%H%M%S)-$fish_pid
+set -l attach_args $argv
+set -l session
+if test (count $argv) -eq 0
+    set session (date +%m%d-%H%M%S)-$fish_pid
+    set attach_args -d . -- $session
+else
+    argparse --min-args=1 --max-args=1 f/force b/background ttl= c/cmd= d/dir= -- $argv
+    or exit 2
+    set session $argv[1]
+end
+
+/etc/nixos/scripts/shpool-client attach $attach_args
+set -l attach_status $status
+
+# The client returns before the daemon finishes updating its session table.
+# Wait for that update: an exited shell disappears, while a detached one stays.
+# A forced takeover can keep the session Attached, so bound the wait.
+for attempt in (seq 20)
+    set -l state (shpool list --json | jq -r --arg name "$session" '.sessions[] | select(.name == $name) | .status')
+    if test -z "$state"
+        exit $attach_status
+    end
+    if test "$state" = Disconnected
+        exec fish
+    end
+    sleep 0.05
+end
+exec fish

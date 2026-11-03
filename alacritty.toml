@@ -38,6 +38,12 @@ style = "Regular"
 # Detach from shpool: send its Ctrl-Space Ctrl-q bytes back to back. Typing
 # the keys doesn't work under the kitty keyboard protocol (fish, claude,
 # codex): they arrive as escape sequences, with key releases in between.
+# These bytes also pass through SSH. Detach returns to the calling shell;
+# closing a local terminal instead kills the attached session. SSH disconnects
+# always preserve remote sessions.
+# Ctrl+D / exit ends the shell session and closes the window directly.
+# Start SSH from that plain shell to reach a remote shpool session directly:
+# with nested shpool sessions, the outer session consumes this shortcut first.
 bindings = [
   { key = "N", mods = "Control", action = "SpawnNewInstance" },
   { key = "Q", mods = "Control|Shift", chars = "\u0000\u0011" },
@@ -47,4 +53,4 @@ bindings = [
 history = 100000
 
 [terminal.shell]
-program = "/etc/nixos/alacritty-shpool"
+program = "/run/current-system/sw/bin/alacritty-shpool"

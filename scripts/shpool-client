@@ -1,0 +1,195 @@
+#!/usr/bin/env python3
+"""Give stock shpool terminal-close semantics without changing its daemon.
+
+Normal client exit (including detach) preserves the session. Local terminal
+hangup kills the attached session. SSH attachments use native shpool behavior
+so transport loss always preserves the session and its processes.
+"""
+import argparse
+import fcntl
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import signal
+import subprocess
+import sys
+import termios
+import time
+import uuid
+
+
+def attach_request(args):
+    """Extract the session and connection options; shpool validates other input."""
+    global_options = []
+    index = 0
+    while index < len(args):
+        arg = args[index]
+        if arg == "attach":
+            parser = argparse.ArgumentParser(add_help=False, exit_on_error=False)
+            parser.add_argument("-f", "--force", action="store_true")
+            parser.add_argument("-b", "--background", action="store_true")
+            parser.add_argument("--ttl")
+            parser.add_argument("-c", "--cmd")
+            parser.add_argument("-d", "--dir")
+            parser.add_argument("name", nargs="?")
+            try:
+                options, unknown = parser.parse_known_args(args[index + 1:])
+            except argparse.ArgumentError:
+                return None
+            if unknown or not options.name:
+                return None
+            return options, global_options
+        if not arg.startswith("-") or arg in ("-h", "--help", "--"):
+            return None
+        if arg not in ("-d", "--daemonize", "-D", "--no-daemonize"):
+            global_options.append(arg)
+        if arg in ("-s", "--socket", "-c", "--config-file", "-l", "--log-file"):
+            index += 1
+            if index >= len(args):
+                return None
+            global_options.append(args[index])
+        index += 1
+    return None
+
+
+def main():
+    binary = shutil.which("shpool")
+    if binary is None:
+        sys.exit("shpool is not installed")
+    args = sys.argv[1:]
+    request = attach_request(args)
+    if request is None:
+        os.execv(binary, [binary, *args])
+    options, connection_options = request
+    name = options.name
+    if name == os.environ.get("SHPOOL_SESSION_NAME"):
+        sys.exit(f"Already inside shpool session {name!r}. Detach with Ctrl+Shift+Q before attaching to it.")
+
+    runtime = Path(os.environ.get("XDG_RUNTIME_DIR", str(Path.home() / ".local/run"))) / "shpool"
+    socket = runtime / "shpool.socket"
+    connection_args = iter(connection_options)
+    for arg in connection_args:
+        if arg in ("-s", "--socket"):
+            socket = Path(next(connection_args))
+        elif arg in ("-c", "--config-file", "-l", "--log-file"):
+            next(connection_args)
+        elif arg.startswith("--socket="):
+            socket = Path(arg.split("=", 1)[1])
+        elif arg.startswith("-s"):
+            socket = Path(arg[2:])
+    socket = socket.resolve()
+    lock_dir = runtime / "clients"
+    lock_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+    key = hashlib.sha256((str(socket) + "\0" + name).encode()).hexdigest()
+    token = "SHPOOL_CLIENT_ID=" + uuid.uuid4().hex
+    closing = 0
+
+    def hangup(signum, frame):
+        nonlocal closing
+        closing = signum
+
+    def control(command):
+        return subprocess.run(
+            [binary, *connection_options, "-D", command, "--", name],
+            stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            timeout=5 if command == "detach" else None, start_new_session=True,
+        )
+
+    def owns_session():
+        # Stock shpool writes this receipt only after a successful attachment.
+        # Explicit sockets use a hashed runtime subdirectory. Do not duplicate
+        # Rust's hash algorithm or infer ownership from millisecond timestamps.
+        matches = 0
+        for sessions in [runtime / "sessions", *runtime.glob("*/sessions")]:
+            try:
+                if token in (sessions / name / "forward.env").read_text().splitlines():
+                    matches += 1
+            except OSError:
+                pass
+        return matches == 1
+
+    def cleanup():
+        # Wait for the daemon's old attachment handler to release the session
+        # before killing it. Otherwise its delayed reaper can remove a newly
+        # created session with the same name after `kill` has already returned.
+        deadline = time.monotonic() + 5
+        while time.monotonic() < deadline:
+            try:
+                result = subprocess.run(
+                    [binary, *connection_options, "-D", "list", "--json"],
+                    capture_output=True, text=True, check=True, timeout=2,
+                    start_new_session=True,
+                )
+                session = next((s for s in json.loads(result.stdout)["sessions"] if s["name"] == name), None)
+            except (OSError, subprocess.SubprocessError, ValueError, KeyError):
+                return
+            if session is None:
+                return
+            if session["status"] == "Disconnected":
+                if owns_session():
+                    control("kill")
+                return
+            time.sleep(0.02)
+
+    signal.signal(signal.SIGHUP, hangup)
+    signal.signal(signal.SIGTERM, hangup)
+    kill_on_close = sys.stdin.isatty() and not options.background and not any(
+        os.environ.get(key) for key in ("SSH_CONNECTION", "SSH_CLIENT", "SSH_TTY")
+    )
+    # Every installed CLI attachment participates, including SSH/background.
+    # Force first detaches the old client, then waits for its cleanup/unlock;
+    # it never starts a new attachment while the old client can still kill it.
+    with os.fdopen(os.open(lock_dir / key, os.O_CREAT | os.O_RDWR, 0o600), "r+") as lock:
+        deadline = time.monotonic() + 10
+        while not closing:
+            try:
+                fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                break
+            except BlockingIOError:
+                if not options.force:
+                    sys.exit(f"Session {name!r} already has an attachment")
+                if time.monotonic() >= deadline:
+                    sys.exit(f"Timed out waiting for session {name!r}; leaving it intact")
+                try:
+                    control("detach")
+                except subprocess.TimeoutExpired:
+                    sys.exit(f"Timed out detaching session {name!r}; leaving it intact")
+                time.sleep(0.05)
+        if closing:
+            return 128 + closing
+
+        client = subprocess.Popen([binary, *args], env=dict(os.environ, SHPOOL_CLIENT_ID=token.split("=", 1)[1]))
+        while client.poll() is None and not closing:
+            try:
+                client.wait(timeout=0.1)
+            except subprocess.TimeoutExpired:
+                pass
+        # PTY EOF can reach the client before SIGHUP reaches this supervisor.
+        if kill_on_close:
+            try:
+                termios.tcgetattr(sys.stdin.fileno())
+            except termios.error:
+                closing = closing or signal.SIGHUP
+        if closing:
+            if client.poll() is None:
+                client.terminate()
+                try:
+                    client.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    client.kill()
+                    client.wait()
+            # A missing receipt (e.g. a custom config omitting our ID) must
+            # preserve the session. Direct native-binary calls bypass this lock.
+            # Native detach sends exit status 0. Preserve an acknowledged
+            # detach even if the terminal closes before we finish waiting.
+            if kill_on_close and client.returncode != 0:
+                cleanup()
+        status = client.wait()
+        return status if status >= 0 else 128 - status
+
+
+if __name__ == "__main__":
+    sys.exit(main())

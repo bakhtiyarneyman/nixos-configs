@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+"""Store shell context and render Fish completion descriptions for stock shpool."""
+import hashlib
+import json
+import os
+from pathlib import Path
+import socket
+import sys
+import tempfile
+import time
+
+
+def directory():
+    runtime = os.environ.get("XDG_RUNTIME_DIR")
+    root = Path(runtime) if runtime else Path.home() / ".local/run"
+    return root / "shpool/session-info"
+
+
+def info_path(name):
+    # Session names can contain slashes and other arbitrary characters.
+    return directory() / (hashlib.sha256(name.encode()).hexdigest() + ".json")
+
+
+def read_info(name):
+    try:
+        info = json.loads(info_path(name).read_text())
+        return info if isinstance(info, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def update(phase, command):
+    name = os.environ.get("SHPOOL_SESSION_NAME")
+    if not name:
+        return
+    directory().mkdir(mode=0o700, parents=True, exist_ok=True)
+    info = {}
+    info.update(host=socket.gethostname(), cwd=os.getcwd(),
+                updated_at_unix_ms=time.time_ns() // 1_000_000)
+    if phase != "init":
+        info.update(command=command, running=phase == "running")
+    # Atomic replacement keeps completion from reading half a command; mkstemp
+    # makes the context private, like shell history, even with a permissive umask.
+    fd, temporary = tempfile.mkstemp(dir=directory())
+    try:
+        with os.fdopen(fd, "w") as output:
+            json.dump(info, output)
+        os.replace(temporary, info_path(name))
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def one_line(value):
+    # Tabs/newlines delimit Fish completions; never emit terminal controls.
+    return " ".join("".join(c if c.isprintable() else " " for c in value).split())
+
+
+def complete(wanted):
+    sessions = json.load(sys.stdin)["sessions"]
+    for session in sessions:
+        name, state = session["name"], session["status"].lower()
+        if wanted and wanted != state:
+            continue
+        info = read_info(name)
+        if info.get("updated_at_unix_ms", 0) < session["started_at_unix_ms"]:
+            info = {}
+        host = info.get("host", socket.gethostname())
+        cwd = info.get("cwd", "?")
+        home = str(Path.home())
+        if cwd == home or cwd.startswith(home + "/"):
+            cwd = "~" + cwd[len(home):]
+        command = info.get("command") or "shell"
+        activity = ", running" if info.get("running") else ""
+        description = one_line(f"{host}:{cwd} — {command} [{state}{activity}]")
+        # A literal tab or newline in a name cannot be represented by this API.
+        if not any(c in name for c in "\t\r\n"):
+            print(f"{name}\t{description}")
+
+
+if __name__ == "__main__":
+    try:
+        if sys.argv[1] == "update":
+            update(sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else "")
+        elif sys.argv[1] == "complete":
+            complete(sys.argv[2] if len(sys.argv) > 2 else "")
+    except (OSError, ValueError, KeyError):
+        # Metadata must never interrupt a command or print errors at the prompt.
+        pass
