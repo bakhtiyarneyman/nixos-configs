@@ -478,6 +478,19 @@ in {
           # Build with stable dependencies so fprintd and its PAM module do not
           # pull in a newer glibc from unstable.
           libfprint = self.callPackage "${self.unstable.path}/pkgs/by-name/li/libfprint/package.nix" {};
+          # Use the core-probe branch until Commander Core probe selection is upstream.
+          liquidctl = super.liquidctl.overridePythonAttrs (old: let
+            version = "${old.version}+coreprobe";
+          in {
+            inherit version;
+            src = self.fetchFromGitHub {
+              owner = "bakhtiyarneyman";
+              repo = "liquidctl";
+              rev = "core-probe";
+              hash = "sha256-j7Ye3prq7CoZ4klYJsOt3wLOBcRyLlGn3wechB7OTEA=";
+            };
+            env.SETUPTOOLS_SCM_PRETEND_VERSION = version;
+          });
           ntopng = self.callPackage ../pkgs/ntopng.nix {};
           telegram-desktop = super.unstable.telegram-desktop;
           wyoming-faster-whisper = super.unstable.wyoming-faster-whisper;

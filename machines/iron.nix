@@ -182,6 +182,46 @@ in {
       };
     };
 
+    systemd.services = {
+      commander-core-fan-curves = {
+        description = "Set Commander CORE front intake fan curves";
+        wantedBy = ["multi-user.target"];
+        before = ["openrgb.service"];
+        # Keep the completed setup across OpenRGB restarts and rebuilds.
+        restartIfChanged = false;
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          TimeoutStartSec = "60s";
+        };
+        preStart = ''
+          # Discovery does not change the controller's operating mode. Wait for
+          # USB enumeration without repeatedly initializing the pump/lighting.
+          for ((attempt = 0; attempt < 30; attempt++)); do
+            if [[ -n "$(${pkgs.liquidctl}/bin/liquidctl --vendor 0x1b1c --product 0x0c1c list)" ]]; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "Commander CORE did not appear within 30 seconds" >&2
+          exit 1
+        '';
+        script = ''
+          # Sensor 1 is the external probe attached to the RX 9070 XT heatsink fins.
+          # Pairs are fin temperature (C), PWM duty (%), not GPU junction temperature.
+          # Keep baseline case airflow for the CPU/RAM; reach full intake at 60 C.
+          for fan in fan1 fan2; do
+            ${pkgs.liquidctl}/bin/liquidctl --vendor 0x1b1c --product 0x0c1c --temperature-sensor 1 \
+              set "$fan" speed 35 35 40 40 45 55 50 70 55 85 60 100
+          done
+        '';
+      };
+      openrgb = {
+        requires = ["commander-core-fan-curves.service"];
+        after = ["commander-core-fan-curves.service"];
+      };
+    };
+
     services = {
       hardware.openrgb = {
         enable = true;
