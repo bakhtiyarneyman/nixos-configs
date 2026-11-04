@@ -160,6 +160,12 @@ in {
             format = " $icon ^icon_cpu $utilization.eng(width:3) ";
             format_alt = " $icon ^icon_memory_mem $vram_used_percents.eng(width:3) ";
             interval = 1;
+            click = [
+              {
+                button = "left";
+                cmd = "${pkgs.alacritty}/bin/alacritty -e ${pkgs.amdgpu_top}/bin/amdgpu_top";
+              }
+            ];
           }
         ];
 
