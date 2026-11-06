@@ -31,6 +31,7 @@ in {
       loader = {
         efi.canTouchEfiVariables = true;
       };
+      zswap.enable = true;
     };
 
     # i18n = {
