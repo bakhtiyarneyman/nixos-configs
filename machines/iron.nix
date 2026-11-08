@@ -69,7 +69,6 @@ in {
     environment = {
       systemPackages = with pkgs; [
         liquidctl
-        amdgpu_top
         texliveFull
         tex-fmt
         # Build packages for `tin` to pickup from cache.
