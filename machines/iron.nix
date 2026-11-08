@@ -1,4 +1,5 @@
 {
+  config,
   lib,
   pkgs,
   hostKeys,
@@ -259,6 +260,12 @@ in {
         user = "ollama";
         models = "/ollama-models";
         environmentVariables = {
+          # Ollama picks dio only for integrated GPUs, leaving discrete ones on
+          # mmap. On ZFS, mmap pages are filled by a single thread copying from
+          # ZFS buffers into a separate page-cache copy, fault by fault, which
+          # is CPU-bound and leaves the model in DRAM. dio reads large chunks
+          # straight into the loader's buffers.
+          LLAMA_ARG_LOAD_MODE = "dio";
           # The context below is sized to fit, so skip llama-server's ~0.4 s
           # memory-fit probe on every load. If VRAM ever runs short, loading
           # fails instead of silently moving layers to the CPU. With fit off,
