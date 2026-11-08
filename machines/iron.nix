@@ -288,9 +288,9 @@ in {
           OLLAMA_CONTEXT_LENGTH = "49152";
         };
       };
-      nextjs-ollama-llm-ui = {
+      open-webui = {
         enable = true;
-        hostname = "0.0.0.0";
+        host = "0.0.0.0";
         port = 11435;
       };
 
