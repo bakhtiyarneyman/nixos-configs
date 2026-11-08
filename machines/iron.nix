@@ -259,6 +259,12 @@ in {
         user = "ollama";
         models = "/ollama-models";
         environmentVariables = {
+          # The context below is sized to fit, so skip llama-server's ~0.4 s
+          # memory-fit probe on every load. If VRAM ever runs short, loading
+          # fails instead of silently moving layers to the CPU. With fit off,
+          # pin the layer count instead of leaving it to "auto".
+          LLAMA_ARG_FIT = "off";
+          LLAMA_ARG_N_GPU_LAYERS = "all";
           OLLAMA_KV_CACHE_TYPE = "q8_0";
           # Ollama defaults to a 4096-token context on a 16 GiB card, which
           # long chats exhaust, truncating replies to a few hundred tokens.
