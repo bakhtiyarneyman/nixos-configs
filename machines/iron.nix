@@ -255,7 +255,7 @@ in {
       ollama = {
         enable = true;
         # The patch forces a local build, so compile kernels for the 9070 XT only.
-        package = (pkgs.ollama-rocm.override {rocmGpuTargets = ["gfx1201"];}).overrideAttrs (old: {
+        package = (pkgs.unstable.ollama-rocm.override {rocmGpuTargets = ["gfx1201"];}).overrideAttrs (old: {
           patches = (old.patches or []) ++ [../pkgs/ollama-discovery-static-cache.patch];
         });
         # A static user keeps ownership of /ollama-models
