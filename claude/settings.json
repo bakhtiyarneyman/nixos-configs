@@ -34,6 +34,7 @@
   "enabledPlugins": {
     "superpowers@claude-plugins-official": true
   },
+  "feedbackDrafts": "off",
   "effortLevel": "high",
   "modelSettings": {
     "claude-opus-5-5": {
