@@ -1,7 +1,5 @@
 # Speech-to-text for Open WebUI on a Vulkan GPU; Open WebUI's built-in Whisper
-# runs only on CPU or CUDA. Open WebUI keeps its STT engine in its database, so
-# point it here in the admin Tools -> Audio settings: engine OpenAI, URL
-# http://127.0.0.1:11436/v1, any non-empty API key.
+# runs only on CPU or CUDA.
 {
   lib,
   options,
@@ -46,6 +44,10 @@
   services.open-webui.environment =
     options.services.open-webui.environment.default
     // {
+      # Open WebUI reads these only with ENABLE_PERSISTENT_CONFIG=False;
+      # otherwise its database copy, seeded on first start, wins.
+      AUDIO_STT_ENGINE = "openai";
+      AUDIO_STT_OPENAI_API_BASE_URL = "http://127.0.0.1:11436/v1";
       # whisper-server decodes webm itself, so skip Open WebUI's own ~0.5 s
       # webm-to-mp3 conversion per recording.
       BYPASS_PYDUB_PREPROCESSING = "True";

@@ -310,6 +310,14 @@ in {
         enable = true;
         host = "0.0.0.0";
         port = 11435;
+        environment = {
+          # Read every admin setting from the environment instead of the
+          # database, so Nix is the only source of truth. Users, chats and
+          # workspace items stay in the database. Settings changed in the UI
+          # last until the next restart. MFA refuses to run in this mode.
+          ENABLE_PERSISTENT_CONFIG = "False";
+          ENABLE_SIGNUP = "False";
+        };
       };
 
       tailscale.serve = {
