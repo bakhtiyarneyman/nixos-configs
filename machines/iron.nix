@@ -308,6 +308,21 @@ in {
 
       open-webui = {
         enable = true;
+        # Fill Open WebUI's empty static/loader.js hook with a script that
+        # preloads the model when a draft starts. The frontend is copied, not
+        # rebuilt: symlinks won't do, since Starlette refuses to serve files
+        # that resolve outside FRONTEND_BUILD_DIR. Open WebUI copies static/
+        # from there on start.
+        package = let
+          inherit (pkgs.open-webui) frontend;
+          frontendWithPreload = pkgs.runCommand "${frontend.name}-preload" {} ''
+            cp -r --no-preserve=mode ${frontend}/share/open-webui $out
+            cp ${../pkgs/open-webui-preload.js} $out/static/loader.js
+          '';
+        in
+          pkgs.open-webui.overridePythonAttrs (old: {
+            makeWrapperArgs = old.makeWrapperArgs ++ ["--set FRONTEND_BUILD_DIR ${frontendWithPreload}"];
+          });
         host = "0.0.0.0";
         port = 11435;
         environment = {
