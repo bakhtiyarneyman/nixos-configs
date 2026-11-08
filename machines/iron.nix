@@ -27,6 +27,7 @@ in {
     ../mixins/trusted.nix
     ../mixins/two-factor-auth.nix
     ../mixins/virtualization.nix
+    ../mixins/whisper-server.nix
     ../mixins/zfs.nix
   ];
 
@@ -233,6 +234,15 @@ in {
       openrgb = {
         requires = ["commander-core-fan-curves.service"];
         after = ["commander-core-fan-curves.service"];
+      };
+      whisper-server.environment = {
+        # q5_0 holds 866 MiB of VRAM, leaving ~80 MiB beside Ollama at
+        # OLLAMA_CONTEXT_LENGTH 49152. With LLAMA_ARG_FIT off, an Ollama
+        # model reload fails once other VRAM use grows past that margin.
+
+        # Vulkan enumerates the Raphael iGPU first; expose only the 9070 XT.
+        MESA_VK_DEVICE_SELECT = "1002:7550";
+        MESA_VK_DEVICE_SELECT_FORCE_DEFAULT_DEVICE = "1";
       };
     };
 
