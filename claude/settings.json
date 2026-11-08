@@ -48,6 +48,7 @@
       }
     }
   },
+  "tui": "fullscreen",
   "timeFormat": "24-hour",
   "autoCompactEnabled": true,
   "voiceEnabled": true,
