@@ -1,0 +1,104 @@
+--- a/discover/llama_server.go
++++ b/discover/llama_server.go
+@@ -13,6 +13,7 @@
+ 	"runtime"
+ 	"strconv"
+ 	"strings"
++	"sync"
+ 	"time"
+ 
+ 	"github.com/ollama/ollama/llm"
+@@ -24,6 +25,13 @@
+ // the short-lived discovery subprocess.
+ const llamaServerDiscoveryWaitDelay = 5 * time.Second
+ 
++// Parsers holding the startup log and native probe output, which describe
++// unchanging hardware, keyed by libDirs and extraEnvs (device filters).
++var (
++	deviceParsersMu sync.Mutex
++	deviceParsers   = map[string]func([]byte) []ml.DeviceInfo{}
++)
++
+ // llamaServerDiscoverDevices spawns llama-server briefly (without a model) to
+ // discover GPU devices and their capabilities. The server prints device info
+ // and system_info (including compiled CUDA architectures) on startup before
+@@ -68,6 +76,18 @@
+ 
+ 	llm.SetupLlamaServerCommandEnv(cmd, llamaServer, libDirs, extraEnvs)
+ 
++	key := fmt.Sprint(libDirs, extraEnvs)
++	deviceParsersMu.Lock()
++	parse := deviceParsers[key]
++	deviceParsersMu.Unlock()
++	if parse != nil {
++		listOutput, err := listDevices(ctx, llamaServer, cmd.Env, status)
++		if err != nil {
++			return nil, status, err
++		}
++		return parse(listOutput), status, nil
++	}
++
+ 	logutil.Trace("running llama-server for discovery", "cmd", cmd.Path, "libDirs", libDirs)
+ 
+ 	// Capture stderr (device info + system_info) via pipe so we can
+@@ -138,30 +158,46 @@
+ 			"libDirs", libDirs, "lines_captured", len(stderrLines))
+ 	}
+ 
+-	// Also run --list-devices to get the stdout device list with free memory
+-	// (the brief server startup doesn't print that)
++	listOutput, err := listDevices(ctx, llamaServer, cmd.Env, status)
++	if err != nil {
++		return nil, status, err
++	}
++
++	nativeDevices, nativeStderr, nativeErr := discoverNativeDevices(ctx, llamaServer, libDirs, extraEnvs)
++	_, _ = status.Write([]byte(nativeStderr))
++	if nativeErr != nil {
++		logNativeProbeFailure(nativeErr, nativeStderr, libDirs)
++	}
++
++	llamaOutput := strings.Join(stderrLines, "\n")
++	parse = func(listOutput []byte) []ml.DeviceInfo {
++		return parseLlamaServerDevicesWithNative(string(listOutput)+"\n"+llamaOutput, nativeStderr, libDirs, nativeDevices)
++	}
++	if gotSystemInfo && nativeErr == nil {
++		deviceParsersMu.Lock()
++		deviceParsers[key] = parse
++		deviceParsersMu.Unlock()
++	}
++	return parse(listOutput), status, nil
++}
++
++// Also run --list-devices to get the stdout device list with free memory
++// (the brief server startup doesn't print that)
++func listDevices(ctx context.Context, llamaServer string, env []string, status io.Writer) ([]byte, error) {
+ 	cmd2 := exec.CommandContext(ctx, llamaServer, "--list-devices", "--offline", "--verbose")
+ 	cmd2.WaitDelay = llamaServerDiscoveryWaitDelay
+-	cmd2.Env = cmd.Env // reuse same environment
++	cmd2.Env = env
+ 	listOutput, err := cmd2.CombinedOutput()
+ 	_, _ = status.Write(listOutput)
+ 	if err != nil {
+ 		exit := llm.ExitStatusFromError(err)
+ 		slog.Debug("llama-server --list-devices failed", "error", err, "exit", exit)
+ 		if exit.Known() {
+-			return nil, status, fmt.Errorf("llama-server --list-devices failed: %s", exit)
++			return nil, fmt.Errorf("llama-server --list-devices failed: %s", exit)
+ 		}
+-		return nil, status, fmt.Errorf("llama-server --list-devices failed: %w", err)
+-	}
+-
+-	nativeDevices, nativeStderr, nativeErr := discoverNativeDevices(ctx, llamaServer, libDirs, extraEnvs)
+-	_, _ = status.Write([]byte(nativeStderr))
+-	if nativeErr != nil {
+-		logNativeProbeFailure(nativeErr, nativeStderr, libDirs)
++		return nil, fmt.Errorf("llama-server --list-devices failed: %w", err)
+ 	}
+-
+-	llamaOutput := string(listOutput) + "\n" + strings.Join(stderrLines, "\n")
+-	return parseLlamaServerDevicesWithNative(llamaOutput, nativeStderr, libDirs, nativeDevices), status, nil
++	return listOutput, nil
+ }
+ 
+ func llamaServerDiscoveryOutput(ctx context.Context) io.Writer {
