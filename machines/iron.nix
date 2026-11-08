@@ -288,17 +288,31 @@ in {
           OLLAMA_CONTEXT_LENGTH = "49152";
         };
       };
-      open-webui = {
-        enable = true;
-        host = "0.0.0.0";
-        port = 11435;
-      };
 
       nfs.server = {
         enable = true;
         boundExports = {
           home = "/home/bakhtiyar";
         };
+      };
+
+      open-webui = {
+        enable = true;
+        host = "0.0.0.0";
+        port = 11435;
+      };
+
+      tailscale.serve = {
+        enable = true;
+        # Raw ServeConfig instead of `services`: set-config turns
+        # "tcp:443" = "http://..." into plain HTTP on 443
+        # (https://github.com/tailscale/tailscale/issues/18381).
+        configFile = pkgs.writeText "tailscale-serve.json" (builtins.toJSON {
+          Services."svc:ai" = {
+            TCP."443".HTTPS = true;
+            Web."ai.orkhon-mohs.ts.net:443".Handlers."/".Proxy = "http://localhost:11435";
+          };
+        });
       };
 
       journal-brief.settings.exclusions = [
