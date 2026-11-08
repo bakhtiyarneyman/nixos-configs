@@ -241,7 +241,19 @@ in {
       ollama = {
         enable = true;
         package = pkgs.ollama-rocm;
-        rocmOverrideGfx = "10.3.2";
+        environmentVariables = {
+          OLLAMA_KV_CACHE_TYPE = "q8_0";
+          # Ollama defaults to a 4096-token context on a 16 GiB card, which
+          # long chats exhaust, truncating replies to a few hundred tokens.
+          # Qwen3.8-27B UD-Q3_K_XL uses ~13.5 GiB of the 9070 XT at 4096;
+          # its KV cache (16 attention layers) costs 64 KiB/token at f16 and
+          # ~34 KiB/token at q8_0. llama-server's fitter reserves ~1.9 GiB of
+          # VRAM (including the vision projector's worst case) and moves
+          # layers to the CPU when the rest doesn't fit: 65536 overshot by
+          # ~390 MiB and ran 63/66 layers on the GPU. 49152 is the largest
+          # 16K multiple that stays fully on the GPU within that reserve.
+          OLLAMA_CONTEXT_LENGTH = "49152";
+        };
       };
       nextjs-ollama-llm-ui = {
         enable = true;
