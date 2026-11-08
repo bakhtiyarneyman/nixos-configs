@@ -53,8 +53,18 @@ in {
           tailscaleState = "/var/lib/tailscale/tailscaled.state";
         };
       };
-      kernel.sysctl = {
-        "vm.swappiness" = 1;
+      kernel = {
+        sysctl = {
+          "vm.swappiness" = 1;
+        };
+        # ROCm pins host memory through HMM, and amdgpu gives up with EAGAIN
+        # after 1s of hmm_range_fault returning -EBUSY because the range was
+        # invalidated mid-walk. With defrag=madvise, faulting a MADV_HUGEPAGE
+        # buffer direct-compacts and migrates the buffer's own pages mid-pin,
+        # so large hipHostMalloc calls stalled in 1s retries. "defer" leaves
+        # huge page assembly to kcompactd instead (measured 521 MiB pin:
+        # ~9s -> ~140ms).
+        sysfs.kernel.mm.transparent_hugepage.defrag = "defer";
       };
       kernelParams = ["zfs.zfs_arc_max=17179869184"];
       loader = {
@@ -180,6 +190,7 @@ in {
         '';
       };
     };
+
     systemd.tmpfiles.rules = [
       "d ${config.services.ollama.models} 0700 ${config.services.ollama.user} ${config.services.ollama.group} -"
     ];
