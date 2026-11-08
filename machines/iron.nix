@@ -180,6 +180,9 @@ in {
         '';
       };
     };
+    systemd.tmpfiles.rules = [
+      "d ${config.services.ollama.models} 0700 ${config.services.ollama.user} ${config.services.ollama.group} -"
+    ];
 
     systemd.services = {
       commander-core-fan-curves = {
@@ -240,6 +243,10 @@ in {
       ollama = {
         enable = true;
         package = pkgs.ollama-rocm;
+        # A static user keeps ownership of /ollama-models
+        # stable, since it lies outside the state directory systemd manages.
+        user = "ollama";
+        models = "/ollama-models";
         environmentVariables = {
           OLLAMA_KV_CACHE_TYPE = "q8_0";
           # Ollama defaults to a 4096-token context on a 16 GiB card, which
@@ -447,6 +454,7 @@ in {
               filesystems = {
                 "fast/nixos/var<" = true;
                 "fast/nixos/home/bakhtiyar/dump<" = true;
+                "fast/ollama-models<" = true;
               };
               inherit snapshotting;
               pruning = {
